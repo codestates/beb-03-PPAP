@@ -2,6 +2,7 @@ ABI
 address
 test_server/node_modules
 test_server/.env
+server/.env
 test_server/package-lock.json
 
 server/node_modules
