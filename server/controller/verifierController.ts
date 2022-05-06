@@ -2,7 +2,7 @@ import { EthrDID } from "ethr-did";
 import { Issuer } from "did-jwt-vc";
 import { Wallet } from "@ethersproject/wallet";
 import { ethers } from "ethers";
-import express, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 const { issuerPub, issuerPriv, didContractAdd } = require("../config");
 const rpcUrl = "http://localhost:7545";
 var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
