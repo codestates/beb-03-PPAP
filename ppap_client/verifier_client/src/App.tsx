@@ -1,16 +1,12 @@
+import "./App.css";
+import Breadcrumb from "./pages/components/Breadcrumb";
+
 function App() {
   return (
     <main id="main" className="main">
       <div className="pagetitle">
         <h1>Dashboard</h1>
-        <nav>
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item">
-              <a href="index.html">Home</a>
-            </li>
-            <li className="breadcrumb-item active">Dashboard</li>
-          </ol>
-        </nav>
+        <Breadcrumb />
       </div>
 
       <section className="section dashboard">
