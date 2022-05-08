@@ -6,4 +6,4 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
   res.status(200).send({ message: "This is sample Auth" });
 });
 
-module.exports = router;
+export default router;
