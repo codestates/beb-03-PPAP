@@ -6,7 +6,7 @@ const Sidebar = () => {
     <aside id="sidebar" className="sidebar">
       <ul className="sidebar-nav" id="sidebar-nav">
         <li className="nav-item">
-          <Link className="nav-link " to="/">
+          <Link className="nav-link " to="/main">
             <i className="bi bi-grid"></i>
             <span>Dashboard</span>
           </Link>
