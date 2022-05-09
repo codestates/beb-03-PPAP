@@ -7,8 +7,8 @@ const express = require("express");
 // import { issuerRoute } from "../routes/issuerRoute";
 // import { verifierRoute } from "../routes/verifierRoute.js";
 const cors = require("cors");
-const { issuerRoute } = require("../routes/issuerRoute.ts");
-const { verifierRoute } = require("../routes/verifierRoute.js");
+const { issuerRoute } = require("../routes/issuerRoute");
+const { verifierRoute } = require("../routes/verifierRoute");
 
 const app = express();
 

@@ -19,5 +19,4 @@ issuerRoute.route("/makePass").post(makePassport);
 issuerRoute.route("/reqVisa").post(requestVisa);
 issuerRoute.route("/makeVisa").post(makeVisa);
 
-// export default issuerRoute;
 module.exports.issuerRoute = issuerRoute;

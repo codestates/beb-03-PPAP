@@ -87,17 +87,3 @@ export const verifyPassport = async (req: Request, res: Response) => {
     console.log(e);
   }
 };
-
-// export const verifyVisa = async (req:Request, res:Response) => {
-//   const { test } = req.body;
-//   const msg = `test post method verifyVisa : ${test}`;
-//   console.log(msg);
-//   res.send({ msg: msg });
-// };
-
-// export const mintStampNFT = async (req:Request, res:Response) => {
-//   const { test } = req.body;
-//   const msg = `test post method mintStampNFT : ${test}`;
-//   console.log(msg);
-//   res.send({ msg: msg });
-// };
