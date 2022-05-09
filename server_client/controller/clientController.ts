@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-const models = require('../models');
+const query = require('../mysql/query/query');
+// import { query } from '../mysql/query';
+// const models = require('../models');
 const jwt = require('jsonwebtoken');
 import { EthrDID } from 'ethr-did';
 import { Issuer } from 'did-jwt-vc';
@@ -91,6 +93,16 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const test = async (req: Request, res: Response) => {
+    query.getClientUser((err: any, data: any) => {
+        if (err) {
+            // error handling code goes here
+            console.log('ERROR : ', err);
+        } else {
+            // code to execute on data retrieval
+            console.log('result from db is : ', data);
+            res.send(data);
+        }
+    });
     // console.log(getClientUser());
 };
 
