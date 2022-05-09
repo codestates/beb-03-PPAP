@@ -54,6 +54,9 @@ export default function App() {
 
   useEffect(() => {
     ask();
+    axios.get("https://ppap.loca.lt/issuer/getPass").then((payload) => {
+      console.log(payload.data.msg);
+    });
   }, []);
 
   return (

@@ -16,11 +16,19 @@ dotenv.config({ path: "./.env" });
 
 const port = 4000;
 
-const corsOptions = { origin: `http://localhost:${port}` };
+const corsOptions = {
+  origin: [
+    `http://localhost:${port}`,
+    "http://localhost:3000",
+    "exp://q6-xk2.ressom.holder-client.exp.direct:80",
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
+};
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); // FIX ME: {extended: false}
 
 app.use("/issuer", issuerRoute);
 app.use("/verifier", verifierRoute);

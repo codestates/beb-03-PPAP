@@ -1,7 +1,15 @@
 import React from "react";
 import Breadcrumb from "./components/Breadcrumb";
+import axios from "axios";
+import { useEffect } from "react";
 
 const Passport = () => {
+  useEffect(() => {
+    axios.get("http://localhost:4000/issuer/getPass").then((payload) => {
+      console.log(payload.data);
+    });
+  }, []);
+
   return (
     <main id="main" className="main">
       <div className="pagetitle">
