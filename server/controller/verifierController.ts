@@ -5,11 +5,11 @@ import { ethers } from "ethers";
 import { Request, Response, NextFunction } from "express";
 const { issuerPub, issuerPriv, didContractAdd } = require("../config");
 const rpcUrl = "http://localhost:7545";
-var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-var contractAddress = "0x8B299ea59ef193F8e2c3A574fbF834010990741B"; //local
+let provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+let contractAddress = didContractAdd; //local
 // txSigner는 이슈어의 개인키? 가 아니고 트랜잭션 일으킬 주체
 const txSigner = new Wallet(
-  "d79cf95b1518009781aaf9f28724b9ee4eef31efe1edb4a17849487696a7131c",
+  "79e5fe77b16cd3c7495fa1170adf4cf15b6a8cd545a42abea4cf0d6a17b90bfe",
   provider
 ); //해당 계정의 개인키
 
@@ -24,25 +24,66 @@ import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 
 export const verifyPassport = async (req: Request, res: Response) => {
-  // 요청 : vp토큰
-  // 응답 : success, fail
-  const { vpJWT } = req.body; // 바디?? 헤더??
+  try {
+    // 요청 : vp토큰
+    // 응답 : success, fail
 
-  const msg = `test post method verifyPassport : ${vpJWT}`;
-  console.log(msg);
-  res.send({ msg: msg });
+    const { vcJWT } = req.body; // 바디?? 헤더??
+    const issuer = new EthrDID({
+      txSigner,
+      provider,
+      identifier: issuerPub,
+      privateKey: issuerPriv,
+      rpcUrl,
+      chainNameOrId: "ganache",
+      registry: contractAddress,
+    }) as Issuer;
+    console.log("Issuer::" + issuer.did);
+    const vcPayload: JwtCredentialPayload = {
+      sub: issuer.did,
+      nbf: 1562950282,
+      vc: {
+        "@context": ["https://www.w3.org/2018/credentials/v1"],
+        type: ["VerifiableCredential"],
+        credentialSubject: {
+          degree: {
+            type: "BachelorDegree",
+            name: "Baccalauréat en musiques numériques",
+          },
+          abc: {
+            type: "abc",
+            name: "def",
+          },
+        },
+      },
+    };
+    const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer);
+    console.log("VCJWT::" + vcJwt);
+
+    // const vpPayload: JwtPresentationPayload = {
+    //   vp: {
+    //     "@context": ["https://www.w3.org/2018/credentials/v1"],
+    //     type: ["VerifiablePresentation"],
+    //     verifiableCredential: [vcJwt],
+    //   },
+    // };
+
+    // const vpJWT = await createVerifiablePresentationJwt(vpPayload, issuer);
+    // console.log("VPJWT::" + vpJWT);
+
+    // const msg = `test post method verifyPassport : ${vpJWT}`;
+    // console.log(msg,"ㅇㅇ");
+    const providerConfig = {
+      name: "ganache",
+      rpcUrl: "http://localhost:7545",
+      registry: contractAddress,
+    };
+    const ethrDidResolver = getResolver(providerConfig);
+    const didResolver = new Resolver(ethrDidResolver);
+    const verifiedVC = await verifyCredential(vcJwt, didResolver);
+    // console.log(verifiedVC.payload.iss);
+    res.status(200).send({ msg: verifiedVC });
+  } catch (e) {
+    console.log(e);
+  }
 };
-
-// export const verifyVisa = async (req:Request, res:Response) => {
-//   const { test } = req.body;
-//   const msg = `test post method verifyVisa : ${test}`;
-//   console.log(msg);
-//   res.send({ msg: msg });
-// };
-
-// export const mintStampNFT = async (req:Request, res:Response) => {
-//   const { test } = req.body;
-//   const msg = `test post method mintStampNFT : ${test}`;
-//   console.log(msg);
-//   res.send({ msg: msg });
-// };
