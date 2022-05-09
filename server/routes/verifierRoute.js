@@ -10,7 +10,7 @@ const express = require("express");
 
 const verifierRoute = express.Router();
 
-verifierRoute.route("/veriPass").post(verifyPassport);
+verifierRoute.route("/veriPass").get(verifyPassport);
 // verifierRoute.route("/veriVisa").post(verifyVisa);
 // verifierRoute.route("/mintStamp").post(mintStampNFT);
 

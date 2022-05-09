@@ -7,8 +7,7 @@ const express = require("express");
 // import { issuerRoute } from "../routes/issuerRoute";
 // import { verifierRoute } from "../routes/verifierRoute.js";
 const cors = require("cors");
-const { authRoute } = require("../routes/authRoute.js");
-const { issuerRoute } = require("../routes/issuerRoute.js");
+const { issuerRoute } = require("../routes/issuerRoute.ts");
 const { verifierRoute } = require("../routes/verifierRoute.js");
 
 const app = express();
@@ -23,7 +22,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", authRoute);
 app.use("/issuer", issuerRoute);
 app.use("/verifier", verifierRoute);
 

@@ -1,22 +1,13 @@
-// import {
-//     getPassport,
-//     authPassport,
-//     requestPassport,
-//     makePassport,
-//     requestVisa,
-//     makeVisa,
-// } from '../controller/issuerController.js';
-const {
+import {
   getPassport,
   authPassport,
   requestPassport,
   makePassport,
   requestVisa,
   makeVisa,
-} = require("../controller/issuerController.js");
+} from "../controller/issuerController";
 
-// import express from "express";
-const express = require("express");
+import express from "express";
 const issuerRoute = express.Router();
 
 issuerRoute.route("/getPass").get(getPassport);
