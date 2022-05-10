@@ -1,9 +1,9 @@
 {
   "verdose": true,
-  "ignore": ["userInfo/*.*"],
   "watch": [
     "package.json",
     "nodemon.json",
+    "tsconfig.json",
     "src/*.*",
     "routes/*.*",
     "mysql/**/*.*",

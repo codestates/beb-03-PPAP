@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { auth } from "../functions/auth";
-import { clientUserInfo } from "../userInfo/clientUserInfo";
+
 const clientAuth = async (authorization: any) => {
-  let output = await auth(authorization);
-  console.log("==========", clientUserInfo.personalId);
+  let output: any = await auth(authorization);
+  // .then으로 resolve, reject 경우 나눠서 처리
+  console.log(output.personalId);
 };
 export const getPassport = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];

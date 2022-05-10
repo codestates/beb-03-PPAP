@@ -18,21 +18,41 @@ export const auth = async (authorization: any) => {
       // 나중에 db에서 did 유무 판별
       const userPhone = data.phoneNum;
       // 쿼리
-      await query.getUser("phoneNum", userPhone, (err: any, data: any) => {
-        if (err) {
-          // error handling code goes here
-          console.log("ERROR : ", err);
-        } else {
-          if (data) {
-            fs.writeFileSync(
-              "userInfo/clientUserInfo.js",
-              "const clientUserInfo =" +
-                JSON.stringify(data[0]) +
-                `\n module.exports={clientUserInfo}`
-            );
+      return new Promise((resolve, reject) => {
+        const data = query.getUser(
+          "phoneNum",
+          userPhone,
+          (err: any, data: any) => {
+            if (err) {
+              // error handling code goes here
+              console.log("ERROR : ", err);
+            } else {
+              if (data) {
+                resolve(data[0]);
+              }
+            }
           }
-        }
+        );
       });
+      // const user = await query.getUser(
+      //   "phoneNum",
+      //   userPhone,
+      //   (err: any, data: any) => {
+      //     if (err) {
+      //       // error handling code goes here
+      //       console.log("ERROR : ", err);
+      //     } else {
+      //       if (data) {
+      //         fs.writeFileSync(
+      //           "userInfo/clientUserInfo.js",
+      //           "const clientUserInfo =" +
+      //             JSON.stringify(data[0]) +
+      //             `\n module.exports={clientUserInfo}`
+      //         );
+      //       }
+      //     }
+      //   }
+      // );
     } else {
       // 관리자 인증 로직
       const adminDID = data.did;
