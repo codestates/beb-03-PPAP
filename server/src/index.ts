@@ -7,9 +7,9 @@ const express = require("express");
 // import { issuerRoute } from "../routes/issuerRoute";
 // import { verifierRoute } from "../routes/verifierRoute.js";
 const cors = require("cors");
-const { authRoute } = require("../routes/authRoute.js");
-const { issuerRoute } = require("../routes/issuerRoute.js");
-const { verifierRoute } = require("../routes/verifierRoute.js");
+const { adminRoute } = require("../routes/adminRoute");
+const { clientRoute } = require("../routes/clientRoute");
+import createIssuerDID from "../functions/createIssuerDID";
 
 const app = express();
 
@@ -18,14 +18,14 @@ dotenv.config({ path: "./.env" });
 const port = 4000;
 
 const corsOptions = { origin: `http://localhost:${port}` };
+createIssuerDID();
 
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", authRoute);
-app.use("/issuer", issuerRoute);
-app.use("/verifier", verifierRoute);
+app.use("/admin", adminRoute);
+app.use("/client", clientRoute);
 
 app.listen(port, () => {
   console.log(`listening on port ${port}...`);
