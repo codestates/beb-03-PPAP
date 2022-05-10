@@ -5,12 +5,13 @@
 // 없으면 사용자 --> 어떤 사용자인지 db에서 검색
 const jwt = require("jsonwebtoken");
 const query = require("../mysql/query/query");
+const fs = require("fs");
+
 // config에서 access secret들고 오기
+
 export const auth = async (authorization: any) => {
   try {
-    console.log(authorization);
     const token = authorization;
-    let userInfo = null;
     const data = await jwt.verify(token, "asdfawefwaerfawdsfasdf");
     if (data.phoneNum) {
       // 사용자 인증 로직
@@ -23,15 +24,15 @@ export const auth = async (authorization: any) => {
           console.log("ERROR : ", err);
         } else {
           if (data) {
-            for (let i = 0; i < data.length; i++) {
-              console.log(data[i]);
-              userInfo = data[i];
-            }
+            fs.writeFileSync(
+              "userInfo/clientUserInfo.js",
+              "const clientUserInfo =" +
+                JSON.stringify(data[0]) +
+                `\n module.exports={clientUserInfo}`
+            );
           }
         }
       });
-      console.log("=========", userInfo);
-      return userInfo;
     } else {
       // 관리자 인증 로직
       const adminDID = data.did;

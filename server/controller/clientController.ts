@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { auth } from "../functions/auth";
-const clientAuth = (authorization: any) => {
-  return auth(authorization);
+import { clientUserInfo } from "../userInfo/clientUserInfo";
+const clientAuth = async (authorization: any) => {
+  let output = await auth(authorization);
+  console.log("==========", clientUserInfo.personalId);
 };
 export const getPassport = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];

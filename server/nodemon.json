@@ -1,0 +1,13 @@
+{
+  "verdose": true,
+  "ignore": ["userInfo/*.*"],
+  "watch": [
+    "package.json",
+    "nodemon.json",
+    "src/*.*",
+    "routes/*.*",
+    "mysql/**/*.*",
+    "functions/*.*",
+    "controller/*.*"
+  ]
+}
