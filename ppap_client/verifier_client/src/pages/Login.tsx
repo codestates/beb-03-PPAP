@@ -1,20 +1,33 @@
 import React, { useState, useContext } from 'react';
-import Breadcrumb from "./components/Breadcrumb";
 import axios from "axios";
 import { useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../redux/userReducer";
+
 const Login = () => {
 
   const [username, setName] = useState('');
   const [password, setPassword] = useState('');
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("http://localhost:포트번호/issuer/getPass").then((payload) => {
       console.log(payload.data);
     });
   }, []);
+
   const onSubmit = async () => {
-   
+   const userInfo = {username, password};
+  //  axios.post("http://localhost:포트번호/issuer/getPass").then((payload) => {
+  //   console.log(payload.data);
+  // });
+    console.log("야 찎혀!")
+   dispatch(setUser(userInfo));
+   window.location.replace('/')
+   //navigate('/');
   };
 
   return (
@@ -29,17 +42,17 @@ const Login = () => {
           <form className="mb-4 mx-auto">
             <div className="mb-4">
               <input
-                className="shadow appearance-none border border rounded h-12 w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border border rounded h-12 w-full py-2 px-3 text-black mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
                 type="email"
-                placeholder="email"
+                placeholder="ID"
                 value={username}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="mb-6">
               <input
-                className="shadow appearance-none border border rounded w-full h-12 py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border border rounded w-full h-12 py-2 px-3 text-black mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="pw"
                 type="password"
                 placeholder="Password"
@@ -49,7 +62,7 @@ const Login = () => {
             </div>
             <div className="w-full text-center">
               <button
-                className="bg-transparent hover:bg-gray-800 border-gray-400 border-2 text-grey-darker font-bold py-3  w-72 rounded focus:outline-none focus:shadow-outline leading-5"
+                className="bg-transparent hover:bg-gray-800 border-gray-500 border-2 text-black font-bold py-3  w-72 rounded focus:outline-none focus:shadow-outline leading-5"
                 type="button"
                 onClick={onSubmit}
               >
