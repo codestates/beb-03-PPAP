@@ -1,9 +1,23 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 const { didContractAdd, issuerDid } = require("../config");
 import { verifyCredential, verifyPresentation } from "did-jwt-vc";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 import createIPFS from "../functions/createIPFS.js";
+
+export const makePassport = async (req: Request, res: Response) => {
+  const { test } = req.body;
+  const msg = `test post method makePassport : ${test}`;
+  console.log(msg);
+  res.send({ msg: msg });
+};
+
+export const makeVisa = async (req: Request, res: Response) => {
+  const { test } = req.body;
+  const msg = `test post method makeVisa : ${test}`;
+  console.log(msg);
+  res.send({ msg: msg });
+};
 
 // 여권검증 라우터
 // 홀더가 보낸 vpJWT를
