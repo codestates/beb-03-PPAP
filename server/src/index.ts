@@ -9,6 +9,7 @@ const express = require("express");
 const cors = require("cors");
 const { issuerRoute } = require("../routes/issuerRoute");
 const { verifierRoute } = require("../routes/verifierRoute");
+import createIssuerDID from "../functions/createIssuerDID";
 
 const app = express();
 
@@ -17,6 +18,7 @@ dotenv.config({ path: "./.env" });
 const port = 4000;
 
 const corsOptions = { origin: `http://localhost:${port}` };
+createIssuerDID();
 
 app.use(cors(corsOptions));
 app.use(express.json());

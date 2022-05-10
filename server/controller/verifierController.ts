@@ -1,88 +1,73 @@
-import { EthrDID } from "ethr-did";
-import { Issuer } from "did-jwt-vc";
-import { Wallet } from "@ethersproject/wallet";
-import { ethers } from "ethers";
-import { Request, Response, NextFunction } from "express";
-const { issuerPub, issuerPriv, didContractAdd } = require("../config");
-const rpcUrl = "http://localhost:7545";
-let provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-let contractAddress = didContractAdd; //local
-// txSigner는 이슈어의 개인키? 가 아니고 트랜잭션 일으킬 주체
-const txSigner = new Wallet(
-  "79e5fe77b16cd3c7495fa1170adf4cf15b6a8cd545a42abea4cf0d6a17b90bfe",
-  provider
-); //해당 계정의 개인키
-
-import {
-  JwtCredentialPayload,
-  createVerifiableCredentialJwt,
-  JwtPresentationPayload,
-  createVerifiablePresentationJwt,
-  verifyCredential,
-} from "did-jwt-vc";
+import { Request, Response } from "express";
+const { didContractAdd, issuerDid } = require("../config");
+import { verifyCredential, verifyPresentation } from "did-jwt-vc";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
+import createIPFS from "../functions/createIPFS.js";
+
+// 여권검증 라우터
+// 홀더가 보낸 vpJWT를
+// 1. vp verifyPresentation(홀더 did 확인)
+// 2. vc verifyCredential(여권, 비자 vc 확인, 이슈어 did 확인)
+// 3. 두 작업이 완료되면 스탬프 발행
+
+// 스탬프 발행 함수
+// 발급일자, 이미지를 ipfs에 json형태로 업로드
+// ipfs url을 db에 업로드
+
+// 도장 발행 함수
+const makeStamp = async () => {
+  const metaData = {
+    timeStamp: new Date(),
+    country: "Korea",
+    countryImg:
+      "https://ipfs.infura.io/ipfs/QmeLrCEtsm28qqf2S7KSwo7QYFiNzwjfY9AJn8xLs8VQWF",
+  };
+  // const Korea = fs.readFileSync(path.resolve(__dirname, "./Korea.png"));
+  const url = await createIPFS(metaData);
+  console.log("url :", url);
+  return url;
+};
 
 export const verifyPassport = async (req: Request, res: Response) => {
   try {
-    // 요청 : vp토큰
-    // 응답 : success, fail
+    const { did, vpJWT } = req.body; // 추후 입/출국 정보도 바디로 올 예정
+    console.log(vpJWT);
 
-    const { vcJWT } = req.body; // 바디?? 헤더??
-    const issuer = new EthrDID({
-      txSigner,
-      provider,
-      identifier: issuerPub,
-      privateKey: issuerPriv,
-      rpcUrl,
-      chainNameOrId: "ganache",
-      registry: contractAddress,
-    }) as Issuer;
-    console.log("Issuer::" + issuer.did);
-    const vcPayload: JwtCredentialPayload = {
-      sub: issuer.did,
-      nbf: 1562950282,
-      vc: {
-        "@context": ["https://www.w3.org/2018/credentials/v1"],
-        type: ["VerifiableCredential"],
-        credentialSubject: {
-          degree: {
-            type: "BachelorDegree",
-            name: "Baccalauréat en musiques numériques",
-          },
-          abc: {
-            type: "abc",
-            name: "def",
-          },
-        },
-      },
-    };
-    const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer);
-    console.log("VCJWT::" + vcJwt);
-
-    // const vpPayload: JwtPresentationPayload = {
-    //   vp: {
-    //     "@context": ["https://www.w3.org/2018/credentials/v1"],
-    //     type: ["VerifiablePresentation"],
-    //     verifiableCredential: [vcJwt],
-    //   },
-    // };
-
-    // const vpJWT = await createVerifiablePresentationJwt(vpPayload, issuer);
-    // console.log("VPJWT::" + vpJWT);
-
-    // const msg = `test post method verifyPassport : ${vpJWT}`;
-    // console.log(msg,"ㅇㅇ");
     const providerConfig = {
       name: "ganache",
       rpcUrl: "http://localhost:7545",
-      registry: contractAddress,
+      registry: didContractAdd,
     };
     const ethrDidResolver = getResolver(providerConfig);
     const didResolver = new Resolver(ethrDidResolver);
-    const verifiedVC = await verifyCredential(vcJwt, didResolver);
-    // console.log(verifiedVC.payload.iss);
-    res.status(200).send({ msg: verifiedVC });
+    // vp 디코딩
+    const verifiedVP = await verifyPresentation(vpJWT, didResolver);
+    console.log(verifiedVP.payload.iss);
+    if (verifiedVP.payload.iss === did) {
+      // vp서명자 === 홀더인지확인
+      // vp서명자가 홀더일 때만 vc검증과정 진행
+
+      // vc검증시작
+      const vcArr = verifiedVP.payload.vp.verifiableCredential; // vc어레이추출
+      console.log(vcArr);
+      for (let i = 0; i < vcArr.length; i++) {
+        let verifiedVC = await verifyCredential(vcArr[i], didResolver);
+        console.log("verifiedVC@@@", verifiedVC);
+        console.log(`vc발급자 : ${verifiedVC.payload.iss}`); // vc발급자는 issuer did와 같아야함
+        console.log(`여권, 비자 vc 확인, 이슈어 did 확인...`);
+        if (verifiedVC.payload.iss !== issuerDid) {
+          // issuerDID가 아닌 vc가 있으면 바로 오류 응답
+          res.status(400).send({ message: "vc 서명자가 issuer가 아닙니다." });
+        }
+        // 조건문 더 추가(여권,비자검증)
+      }
+      // 반복문 종료 후 stamp발행 실행
+      makeStamp();
+      res.status(200).send({ message: "검증 성공, 출입국 도장 발행 완료" });
+    } else {
+      res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
+    }
   } catch (e) {
     console.log(e);
   }
