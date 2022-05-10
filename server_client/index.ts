@@ -1,6 +1,6 @@
 // import dotenv from "dotenv";
-// import express from "express";
-const express = require('express');
+import express from 'express';
+// const express = require('express');
 // const connection = require('./mysql/config/mysql');
 // const query = require('./mysql/query/query');
 // import cors from "cors";

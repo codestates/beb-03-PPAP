@@ -7,6 +7,6 @@ const clientRoute = express.Router();
 
 clientRoute.route('/login').post(login);
 clientRoute.route('/register').post(register);
-clientRoute.route('/test').post(test);
+clientRoute.route('/test').get(test);
 
 module.exports.clientRoute = clientRoute;
