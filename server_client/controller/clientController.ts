@@ -38,7 +38,7 @@ export const register = async (req: Request, res: Response) => {
     });
     userData.did = holder.did;
 
-    const hashed = passHash(userData.password);
+    const hashed = await passHash(userData.password);
     userData.password = hashed;
 
     await query.createUser(userData, (err: any, data: any) => {
@@ -107,12 +107,3 @@ export const test = async (req: Request, res: Response) => {
 };
 
 // module.exports = { register, authClient };
-
-// const dataFiltered = await data.filter(
-//     async (elem: any) =>
-//         await bcrypt.compare(
-//             loginData.password,
-//             elem.password
-//         )
-// );
-// console.log(dataFiltered);
