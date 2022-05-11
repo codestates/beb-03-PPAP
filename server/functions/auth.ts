@@ -5,7 +5,7 @@
 // 없으면 사용자 --> 어떤 사용자인지 db에서 검색
 const jwt = require("jsonwebtoken");
 const query = require("../mysql/query/query");
-const fs = require("fs");
+const bcrypt = require("bcrypt");
 
 // config에서 access secret들고 오기
 
@@ -60,31 +60,39 @@ export const auth = async (authorization: any) => {
     }
   } catch (e) {
     console.log(e);
-    return e;
   }
 };
 
 // password로 db에서 관리자 찾아주는 함수
-export const getAdminDid = async (password: any) => {
+export const getAdminDid = async (id: any, password: any) => {
   try {
     return new Promise((resolve, reject) => {
-      const output = query.getAdmin(
-        "password",
-        password,
-        (err: any, data: any) => {
-          if (err) {
-            // error handling code goes here
-            console.log("ERROR : ", err);
+      query.getAdmin("userId", id, (err: any, data: any) => {
+        if (err) {
+          // error handling code goes here
+          console.log("ERROR : ", err);
+        } else {
+          if (data.length === 0) {
+            resolve({
+              userId: null,
+              password: null,
+            });
           } else {
-            if (data) {
-              resolve(data[0]);
-            }
+            bcrypt.compare(password, data[0].password).then((res: any) => {
+              if (res) {
+                resolve(data[0]);
+              } else {
+                resolve({
+                  userId: data[0].userId,
+                  password: null,
+                });
+              }
+            });
           }
         }
-      );
+      });
     });
   } catch (e) {
     console.log(e);
-    return e;
   }
 };
