@@ -1,15 +1,40 @@
 import { Request, Response, NextFunction } from "express";
 const { didContractAdd, issuerDid } = require("../config");
 import { verifyCredential, verifyPresentation } from "did-jwt-vc";
+const jwt = require("jsonwebtoken");
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 import createIPFS from "../functions/createIPFS.js";
+import { auth, getAdminDid } from "../functions/auth";
+
+const genAccessToken = (data: any) => {
+  return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "1d",
+  });
+};
+
+const adminAuth = async (authorization: any) => {
+  let output: any = await auth(authorization);
+  // .then으로 resolve, reject 경우 나눠서 처리
+  console.log("@@@@@@@", output.userId);
+  return output;
+};
+
+export const adminLogin = async (req: Request, res: Response) => {
+  const { id, password } = req.body;
+  //adminAuth=> did를 이용해서 access token 발급
+  const output: any = await getAdminDid(password);
+  const tokenData = {
+    did: output.did,
+  };
+  const accessToken = genAccessToken(tokenData);
+  res.status(200).send({ data: accessToken, message: "Login Success" });
+};
 
 export const makePassport = async (req: Request, res: Response) => {
-  const { test } = req.body;
-  const msg = `test post method makePassport : ${test}`;
-  console.log(msg);
-  res.send({ msg: msg });
+  const authorization = req.headers["authorization"];
+  const output = await adminAuth(authorization);
+  res.status(200).send({ output });
 };
 
 export const makeVisa = async (req: Request, res: Response) => {
