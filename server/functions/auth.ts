@@ -1,4 +1,3 @@
-import { adminLogin } from "./../controller/adminController";
 // access token을 인자로 받음
 // access token 디코딩
 // 디코딩한 토큰에 휴대폰 번호 있는지 없는지 판단
@@ -61,6 +60,7 @@ export const auth = async (authorization: any) => {
     }
   } catch (e) {
     console.log(e);
+    return e;
   }
 };
 
@@ -85,5 +85,6 @@ export const getAdminDid = async (password: any) => {
     });
   } catch (e) {
     console.log(e);
+    return e;
   }
 };
