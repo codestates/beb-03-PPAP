@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 const query = require('../mysql/query/query');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { hashRound, accessTokenSecret } = require('../config');
 import { EthrDID } from 'ethr-did';
 import { ethers } from 'ethers';
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
-import { hashRound, accessTokenSecret } from '../config';
 
 const didContractAdd = '0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca';
 const rpcUrl = 'http://localhost:7545';
@@ -75,22 +75,28 @@ export const login = async (req: Request, res: Response) => {
                         msg: 'Wrong username or no data exists!',
                     });
                 } else {
-                    let singleData: any = null;
-                    for (const elem of data) {
-                        const compare = await bcrypt.compare(
+                    const promises = await data.map(async (elem: any) => {
+                        const compareBoolean = await bcrypt.compare(
                             loginData.password,
                             elem.password
                         );
-                        if (compare) {
-                            singleData = elem;
+                        return compareBoolean;
+                    });
+                    const compareBoolArr = await Promise.all(promises);
+                    const dataFiltered = data.filter(
+                        (elem: any, idx: number) => {
+                            return compareBoolArr[idx];
                         }
-                    }
-                    if (!singleData) {
-                        res.send({ data: null, msg: 'Wrong password!' });
+                    )[0];
+                    if (!dataFiltered) {
+                        res.status(401).send({
+                            data: null,
+                            msg: 'Wrong password!',
+                        });
                     } else {
                         const tokenData = {
-                            did: singleData.did,
-                            phoneNum: singleData.phoneNum,
+                            did: dataFiltered.did,
+                            phoneNum: dataFiltered.phoneNum,
                         };
 
                         const accessToken = genAccessToken(tokenData);
