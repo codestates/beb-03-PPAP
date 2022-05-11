@@ -34,6 +34,32 @@ module.exports.getAdmin = async function getAdminUser(
     }
   );
 };
+module.exports.getPassport = async function getPassportList(
+  findFlag,
+  data,
+  callback
+) {
+  connection.query(
+    `SELECT * FROM GOVERN_FA_PASSPORT WHERE ${findFlag}='${data}'`,
+    function (err, result) {
+      if (err) callback(err, null);
+      else callback(null, result);
+    }
+  );
+};
+module.exports.getVisaSurveyList = async function getVisaSurveyList(
+  findFlag,
+  data,
+  callback
+) {
+  connection.query(
+    `SELECT * FROM GOVERN_FA_VISA_SURVEY WHERE ${findFlag}='${data}'`,
+    function (err, result) {
+      if (err) callback(err, null);
+      else callback(null, result);
+    }
+  );
+};
 
 module.exports.createUser = async function getClientUser(userData, callback) {
   this.getUser("phoneNum", userData.phoneNum, (err, data) => {

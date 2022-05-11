@@ -6,12 +6,9 @@ import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 import createIPFS from "../functions/createIPFS.js";
 import { auth, getAdminDid } from "../functions/auth";
-
-const genAccessToken = (data: any) => {
-  return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "1d",
-  });
-};
+import { getPassport_zero, getVisa_zero } from "../functions/admin";
+import { genAccessToken } from "../functions/genAccessToken";
+const query = require("../mysql/query/query");
 
 const adminAuth = async (authorization: any) => {
   let output: any = await auth(authorization);
@@ -20,12 +17,49 @@ const adminAuth = async (authorization: any) => {
   // console.log('@@@@@@@', output.userId);
   return output;
 };
+
+//여권 신청 목록 가져오기
 export const getPassportRequests = async (req: Request, res: Response) => {
-  res.status(200).send({ message: "Success" });
+  const authorization = req.headers["authorization"];
+  if (!authorization) res.status(401).send({ message: "no Auth header" });
+  const output = await adminAuth(authorization);
+  if (output.did === issuerDid) {
+    // admin의 did일 때만 동작
+    // 쿼리 날려서 받아오기
+    let output: any = await getPassport_zero(0);
+    console.log(output);
+    if (output.length >= 1) {
+      res.status(200).send({ passportRequests: output, message: "success" });
+    } else {
+      res.status(200).send({ message: "there are no requests" });
+    }
+  } else {
+    // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+    res.status(401).send({ message: "Admin Auth fail" });
+  }
 };
+
+// 비자 신청 목록 가져오기
 export const getVisaRequests = async (req: Request, res: Response) => {
-  res.status(200).send({ message: "Success" });
+  const authorization = req.headers["authorization"];
+  if (!authorization) res.status(401).send({ message: "no Auth header" });
+  const output = await adminAuth(authorization);
+  if (output.did === issuerDid) {
+    // admin의 did일 때만 동작
+    // 쿼리 날려서 받아오기
+    let output: any = await getVisa_zero(0);
+    console.log(output);
+    if (output.length >= 1) {
+      res.status(200).send({ visaRequests: output, message: "success" });
+    } else {
+      res.status(200).send({ message: "there are no requests" });
+    }
+  } else {
+    // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+    res.status(401).send({ message: "Admin Auth fail" });
+  }
 };
+
 export const adminLogin = async (req: Request, res: Response) => {
   const { id, password } = req.body;
   //adminAuth=> did를 이용해서 access token 발급
