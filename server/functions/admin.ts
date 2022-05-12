@@ -24,6 +24,7 @@ export const getPassport_zero = async (successyn: any) => {
     return e;
   }
 };
+
 // success_yn이 0인 비자 요청 목록 조회
 export const getVisa_zero = async (successyn: any) => {
   try {
