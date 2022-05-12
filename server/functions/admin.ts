@@ -63,6 +63,34 @@ export const getVisa_zero = async (successyn: any, countryCode: any) => {
   }
 };
 
+// 여권 발급 승인/거절
+export const UpdatePassportReq = async (successyn: any, passport_id: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      const PassportUpdate = query.updateRequest(
+        "GOVERN_FA_PASSPORT",
+        "successyn",
+        successyn,
+        "passport_id",
+        passport_id,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
+          }
+        }
+      );
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
 // 도장 발행 함수
 export const makeStamp = async () => {
   const metaData = {

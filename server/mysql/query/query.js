@@ -54,6 +54,26 @@ module.exports.getVisaSurveyList = async function getVisaSurveyList(
   );
 };
 
+// 비자, 여권 successyn코드 수정하는 쿼리
+module.exports.updateRequest = async function updateRequest(
+  tableFlag,
+  updateFlag,
+  updateData,
+  findFlag,
+  findData,
+  callback
+) {
+  connection.query(
+    `UPDATE ${tableFlag}
+    SET ${updateFlag} = '${updateData}'
+    WHERE ${findFlag} = ${findData}`,
+    function (err, result) {
+      if (err) callback(err, null);
+      else callback(null, result);
+    }
+  );
+};
+
 module.exports.requestForm = async function requestForm(reqForm, callback) {
   this.getUser("GOVERN_FA_PASSPORT", "id", reqForm.clientId, (err, data) => {
     if (err) {
