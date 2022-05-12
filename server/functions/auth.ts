@@ -27,9 +27,11 @@ export const auth = async (authorization: any) => {
                             console.log('ERROR : ', err);
                         } else {
                             if (data) {
+                                // console.log(data);
                                 const transferObj: any = new Object();
                                 transferObj.did = tokenData.did;
                                 transferObj.clientId = data[0].id;
+                                transferObj.countryCode = data[0].countryCode;
                                 resolve(transferObj);
                             }
                         }
