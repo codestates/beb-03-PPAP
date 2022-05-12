@@ -4,18 +4,38 @@ import { verifyCredential, verifyPresentation } from "did-jwt-vc";
 const jwt = require("jsonwebtoken");
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
-import createIPFS from "../functions/createIPFS.js";
-import { auth, getAdminDid } from "../functions/auth";
-import { getPassport_zero, getVisa_zero } from "../functions/admin";
+import {
+  getPassport_zero,
+  getVisa_zero,
+  adminAuth,
+  makeStamp,
+} from "../functions/admin";
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
+import { getAdminDid } from "../functions/auth";
 
-const adminAuth = async (authorization: any) => {
-  let output: any = await auth(authorization);
+// 관리자 로그인
+export const adminLogin = async (req: Request, res: Response) => {
+  const { id, password } = req.body;
+  //adminAuth=> did를 이용해서 access token 발급
+  const output: any = await getAdminDid(id, password);
   console.log(output);
-  // .then으로 resolve, reject 경우 나눠서 처리
-  // console.log('@@@@@@@', output.userId);
-  return output;
+  if (output.userId) {
+    if (output.password) {
+      const tokenData = {
+        did: output.did,
+      };
+      const accessToken = genAccessToken(tokenData);
+      res.status(200).send({
+        data: accessToken,
+        message: "Login Success",
+      });
+    } else {
+      res.status(401).send({ data: null, message: "Wrong password" });
+    }
+  } else {
+    res.status(401).send({ data: null, message: "Invalid id" });
+  }
 };
 
 //여권 신청 목록 가져오기
@@ -60,35 +80,28 @@ export const getVisaRequests = async (req: Request, res: Response) => {
   }
 };
 
-export const adminLogin = async (req: Request, res: Response) => {
-  const { id, password } = req.body;
-  //adminAuth=> did를 이용해서 access token 발급
-  const output: any = await getAdminDid(id, password);
-  console.log(output);
-  if (output.userId) {
-    if (output.password) {
-      const tokenData = {
-        did: output.did,
-      };
-      const accessToken = genAccessToken(tokenData);
-      res.status(200).send({
-        data: accessToken,
-        message: "Login Success",
-      });
+// 여권 발급
+export const makePassport = async (req: Request, res: Response) => {
+  const authorization = req.headers["authorization"];
+  if (!authorization) res.status(401).send({ message: "no Auth header" });
+  const output = await adminAuth(authorization);
+  if (output.did === issuerDid) {
+    // admin의 did일 때만 동작
+    // 쿼리 날려서 받아오기
+    let output: any = await getVisa_zero(0);
+    console.log(output);
+    if (output.length >= 1) {
+      res.status(200).send({ visaRequests: output, message: "success" });
     } else {
-      res.status(401).send({ data: null, message: "Wrong password" });
+      res.status(200).send({ message: "there are no requests" });
     }
   } else {
-    res.status(401).send({ data: null, message: "Invalid id" });
+    // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+    res.status(401).send({ message: "Admin Auth fail" });
   }
 };
 
-export const makePassport = async (req: Request, res: Response) => {
-  const authorization = req.headers["authorization"];
-  const output = await adminAuth(authorization);
-  res.status(200).send({ output });
-};
-
+// 비자 발급
 export const makeVisa = async (req: Request, res: Response) => {
   const { test } = req.body;
   const msg = `test post method makeVisa : ${test}`;
@@ -105,20 +118,6 @@ export const makeVisa = async (req: Request, res: Response) => {
 // 스탬프 발행 함수
 // 발급일자, 이미지를 ipfs에 json형태로 업로드
 // ipfs url을 db에 업로드
-
-// 도장 발행 함수
-const makeStamp = async () => {
-  const metaData = {
-    timeStamp: new Date(),
-    country: "Korea",
-    countryImg:
-      "https://ipfs.infura.io/ipfs/QmeLrCEtsm28qqf2S7KSwo7QYFiNzwjfY9AJn8xLs8VQWF",
-  };
-  // const Korea = fs.readFileSync(path.resolve(__dirname, "./Korea.png"));
-  const url = await createIPFS(metaData);
-  console.log("url :", url);
-  return url;
-};
 
 export const verifyPassport = async (req: Request, res: Response) => {
   try {
@@ -156,9 +155,10 @@ export const verifyPassport = async (req: Request, res: Response) => {
         // 조건문 더 추가(여권,비자검증)
       }
       // 반복문 종료 후 stamp발행 실행
-      makeStamp();
+      const stampurl = makeStamp();
       res.status(200).send({
         message: "검증 성공, 출입국 도장 발행 완료",
+        stampurl,
       });
     } else {
       res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
