@@ -2,8 +2,10 @@ import React, { useState, useContext } from 'react';
 import axios from "axios";
 import { useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { setUser } from "../redux/userReducer";
+;
+
 
 const Login = () => {
 
@@ -12,22 +14,23 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  
+  
   useEffect(() => {
-    axios.get("http://localhost:포트번호/issuer/getPass").then((payload) => {
-      console.log(payload.data);
-    });
   }, []);
 
   const onSubmit = async () => {
-   const userInfo = {username, password};
-  //  axios.post("http://localhost:포트번호/issuer/getPass").then((payload) => {
-  //   console.log(payload.data);
-  // });
-    console.log("야 찎혀!")
-   dispatch(setUser(userInfo));
-   window.location.replace('/')
-   //navigate('/');
+    //로그인 시도
+    const body = { id: username, password: password };
+    axios
+      .post(process.env.REACT_APP_SERVER_ADMIN_URL + "/admin/adminlogin", body)
+      .then((data) => data.data)
+      .then((jwtToken) => {
+        const userInfo = { username, jwtToken };
+        dispatch(setUser(userInfo));
+        window.location.replace("/");
+        navigate("/");
+      });
   };
 
   return (
@@ -68,15 +71,6 @@ const Login = () => {
               >
                 Sign In
               </button>
-            </div>
-            <div className="mt-10 pt-4 border-t-2 border-gray-500 border-dotted text-center">
-              <p className="text-base text-gray-400">or sign up with</p>
-              <Link
-                to="/signup"
-                className="block bg-gray-900 hover:bg-transparent border-gray-400 border-2 text-white font-bold w-72 py-3 m-auto mt-6 rounded focus:outline-none focus:shadow-outline leading-5"
-              >
-                Sign Up
-              </Link>
             </div>
           </form>
         </div>

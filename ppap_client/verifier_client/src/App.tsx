@@ -3,8 +3,8 @@ import Footer from "./pages/components/Footer";
 import Header from "./pages/components/Header";
 import Sidebar from "./pages/components/Sidebar";
 import Passport from "./pages/Passport";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
+import PassportDetail from "./pages/PassportDetail";
+import Visa from "./pages/Visa";
 import Mains from "./pages/Mains";
 
 import { useState, useEffect } from "react";
@@ -16,7 +16,6 @@ function App() {
   const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
-    console.log("여기는언제?")
     const userInfo = getUserInfo();
     if(userInfo!=null){
       setIsLogin(true)
@@ -38,8 +37,10 @@ function App() {
         {isLogin?<Sidebar />:null}
         <Routes>
         <Route path="/" element={<Mains />} />
-          //{isLogin? <Route path="/" element={<Dashboard />} />:<Route path="/" element={<Login />} />}
         <Route path="/passport" element={<Passport />} />
+        <Route path="/passport/detail/:id" element={<PassportDetail />} />
+
+        <Route path="/visa" element={<Visa />} />
         </Routes>
         <Footer />
       </BrowserRouter>

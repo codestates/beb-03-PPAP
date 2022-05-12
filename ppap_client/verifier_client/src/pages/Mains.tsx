@@ -12,7 +12,6 @@ function Main() {
   const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
-    console.log("여기는언제?")
     const userInfo = getUserInfo();
     if(userInfo!=null){
       setIsLogin(true)
