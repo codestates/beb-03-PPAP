@@ -43,7 +43,7 @@ export const getPassportRequests = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
   if (!authorization) res.status(401).send({ message: "no Auth header" });
   const admin = await adminAuth(authorization);
-  if (admin.did === issuerDid) {
+  if (issuerDid.includes(admin.did)) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
     let output: any = await getPassport_zero(0, admin.countryCode);
@@ -64,7 +64,7 @@ export const getVisaRequests = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
   if (!authorization) res.status(401).send({ message: "no Auth header" });
   const admin = await adminAuth(authorization);
-  if (admin.did === issuerDid) {
+  if (issuerDid.includes(admin.did)) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
     let output: any = await getVisa_zero(0, admin.countryCode);
@@ -85,7 +85,7 @@ export const makePassport = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
   if (!authorization) res.status(401).send({ message: "no Auth header" });
   const admin = await adminAuth(authorization);
-  if (admin.did === issuerDid) {
+  if (issuerDid.includes(admin.did)) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
     let output: any = await getVisa_zero(0, admin.countryCode);
@@ -146,7 +146,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
         console.log("verifiedVC@@@", verifiedVC);
         console.log(`vc발급자 : ${verifiedVC.payload.iss}`); // vc발급자는 issuer did와 같아야함
         console.log(`여권, 비자 vc 확인, 이슈어 did 확인...`);
-        if (verifiedVC.payload.iss !== issuerDid) {
+        if (!issuerDid.includes(verifiedVC.payload.iss)) {
           // issuerDID가 아닌 vc가 있으면 바로 오류 응답
           res.status(400).send({
             message: "vc 서명자가 issuer가 아닙니다.",

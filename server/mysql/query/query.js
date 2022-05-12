@@ -46,7 +46,7 @@ module.exports.getVisaSurveyList = async function getVisaSurveyList(
     ON V.passport_id = P.passport_id
     INNER JOIN GOVERN_USER_CLIENT C 
     ON P.clientId = C.id
-         WHERE V.${findFlag}='${data}' AND FV.countryCode = "${countryCode}"`,
+    WHERE V.${findFlag}='${data}' AND FV.countryCode = "${countryCode}"`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
