@@ -12,48 +12,97 @@ const clientAuth = async (authorization: any) => {
 
 export const requestPassport = async (req: Request, res: Response) => {
     const { photoURI } = req.body;
+    // JWT token from authorization header
     const authorization = req.headers['authorization'];
-    // const clientInfo = clientAuth(authorization);
+    // specify user using user data in DB
     const clientInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
+    // add user photo data
     clientInfo.photoURI = photoURI;
 
-    await query.requestForm(clientInfo, (reqIn: Request, resIn: Response) => {
-        if (!resIn) {
-            res.status(401).send({
-                data: null,
-                msg: 'Your request is already transfered',
-            });
-        } else {
-            res.status(200).send({
-                data: null,
-                msg: 'Your request is successfully submitted',
-            });
+    // submit request for issuing passport
+    await query.requestForm(clientInfo, (err: any, data: any) => {
+        let statusCode: number = 401;
+        let msg: string;
+        if (err) {
+            console.log(err);
+            res.status(400).send(err);
         }
+        if (!data) {
+            // already exist request
+            statusCode = 401;
+            msg = 'Your request is already transfered';
+        } else {
+            // no request -> submit new request to DB
+            statusCode = 200;
+            msg = 'Your request is sucessfully submitted';
+        }
+        res.status(statusCode).send({
+            data: null,
+            msg: msg,
+        });
     });
 };
 
 export const getPassport = async (req: Request, res: Response) => {
+    // JWT token from authorization header
     const authorization = req.headers['authorization'];
+    // specify user using user data in DB
     const clientInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
-    console.log(clientInfo);
-    res.status(200).send();
+    query.getUser(
+        'GOVERN_FA_PASSPORT',
+        'did',
+        clientInfo.did,
+        (err: any, data: any) => {
+            let msg: any = null;
+            let statusCode: any = null;
+            if (err) {
+                console.log(err);
+                res.status(400).send(err);
+            }
+            if (!data) {
+                // no data in passport DB
+                msg = `You don't have passport yet. Submit passport request first.`;
+                statusCode = 401;
+            }
+            if (data[0].successyn === 0) {
+                // submitted request is not approved yet
+                msg = 'your request is not approved yet.';
+                statusCode = 401;
+            } else if (data[0].successyn === 2) {
+                // submitted request is not approved yet
+                msg = 'your request is rejected';
+                statusCode = 401;
+            } else if (data[0].successyn === 1) {
+                statusCode = 200;
+                msg = 'identify success';
+            }
+            // **** data should be transferred by session ****
+            // res.status(statusCode).send({
+            //     data: null,
+            //     msg: msg,
+            // });
+        }
+    );
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-    const { test } = req.body;
-    const msg = `test post method requestVisa : ${test}`;
-    console.log(msg);
-    res.send({ msg: msg });
-};
-
-export const test = async (req: Request, res: Response) => {
-    return new Promise((resolve) => {
-        query.joinTables((req: Request, res: Response) => {
-            console.log(res);
-        });
+    const { visaType } = req.body;
+    // JWT token from authorization header
+    const authorization = req.headers['authorization'];
+    // specify user using user data in DB
+    const clientInfo: any = await new Promise((resolve) => {
+        resolve(clientAuth(authorization));
     });
 };
+
+// export const test = async (req: Request, res: Response) => {
+//     return new Promise((resolve) => {
+//         query.joinTables((req: any, res: any) => {
+//             console.log(res);
+//         });
+//     });
+// };

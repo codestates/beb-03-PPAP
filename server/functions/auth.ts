@@ -11,12 +11,11 @@ const { accessTokenSecret } = require('../config');
 export const auth = async (authorization: any) => {
     try {
         const token = authorization;
+        // decode data on access token
         const tokenData = await jwt.verify(token, accessTokenSecret);
         if (tokenData.phoneNum) {
-            // 사용자 인증 로직
-            // 나중에 db에서 did 유무 판별
+            // client authentication sequence
             const userPhone = tokenData.phoneNum;
-            // 쿼리
             return new Promise((resolve, reject) => {
                 query.getUser(
                     'GOVERN_USER_CLIENT',
