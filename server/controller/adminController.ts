@@ -4,6 +4,7 @@ import { verifyCredential, verifyPresentation } from "did-jwt-vc";
 const jwt = require("jsonwebtoken");
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
+const CountryIpfs = require("../countryUrl/CountryIpfsUrl");
 import {
   getPassport_zero,
   getVisa_zero,
@@ -21,7 +22,7 @@ export const adminLogin = async (req: Request, res: Response) => {
   const { id, password } = req.body;
   //adminAuth=> did를 이용해서 access token 발급
   const output: any = await getAdminDid(id, password);
-  console.log(output);
+  console.log(output.countryCode);
   if (output.userId) {
     if (output.password) {
       const tokenData = {
@@ -31,6 +32,7 @@ export const adminLogin = async (req: Request, res: Response) => {
       res.status(200).send({
         data: accessToken,
         message: "Login Success",
+        profile_url: CountryIpfs[output.countryCode],
       });
     } else {
       res.status(401).send({ data: null, message: "Wrong password" });
