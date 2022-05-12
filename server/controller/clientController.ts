@@ -18,7 +18,7 @@ export const requestPassport = async (req: Request, res: Response) => {
         resolve(clientAuth(authorization));
     });
     clientInfo.photoURI = photoURI;
-    console.log(clientInfo);
+
     await query.requestForm(clientInfo, (reqIn: Request, resIn: Response) => {
         if (!resIn) {
             res.status(401).send({
@@ -36,7 +36,11 @@ export const requestPassport = async (req: Request, res: Response) => {
 
 export const getPassport = async (req: Request, res: Response) => {
     const authorization = req.headers['authorization'];
-    res.status(200).send(clientAuth(authorization));
+    const clientInfo: any = await new Promise((resolve) => {
+        resolve(clientAuth(authorization));
+    });
+    console.log(clientInfo);
+    res.status(200).send();
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
