@@ -91,6 +91,34 @@ export const UpdatePassportReq = async (successyn: any, passport_id: any) => {
   }
 };
 
+// 비자 발급 승인/거절
+export const UpdateVisaReq = async (successyn: any, passport_id: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      const VisaUpdate = query.updateRequest(
+        "GOVERN_FA_VISA_SURVEY",
+        "success_yn",
+        successyn,
+        "passport_id",
+        passport_id,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
+          }
+        }
+      );
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
 // 도장 발행 함수
 export const makeStamp = async () => {
   const metaData = {

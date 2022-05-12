@@ -11,6 +11,7 @@ import {
   adminAuth,
   makeStamp,
   UpdatePassportReq,
+  UpdateVisaReq,
 } from "../functions/admin";
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
@@ -84,7 +85,7 @@ export const getVisaRequests = async (req: Request, res: Response) => {
   }
 };
 
-// 여권 발급
+// 여권 발급 승인/거절
 export const makePassport = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
   const { passport_id, success_yn } = req.body;
@@ -115,12 +116,35 @@ export const makePassport = async (req: Request, res: Response) => {
   }
 };
 
-// 비자 발급
+// 비자 발급 승인/거절 UpdateVisaReq
 export const makeVisa = async (req: Request, res: Response) => {
-  const { test } = req.body;
-  const msg = `test post method makeVisa : ${test}`;
-  console.log(msg);
-  res.send({ msg: msg });
+  const authorization = req.headers["authorization"];
+  const { passport_id, success_yn } = req.body;
+  if (!authorization) res.status(401).send({ message: "no Auth header" });
+  const admin = await adminAuth(authorization);
+  if (issuerDid.includes(admin.did)) {
+    // admin의 did일 때만 동작
+    // 쿼리 날려서 받아오기
+    if (success_yn > 2 || success_yn < 0) {
+      res.status(400).send({ message: "invalid success_yn" });
+    } else {
+      let output: any = await UpdateVisaReq(success_yn, passport_id);
+      if (output.affectedRows === 1) {
+        res.status(200).send({ message: "passport update success" });
+      } else if (output.affectedRows === 0) {
+        res.status(400).send({
+          message: `There is no matched data wite passport_id = ${passport_id}`,
+        });
+      } else {
+        res.status(400).send({
+          message: "check db",
+        });
+      }
+    }
+  } else {
+    // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+    res.status(401).send({ message: "Admin Auth fail" });
+  }
 };
 
 // 여권검증 라우터
