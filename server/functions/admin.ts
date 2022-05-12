@@ -4,7 +4,7 @@ const query = require("../mysql/query/query");
 export const getPassport_zero = async (successyn: any) => {
   try {
     return new Promise((resolve, reject) => {
-      const data = query.getPassport(
+      const Passportdata = query.getPassport(
         "successyn",
         successyn,
         (err: any, data: any) => {
@@ -29,7 +29,7 @@ export const getPassport_zero = async (successyn: any) => {
 export const getVisa_zero = async (successyn: any) => {
   try {
     return new Promise((resolve, reject) => {
-      const data = query.getVisaSurveyList(
+      const VisaRequestdata = query.getVisaSurveyList(
         "success_yn",
         successyn,
         (err: any, data: any) => {

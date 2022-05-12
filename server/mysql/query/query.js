@@ -66,8 +66,14 @@ module.exports.getVisaSurveyList = async function getVisaSurveyList(
   callback
 ) {
   connection.query(
-    `SELECT * FROM GOVERN_FA_VISA_SURVEY
-         WHERE ${findFlag}='${data}'`,
+    `SELECT * FROM GOVERN_FA_VISA FV
+    INNER JOIN GOVERN_FA_VISA_SURVEY V
+    ON V.visa_id = FV.visa_id
+    INNER JOIN GOVERN_FA_PASSPORT P
+    ON V.passport_id = P.passport_id
+    INNER JOIN GOVERN_USER_CLIENT C 
+    ON P.clientId = C.id
+         WHERE V.${findFlag}='${data}'`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
