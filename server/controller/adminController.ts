@@ -42,11 +42,11 @@ export const adminLogin = async (req: Request, res: Response) => {
 export const getPassportRequests = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
   if (!authorization) res.status(401).send({ message: "no Auth header" });
-  const output = await adminAuth(authorization);
-  if (output.did === issuerDid) {
+  const admin = await adminAuth(authorization);
+  if (admin.did === issuerDid) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
-    let output: any = await getPassport_zero(0);
+    let output: any = await getPassport_zero(0, admin.countryCode);
     console.log(output);
     if (output.length >= 1) {
       res.status(200).send({ passportRequests: output, message: "success" });
@@ -63,11 +63,11 @@ export const getPassportRequests = async (req: Request, res: Response) => {
 export const getVisaRequests = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
   if (!authorization) res.status(401).send({ message: "no Auth header" });
-  const output = await adminAuth(authorization);
-  if (output.did === issuerDid) {
+  const admin = await adminAuth(authorization);
+  if (admin.did === issuerDid) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
-    let output: any = await getVisa_zero(0);
+    let output: any = await getVisa_zero(0, admin.countryCode);
     console.log(output);
     if (output.length >= 1) {
       res.status(200).send({ visaRequests: output, message: "success" });
@@ -84,11 +84,11 @@ export const getVisaRequests = async (req: Request, res: Response) => {
 export const makePassport = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
   if (!authorization) res.status(401).send({ message: "no Auth header" });
-  const output = await adminAuth(authorization);
-  if (output.did === issuerDid) {
+  const admin = await adminAuth(authorization);
+  if (admin.did === issuerDid) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
-    let output: any = await getVisa_zero(0);
+    let output: any = await getVisa_zero(0, admin.countryCode);
     console.log(output);
     if (output.length >= 1) {
       res.status(200).send({ visaRequests: output, message: "success" });
