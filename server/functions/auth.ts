@@ -11,33 +11,32 @@ const { accessTokenSecret } = require('../config');
 export const auth = async (authorization: any) => {
     try {
         const token = authorization;
-        const data = await jwt.verify(token, accessTokenSecret);
-        if (data.phoneNum) {
+        const tokenData = await jwt.verify(token, accessTokenSecret);
+        if (tokenData.phoneNum) {
             // 사용자 인증 로직
             // 나중에 db에서 did 유무 판별
-            const userPhone = data.phoneNum;
+            const userPhone = tokenData.phoneNum;
             // 쿼리
             return new Promise((resolve, reject) => {
-                const data = query.getUser(
-                    'phoneNum',
-                    userPhone,
-                    (err: any, data: any) => {
-                        if (err) {
-                            // error handling code goes here
-                            console.log('ERROR : ', err);
-                        } else {
-                            if (data) {
-                                resolve(data[0]);
-                            }
+                query.getUser('phoneNum', userPhone, (err: any, data: any) => {
+                    if (err) {
+                        // error handling code goes here
+                        console.log('ERROR : ', err);
+                    } else {
+                        if (data) {
+                            const transferObj: any = new Object();
+                            transferObj.did = tokenData.did;
+                            transferObj.clientId = data[0].id;
+                            resolve(transferObj);
                         }
                     }
-                );
+                });
             });
         } else {
             // 관리자 인증 로직
-            if (data.did) {
+            if (tokenData.did) {
                 // did로 관리자 검색
-                const adminDID = data.did;
+                const adminDID = tokenData.did;
                 console.log('=======', adminDID);
                 return new Promise((resolve, reject) => {
                     const output = query.getAdmin(
