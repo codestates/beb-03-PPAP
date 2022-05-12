@@ -11,26 +11,30 @@ const { accessTokenSecret } = require('../config');
 export const auth = async (authorization: any) => {
     try {
         const token = authorization;
+        // decode data on access token
         const tokenData = await jwt.verify(token, accessTokenSecret);
         if (tokenData.phoneNum) {
-            // 사용자 인증 로직
-            // 나중에 db에서 did 유무 판별
+            // client authentication sequence
             const userPhone = tokenData.phoneNum;
-            // 쿼리
             return new Promise((resolve, reject) => {
-                query.getUser('phoneNum', userPhone, (err: any, data: any) => {
-                    if (err) {
-                        // error handling code goes here
-                        console.log('ERROR : ', err);
-                    } else {
-                        if (data) {
-                            const transferObj: any = new Object();
-                            transferObj.did = tokenData.did;
-                            transferObj.clientId = data[0].id;
-                            resolve(transferObj);
+                query.getUser(
+                    'GOVERN_USER_CLIENT',
+                    'phoneNum',
+                    userPhone,
+                    (err: any, data: any) => {
+                        if (err) {
+                            // error handling code goes here
+                            console.log('ERROR : ', err);
+                        } else {
+                            if (data) {
+                                const transferObj: any = new Object();
+                                transferObj.did = tokenData.did;
+                                transferObj.clientId = data[0].id;
+                                resolve(transferObj);
+                            }
                         }
                     }
-                });
+                );
             });
         } else {
             // 관리자 인증 로직
@@ -39,7 +43,8 @@ export const auth = async (authorization: any) => {
                 const adminDID = tokenData.did;
                 console.log('=======', adminDID);
                 return new Promise((resolve, reject) => {
-                    const output = query.getAdmin(
+                    query.getUser(
+                        'GOVERN_USER_ADMIN',
                         'did',
                         adminDID,
                         (err: any, data: any) => {
@@ -65,32 +70,37 @@ export const auth = async (authorization: any) => {
 export const getAdminDid = async (id: any, password: any) => {
     try {
         return new Promise((resolve, reject) => {
-            query.getAdmin('userId', id, (err: any, data: any) => {
-                if (err) {
-                    // error handling code goes here
-                    console.log('ERROR : ', err);
-                } else {
-                    if (data.length === 0) {
-                        resolve({
-                            userId: null,
-                            password: null,
-                        });
+            query.getUser(
+                'GOVERN_USER_ADMIN',
+                'userId',
+                id,
+                (err: any, data: any) => {
+                    if (err) {
+                        // error handling code goes here
+                        console.log('ERROR : ', err);
                     } else {
-                        bcrypt
-                            .compare(password, data[0].password)
-                            .then((res: any) => {
-                                if (res) {
-                                    resolve(data[0]);
-                                } else {
-                                    resolve({
-                                        userId: data[0].userId,
-                                        password: null,
-                                    });
-                                }
+                        if (data.length === 0) {
+                            resolve({
+                                userId: null,
+                                password: null,
                             });
+                        } else {
+                            bcrypt
+                                .compare(password, data[0].password)
+                                .then((res: any) => {
+                                    if (res) {
+                                        resolve(data[0]);
+                                    } else {
+                                        resolve({
+                                            userId: data[0].userId,
+                                            password: null,
+                                        });
+                                    }
+                                });
+                        }
                     }
                 }
-            });
+            );
         });
     } catch (e) {
         console.log(e);
