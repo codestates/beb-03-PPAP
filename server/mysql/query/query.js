@@ -24,8 +24,8 @@ module.exports.getPassport = async function getPassportList(
   connection.query(
     `SELECT * FROM GOVERN_FA_PASSPORT P
     INNER JOIN GOVERN_USER_CLIENT C 
-    ON P.clientId = C.id 
-    WHERE C.countryCode = "${countryCode}" AND P.${findFlag}=${data}`,
+    ON P.client_id = C.client_id 
+    WHERE C.country_code = "${countryCode}" AND P.${findFlag}=${data}`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
@@ -45,8 +45,8 @@ module.exports.getVisaSurveyList = async function getVisaSurveyList(
     INNER JOIN GOVERN_FA_PASSPORT P
     ON V.passport_id = P.passport_id
     INNER JOIN GOVERN_USER_CLIENT C 
-    ON P.clientId = C.id
-    WHERE V.${findFlag}='${data}' AND FV.countryCode = "${countryCode}"`,
+    ON P.client_id = C.client_id
+    WHERE V.${findFlag}='${data}' AND FV.country_code = "${countryCode}"`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
