@@ -88,15 +88,15 @@ export const UpdatePassportReq = async (successyn: any, passport_id: any) => {
 };
 
 // 비자 발급 승인/거절
-export const UpdateVisaReq = async (successyn: any, passport_id: any) => {
+export const UpdateVisaReq = async (successyn: any, visa_survey_id: any) => {
   try {
     return new Promise((resolve, reject) => {
       const VisaUpdate = query.updateRequest(
         "GOVERN_FA_VISA_SURVEY",
         "success_yn",
         successyn,
-        "passport_id",
-        passport_id,
+        "visa_survey_id",
+        visa_survey_id,
         (err: any, data: any) => {
           if (err) {
             // error handling code goes here

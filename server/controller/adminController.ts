@@ -119,7 +119,7 @@ export const makePassport = async (req: Request, res: Response) => {
 // 비자 발급 승인/거절 UpdateVisaReq
 export const makeVisa = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
-  const { passport_id, success_yn } = req.body;
+  const { visa_survey_id, success_yn } = req.body;
   if (!authorization) res.status(401).send({ message: "no Auth header" });
   const admin = await adminAuth(authorization);
   if (issuerDid.includes(admin.did)) {
@@ -128,12 +128,12 @@ export const makeVisa = async (req: Request, res: Response) => {
     if (success_yn > 2 || success_yn < 0) {
       res.status(400).send({ message: "invalid success_yn" });
     } else {
-      let output: any = await UpdateVisaReq(success_yn, passport_id);
+      let output: any = await UpdateVisaReq(success_yn, visa_survey_id);
       if (output.affectedRows === 1) {
         res.status(200).send({ message: "passport update success" });
       } else if (output.affectedRows === 0) {
         res.status(400).send({
-          message: `There is no matched data wite passport_id = ${passport_id}`,
+          message: `There is no matched data wite visa_survey_id = ${visa_survey_id}`,
         });
       } else {
         res.status(400).send({
