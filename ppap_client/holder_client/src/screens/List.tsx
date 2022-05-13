@@ -6,6 +6,7 @@ const Container = styled.View`
   align-items: center;
   justify-content: center;
   flex: 1;
+  /* background-color: #fff; */
 `;
 
 const StyledText = styled.Text`
@@ -19,9 +20,10 @@ const items = [
   { _id: 3, name: "Hanbit" },
 ];
 
-const _onPress = (item) => {};
-
-const List = () => {
+const List = ({ navigation }) => {
+  const _onPress = (item) => {
+    navigation.navigate("Detail", { id: item._id, name: item.name });
+  };
   return (
     <Container>
       <StyledText>List</StyledText>

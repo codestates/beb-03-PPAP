@@ -2,8 +2,11 @@ import React from "react";
 import { View, StyleSheet, Text, Button } from "react-native";
 import styled from "styled-components/native";
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
+  flex: 1;
   align-items: center;
+  justify-content: center;
+  /* background-color: #fff; */
 `;
 
 const StyledText = styled.Text`
