@@ -6,13 +6,33 @@ module.exports.getUser = async function getUser(
   data,
   callback
 ) {
-  connection.query(
-    `SELECT * FROM ${tableFlag} WHERE ${findFlag}='${data}'`,
-    function (err, result) {
-      if (err) callback(err, null);
-      else callback(null, result);
+  const queryMsg = `SELECT * FROM ${tableFlag} WHERE ${findFlag}='${data}'`;
+  connection.query(queryMsg, function (err, result) {
+    if (err) callback(err, null);
+    else callback(null, result);
+  });
+};
+
+// query using multiple condition
+module.exports.getUserMultiCond = async function getUserMultiCond(
+  tableFlag,
+  findCond,
+  callback
+) {
+  let queryMsg = `SELECT * FROM ${tableFlag} `;
+  Object.entries(findCond).forEach(([findFlag, data], idx) => {
+    if (idx === 0) {
+      queryMsg += "WHERE ";
+    } else {
+      queryMsg += "AND ";
     }
-  );
+    queryMsg += `${findFlag}='${data}' `;
+  });
+
+  connection.query(queryMsg, function (err, result) {
+    if (err) callback(err, null);
+    else callback(null, result);
+  });
 };
 
 module.exports.getPassport = async function getPassportList(
@@ -32,6 +52,7 @@ module.exports.getPassport = async function getPassportList(
     }
   );
 };
+
 module.exports.getVisaSurveyList = async function getVisaSurveyList(
   findFlag,
   data,
@@ -74,27 +95,67 @@ module.exports.updateRequest = async function updateRequest(
   );
 };
 
-module.exports.requestForm = async function requestForm(reqForm, callback) {
+module.exports.requestPassForm = async function requestPassForm(
+  reqForm,
+  callback
+) {
   // find user using id(clientId)
-  this.getUser("GOVERN_FA_PASSPORT", "id", reqForm.clientId, (err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      if (data.length === 0) {
-        // none request -> newly transfer
-        connection.query(
-          `INSERT INTO GOVERN_FA_PASSPORT (clientId, did, photoURI, successyn) VALUES ('${
-            reqForm.clientId
-          }','${reqForm.did}','${reqForm.photoURI}','${0}')`,
-          function (err, result) {
-            if (err) callback(err, null);
-            else callback(null, result);
-          }
-        );
+  this.getUser(
+    "GOVERN_FA_PASSPORT",
+    "clientId",
+    reqForm.clientId,
+    (err, data) => {
+      if (err) {
+        console.log(err);
       } else {
-        // request already exists
-        callback(null, null);
+        if (data.length === 0) {
+          // none request -> newly transfer
+          connection.query(
+            `INSERT INTO GOVERN_FA_PASSPORT (clientId, did, photoURI, successyn) VALUES ('${
+              reqForm.clientId
+            }','${reqForm.did}','${reqForm.photoURI}','${0}')`,
+            function (err, result) {
+              if (err) callback(err, null);
+              else callback(null, result);
+            }
+          );
+        } else {
+          // request already exists
+          callback(null, null);
+        }
       }
     }
-  });
+  );
+};
+
+module.exports.requestVisaForm = async function requestVisaForm(
+  reqForm,
+  callback
+) {
+  // find visa request
+  connection.query(
+    `SELECT * FROM GOVERN_FA_VISA_SURVEY WHERE passport_id='${reqForm.passport_id}' AND visa_id='${reqForm.visa_id}'`,
+    reqForm.clientId,
+    (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        if (data.length === 0) {
+          // none request -> newly transfer
+          connection.query(
+            `INSERT INTO GOVERN_FA_VISA_SURVEY (passport_id, visa_id, success_yn) VALUES ('${
+              reqForm.passport_id
+            }','${reqForm.visa_id}','${0}')`,
+            function (err, result) {
+              if (err) callback(err, null);
+              else callback(null, result);
+            }
+          );
+        } else {
+          // request already exists
+          callback(null, null);
+        }
+      }
+    }
+  );
 };
