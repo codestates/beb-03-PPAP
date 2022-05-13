@@ -72,7 +72,7 @@ module.exports.getVisaSurveyList = async function getVisaSurveyList(
   callback
 ) {
   connection.query(
-    `SELECT * FROM GOVERN_FA_VISA FV
+    `SELECT *,V.success_yn AS visa_success_yn FROM GOVERN_FA_VISA FV
     INNER JOIN GOVERN_FA_VISA_SURVEY V
     ON V.visa_id = FV.visa_id
     INNER JOIN GOVERN_FA_PASSPORT P
