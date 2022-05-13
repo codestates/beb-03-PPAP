@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 const query = require('../mysql/query/query');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -98,6 +98,11 @@ export const login = async (req: Request, res: Response) => {
                             did: dataFiltered.did,
                             phoneNum: dataFiltered.phoneNum,
                         };
+
+                        req.session.user_name = dataFiltered.user_name;
+                        req.session.user_birth = dataFiltered.user_birth;
+                        req.session.did = dataFiltered.did;
+                        req.session.phone_num = dataFiltered.phone_num;
 
                         const accessToken = genAccessToken(tokenData);
                         res.send({ data: accessToken, msg: 'Login success!' });
