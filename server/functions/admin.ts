@@ -11,13 +11,11 @@ export const adminAuth = async (authorization: any) => {
   return output;
 };
 
-// successyn이 0인 여권 목록 조회
-export const getPassport_zero = async (successyn: any, countryCode: any) => {
+// 여권 목록 조회
+export const getPassportList = async (countryCode: any) => {
   try {
     return new Promise((resolve, reject) => {
       const Passportdata = query.getPassport(
-        "success_yn",
-        successyn,
         countryCode,
         (err: any, data: any) => {
           if (err) {
@@ -37,13 +35,11 @@ export const getPassport_zero = async (successyn: any, countryCode: any) => {
   }
 };
 
-// success_yn이 0인 비자 요청 목록 조회
-export const getVisa_zero = async (successyn: any, countryCode: any) => {
+// 비자 요청 목록 조회
+export const getVisaList = async (countryCode: any) => {
   try {
     return new Promise((resolve, reject) => {
       const VisaRequestdata = query.getVisaSurveyList(
-        "success_yn",
-        successyn,
         countryCode,
         (err: any, data: any) => {
           if (err) {

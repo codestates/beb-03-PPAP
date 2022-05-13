@@ -36,8 +36,6 @@ module.exports.getUserMultiCond = async function getUserMultiCond(
 };
 
 module.exports.getPassport = async function getPassportList(
-  findFlag,
-  data,
   countryCode,
   callback
 ) {
@@ -45,7 +43,7 @@ module.exports.getPassport = async function getPassportList(
     `SELECT * FROM GOVERN_FA_PASSPORT P
     INNER JOIN GOVERN_USER_CLIENT C 
     ON P.client_id = C.client_id 
-    WHERE C.country_code = "${countryCode}" AND P.${findFlag}=${data}`,
+    WHERE C.country_code = "${countryCode}"`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
@@ -54,8 +52,6 @@ module.exports.getPassport = async function getPassportList(
 };
 
 module.exports.getVisaSurveyList = async function getVisaSurveyList(
-  findFlag,
-  data,
   countryCode,
   callback
 ) {
@@ -67,7 +63,7 @@ module.exports.getVisaSurveyList = async function getVisaSurveyList(
     ON V.passport_id = P.passport_id
     INNER JOIN GOVERN_USER_CLIENT C 
     ON P.client_id = C.client_id
-    WHERE V.${findFlag}='${data}' AND FV.country_code = "${countryCode}"`,
+    WHERE FV.country_code = "${countryCode}"`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);

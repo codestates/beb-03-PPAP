@@ -6,8 +6,8 @@ import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 const CountryIpfs = require("../countryUrl/CountryIpfsUrl");
 import {
-  getPassport_zero,
-  getVisa_zero,
+  getPassportList,
+  getVisaList,
   adminAuth,
   makeStamp,
   UpdatePassportReq,
@@ -50,7 +50,7 @@ export const getPassportRequests = async (req: Request, res: Response) => {
   if (issuerDid.includes(admin.did)) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
-    let output: any = await getPassport_zero(0, admin.country_code);
+    let output: any = await getPassportList(admin.country_code);
     console.log(output);
     if (output.length >= 1) {
       res.status(200).send({ passportRequests: output, message: "success" });
@@ -71,7 +71,7 @@ export const getVisaRequests = async (req: Request, res: Response) => {
   if (issuerDid.includes(admin.did)) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
-    let output: any = await getVisa_zero(0, admin.country_code);
+    let output: any = await getVisaList(admin.country_code);
     console.log(output);
     if (output.length >= 1) {
       res.status(200).send({ visaRequests: output, message: "success" });
@@ -158,7 +158,10 @@ export const makeVisa = async (req: Request, res: Response) => {
 
 export const verifyPassport = async (req: Request, res: Response) => {
   try {
-    const { did, vpJWT } = req.body; // 추후 입/출국 정보도 바디로 올 예정
+    const authorization = req.headers["authorization"];
+    const { did, vpJWT } = req.body;
+    if (!authorization) res.status(401).send({ message: "no Auth header" });
+    const admin = await adminAuth(authorization);
     console.log(vpJWT);
 
     const providerConfig = {
