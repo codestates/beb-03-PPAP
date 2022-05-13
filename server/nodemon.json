@@ -1,6 +1,7 @@
 {
   "verdose": true,
   "watch": [
+    "index.ts",
     "package.json",
     "nodemon.json",
     "tsconfig.json",

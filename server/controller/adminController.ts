@@ -12,11 +12,12 @@ import {
   makeStamp,
   UpdatePassportReq,
   UpdateVisaReq,
+  findHolderDid,
+  updateStamp,
 } from "../functions/admin";
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
 import { getAdminDid } from "../functions/auth";
-import { id } from "ethers/lib/utils";
 
 // 관리자 로그인
 export const adminLogin = async (req: Request, res: Response) => {
@@ -176,7 +177,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
     if (!authorization) res.status(401).send({ message: "no Auth header" });
     const admin = await adminAuth(authorization);
     if (issuerDid.includes(admin.did)) {
-      // 여기서 실행
+      // issuer did 확인 후 검증 진행
       // vp 디코딩
       const verifiedVP = await verifyPresentation(vpJWT, didResolver);
       console.log(verifiedVP.payload.iss);
@@ -193,6 +194,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
           console.log(`여권, 비자 vc 확인, 이슈어 did 확인...`);
           if (!issuerDid.includes(verifiedVC.payload.iss)) {
             // issuerDID가 아닌 vc가 있으면 바로 오류 응답
+            // 어떤 vc에서 에러났는지 알려주면 좋을듯
             res.status(400).send({
               message: "vc 서명자가 issuer가 아닙니다.",
             });
@@ -200,12 +202,25 @@ export const verifyPassport = async (req: Request, res: Response) => {
           // 조건문 더 추가(여권,비자검증)
         }
         // 반복문 종료 후 stamp발행 실행
-        const stampurl = makeStamp(entOrdep);
+        const stampurl = makeStamp(
+          entOrdep,
+          admin.country_code,
+          CountryIpfs[admin.country_code]
+        );
+        // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
+        const holderInfo: any = await findHolderDid(did);
+        console.log("holderInfo :", holderInfo);
+        const output: any = await updateStamp(
+          holderInfo.passport_id,
+          stampurl,
+          holderInfo.counrty_code,
+          365
+        );
+        console.log(output);
         res.status(200).send({
           message: "검증 성공, 출입국 도장 발행 완료",
           stampurl,
         });
-        // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
       } else {
         res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
       }

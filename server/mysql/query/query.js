@@ -51,6 +51,22 @@ module.exports.getPassport = async function getPassportList(
   );
 };
 
+module.exports.getPassportForStamp = async function getPassportForStamp(
+  holder_did,
+  callback
+) {
+  connection.query(
+    `SELECT * FROM GOVERN_FA_PASSPORT P
+    INNER JOIN GOVERN_USER_CLIENT C 
+    ON P.client_id = C.client_id 
+    WHERE P.did = "${holder_did}"`,
+    function (err, result) {
+      if (err) callback(err, null);
+      else callback(null, result);
+    }
+  );
+};
+
 module.exports.getVisaSurveyList = async function getVisaSurveyList(
   countryCode,
   callback
@@ -83,6 +99,25 @@ module.exports.updateRequest = async function updateRequest(
   connection.query(
     `UPDATE ${tableFlag}
     SET ${updateFlag} = '${updateData}'
+    WHERE ${findFlag} = ${findData} AND ${updateFlag} = "0"`,
+    function (err, result) {
+      if (err) callback(err, null);
+      else callback(null, result);
+    }
+  );
+};
+
+// stamp table 업데이트 쿼리
+module.exports.updateStampTable = async function updateStampTable(
+  passport_id,
+  stamp_uri,
+  country_code,
+  stamp_expired_date,
+  callback
+) {
+  connection.query(
+    `UPDATE GOVERN_FA_STAMP
+    SET passport_id = '${passport_id}', stamp_uri = '${stamp_uri}', country_code = ${country_code}, stamp_expired_date = ${stamp_expired_date}
     WHERE ${findFlag} = ${findData} AND ${updateFlag} = "0"`,
     function (err, result) {
       if (err) callback(err, null);
