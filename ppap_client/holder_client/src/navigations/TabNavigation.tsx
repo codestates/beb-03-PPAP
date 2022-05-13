@@ -4,6 +4,7 @@ import { Mail, Meet, Settings } from "../screens/TabScreens";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "../assets/colorScheme";
+import { Login } from "../screens";
 
 const TabIcon = ({ name, size, color }) => {
   return <MaterialCommunityIcons name={name} size={size} color={color} />;
@@ -40,7 +41,7 @@ const TabNavigation = () => {
       })}
     >
       <Tab.Screen name="Mail" component={Mail} />
-      <Tab.Screen name="Meet" component={Meet} />
+      <Tab.Screen name="Meet" component={Login} />
       <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>
   );
