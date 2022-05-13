@@ -1,6 +1,7 @@
 const query = require('../mysql/query/query');
 import { rejects } from 'assert';
 import { Request, Response, NextFunction } from 'express';
+import { getOnlyPassport } from '../functions/client';
 
 import { auth } from '../functions/auth';
 
@@ -22,26 +23,24 @@ export const requestPassport = async (req: Request, res: Response) => {
     clientInfo.photoURI = photoURI;
 
     // submit request for issuing passport
-    await query.requestForm(clientInfo, (err: any, data: any) => {
-        let statusCode: number = 401;
-        let msg: string;
+    await query.requestPassForm(clientInfo, (err: any, data: any) => {
         if (err) {
             console.log(err);
             res.status(400).send(err);
         }
         if (!data) {
             // already exist request
-            statusCode = 401;
-            msg = 'Your request is already transfered';
+            res.status(401).send({
+                data: null,
+                msg: 'Your request is already transfered',
+            });
         } else {
             // no request -> submit new request to DB
-            statusCode = 200;
-            msg = 'Your request is sucessfully submitted';
+            res.status(200).send({
+                data: null,
+                msg: 'Your request is sucessfully submitted',
+            });
         }
-        res.status(statusCode).send({
-            data: null,
-            msg: msg,
-        });
     });
 };
 
@@ -52,50 +51,76 @@ export const getPassport = async (req: Request, res: Response) => {
     const clientInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
-    query.getUser(
-        'GOVERN_FA_PASSPORT',
-        'did',
-        clientInfo.did,
-        (err: any, data: any) => {
-            let msg: any = null;
-            let statusCode: any = null;
-            if (err) {
-                console.log(err);
-                res.status(400).send(err);
-            }
-            if (!data) {
-                // no data in passport DB
-                msg = `You don't have passport yet. Submit passport request first.`;
-                statusCode = 401;
-            }
-            if (data[0].successyn === 0) {
-                // submitted request is not approved yet
-                msg = 'your request is not approved yet.';
-                statusCode = 401;
-            } else if (data[0].successyn === 2) {
-                // submitted request is not approved yet
-                msg = 'your request is rejected';
-                statusCode = 401;
-            } else if (data[0].successyn === 1) {
-                statusCode = 200;
-                msg = 'identify success';
-            }
-            // **** data should be transferred by session ****
-            // res.status(statusCode).send({
-            //     data: null,
-            //     msg: msg,
-            // });
-        }
-    );
+
+    // recall passport
+    const passData = await getOnlyPassport(clientInfo);
+    if (passData.statusCode) {
+        res.status(passData.statusCode).send({ data: null, msg: passData.msg });
+    }
+
+    // **** data should be transferred by session ****
+    // **** visa, stamp data should be added ****
+    // **** data should be transferred by session ****
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-    const { visaType } = req.body;
+    const { visaPurpose } = req.body;
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
     // specify user using user data in DB
     const clientInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
+    });
+
+    // recall passport
+    const passData = await getOnlyPassport(clientInfo);
+    if (passData.statusCode) {
+        res.status(passData.statusCode).send({ data: null, msg: passData.msg });
+    }
+    clientInfo.passport_id = passData.data[0].passport_id;
+
+    // find visa type
+    const condOption = {
+        visa_purpose: visaPurpose,
+        countryCode: clientInfo.countryCode,
+    };
+    // check requested visa is available
+    const visaType: any = await new Promise((resolve) => {
+        query.getUserMultiCond(
+            'GOVERN_FA_VISA',
+            condOption,
+            (err: any, data: any) => {
+                if (!data) {
+                    res.status(400).send({
+                        data: null,
+                        msg: 'No available for your request',
+                    });
+                }
+                resolve(data);
+            }
+        );
+    });
+    clientInfo.visa_id = visaType[0].visa_id;
+
+    // submit request for issuing passport
+    await query.requestVisaForm(clientInfo, (err: any, data: any) => {
+        if (err) {
+            console.log(err);
+            res.status(400).send(err);
+        }
+        if (!data) {
+            // already exist request
+            res.status(401).send({
+                data: null,
+                msg: 'Your request is already transfered',
+            });
+        } else {
+            // no request -> submit new request to DB
+            res.status(200).send({
+                data: null,
+                msg: 'Your request is sucessfully submitted',
+            });
+        }
     });
 };
 

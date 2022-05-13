@@ -23,8 +23,7 @@ export const adminLogin = async (req: Request, res: Response) => {
   const { id, password } = req.body;
   //adminAuth=> did를 이용해서 access token 발급
   const output: any = await getAdminDid(id, password);
-  console.log(output.countryCode);
-  if (output.userId) {
+  if (output.user_id) {
     if (output.password) {
       const tokenData = {
         did: output.did,
@@ -33,7 +32,7 @@ export const adminLogin = async (req: Request, res: Response) => {
       res.status(200).send({
         data: accessToken,
         message: "Login Success",
-        profile_url: CountryIpfs[output.countryCode],
+        profile_url: CountryIpfs[output.country_code],
       });
     } else {
       res.status(401).send({ data: null, message: "Wrong password" });
@@ -51,7 +50,7 @@ export const getPassportRequests = async (req: Request, res: Response) => {
   if (issuerDid.includes(admin.did)) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
-    let output: any = await getPassport_zero(0, admin.countryCode);
+    let output: any = await getPassport_zero(0, admin.country_code);
     console.log(output);
     if (output.length >= 1) {
       res.status(200).send({ passportRequests: output, message: "success" });
@@ -72,7 +71,7 @@ export const getVisaRequests = async (req: Request, res: Response) => {
   if (issuerDid.includes(admin.did)) {
     // admin의 did일 때만 동작
     // 쿼리 날려서 받아오기
-    let output: any = await getVisa_zero(0, admin.countryCode);
+    let output: any = await getVisa_zero(0, admin.country_code);
     console.log(output);
     if (output.length >= 1) {
       res.status(200).send({ visaRequests: output, message: "success" });

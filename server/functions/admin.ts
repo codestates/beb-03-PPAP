@@ -5,7 +5,7 @@ import createIPFS from "../functions/createIPFS.js";
 // 관리자 인증
 export const adminAuth = async (authorization: any) => {
   let output: any = await auth(authorization);
-  console.log(output);
+  console.log("admin Auth : ", output);
   // .then으로 resolve, reject 경우 나눠서 처리
   // console.log('@@@@@@@', output.userId);
   return output;
@@ -16,7 +16,7 @@ export const getPassport_zero = async (successyn: any, countryCode: any) => {
   try {
     return new Promise((resolve, reject) => {
       const Passportdata = query.getPassport(
-        "successyn",
+        "success_yn",
         successyn,
         countryCode,
         (err: any, data: any) => {
@@ -69,7 +69,7 @@ export const UpdatePassportReq = async (successyn: any, passport_id: any) => {
     return new Promise((resolve, reject) => {
       const PassportUpdate = query.updateRequest(
         "GOVERN_FA_PASSPORT",
-        "successyn",
+        "success_yn",
         successyn,
         "passport_id",
         passport_id,
