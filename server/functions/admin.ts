@@ -116,9 +116,10 @@ export const UpdateVisaReq = async (successyn: any, passport_id: any) => {
 };
 
 // 도장 발행 함수
-export const makeStamp = async () => {
+export const makeStamp = async (entOrdep: any) => {
   const metaData = {
     timeStamp: new Date(),
+    Immigration: entOrdep,
     country: "Korea",
     countryImg:
       "https://ipfs.infura.io/ipfs/QmeLrCEtsm28qqf2S7KSwo7QYFiNzwjfY9AJn8xLs8VQWF",

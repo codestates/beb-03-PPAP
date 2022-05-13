@@ -159,11 +159,12 @@ export const makeVisa = async (req: Request, res: Response) => {
 export const verifyPassport = async (req: Request, res: Response) => {
   try {
     const authorization = req.headers["authorization"];
-    const { did, vpJWT } = req.body;
-    if (!authorization) res.status(401).send({ message: "no Auth header" });
-    const admin = await adminAuth(authorization);
-    console.log(vpJWT);
-
+    // entOrdep : 출입국정보
+    // Departure - 출국
+    // Entrance - 입국
+    const { did, vpJWT, entOrdep } = req.body;
+    if (!did || !vpJWT || !entOrdep)
+      res.status(400).send({ message: "Please check your request " });
     const providerConfig = {
       name: "ganache",
       rpcUrl: "http://localhost:7545",
@@ -171,37 +172,46 @@ export const verifyPassport = async (req: Request, res: Response) => {
     };
     const ethrDidResolver = getResolver(providerConfig);
     const didResolver = new Resolver(ethrDidResolver);
-    // vp 디코딩
-    const verifiedVP = await verifyPresentation(vpJWT, didResolver);
-    console.log(verifiedVP.payload.iss);
-    if (verifiedVP.payload.iss === did) {
-      // vp서명자 === 홀더인지확인
-      // vp서명자가 홀더일 때만 vc검증과정 진행
-
-      // vc검증시작
-      const vcArr = verifiedVP.payload.vp.verifiableCredential; // vc어레이추출
-      console.log(vcArr);
-      for (let i = 0; i < vcArr.length; i++) {
-        let verifiedVC = await verifyCredential(vcArr[i], didResolver);
-        console.log("verifiedVC@@@", verifiedVC);
-        console.log(`vc발급자 : ${verifiedVC.payload.iss}`); // vc발급자는 issuer did와 같아야함
-        console.log(`여권, 비자 vc 확인, 이슈어 did 확인...`);
-        if (!issuerDid.includes(verifiedVC.payload.iss)) {
-          // issuerDID가 아닌 vc가 있으면 바로 오류 응답
-          res.status(400).send({
-            message: "vc 서명자가 issuer가 아닙니다.",
-          });
+    console.log(vpJWT);
+    if (!authorization) res.status(401).send({ message: "no Auth header" });
+    const admin = await adminAuth(authorization);
+    if (issuerDid.includes(admin.did)) {
+      // 여기서 실행
+      // vp 디코딩
+      const verifiedVP = await verifyPresentation(vpJWT, didResolver);
+      console.log(verifiedVP.payload.iss);
+      if (verifiedVP.payload.iss === did) {
+        // vp서명자 === 홀더인지확인
+        // vp서명자가 홀더일 때만 vc검증과정 진행
+        // vc검증시작
+        const vcArr = verifiedVP.payload.vp.verifiableCredential; // vc어레이추출
+        console.log(vcArr);
+        for (let i = 0; i < vcArr.length; i++) {
+          let verifiedVC = await verifyCredential(vcArr[i], didResolver);
+          console.log("verifiedVC@@@", verifiedVC);
+          console.log(`vc발급자 : ${verifiedVC.payload.iss}`); // vc발급자는 issuer did와 같아야함
+          console.log(`여권, 비자 vc 확인, 이슈어 did 확인...`);
+          if (!issuerDid.includes(verifiedVC.payload.iss)) {
+            // issuerDID가 아닌 vc가 있으면 바로 오류 응답
+            res.status(400).send({
+              message: "vc 서명자가 issuer가 아닙니다.",
+            });
+          }
+          // 조건문 더 추가(여권,비자검증)
         }
-        // 조건문 더 추가(여권,비자검증)
+        // 반복문 종료 후 stamp발행 실행
+        const stampurl = makeStamp(entOrdep);
+        res.status(200).send({
+          message: "검증 성공, 출입국 도장 발행 완료",
+          stampurl,
+        });
+        // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
+      } else {
+        res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
       }
-      // 반복문 종료 후 stamp발행 실행
-      const stampurl = makeStamp();
-      res.status(200).send({
-        message: "검증 성공, 출입국 도장 발행 완료",
-        stampurl,
-      });
     } else {
-      res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
+      // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+      res.status(401).send({ message: "Admin Auth fail" });
     }
   } catch (e) {
     console.log(e);

@@ -15,7 +15,7 @@ const app = express();
 
 dotenv.config({ path: "./.env" });
 
-const port = 4000;
+const port = 3000;
 
 const corsOptions = { origin: `http://localhost:${port}` };
 createIssuerDID();
