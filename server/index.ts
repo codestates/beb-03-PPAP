@@ -26,6 +26,15 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(
+    session({
+        secret: 'asefwaefawerfewrg',
+        resave: false,
+        saveUninitialized: true,
+        store: new FileStore(),
+    })
+);
+
 app.use('/admin', adminRoute);
 app.use('/client', clientRoute);
 

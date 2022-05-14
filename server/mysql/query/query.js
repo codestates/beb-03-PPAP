@@ -190,3 +190,18 @@ module.exports.requestVisaForm = async function requestVisaForm(
         }
     );
 };
+
+// module.exports.joinTable = async function joinTables(
+//     tableFlag,
+//     joinTable,
+//     cond,
+//     data,
+//     callback
+// ) {
+//     let queryMsg = `SELECT * FROM ${tableFlag} INNER JOIN ${joinTable} ON ${tableFlag}.${cond[0]} = ${joinTable}.${cond[1]} WHERE ${tableFlag}.${cond[0]} = '${data}'`;
+
+//     connection.query(queryMsg, function (err, result) {
+//         if (err) callback(err, null);
+//         else callback(null, result);
+//     });
+// };

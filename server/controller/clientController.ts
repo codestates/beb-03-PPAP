@@ -67,13 +67,55 @@ export const getPassport = async (req: Request, res: Response) => {
     // recall passport
     const passData = await getOnlyPassport(clientInfo);
     if (passData.statusCode) {
-        res.status(passData.statusCode).send({ data: null, msg: passData.msg });
+        return res
+            .status(passData.statusCode)
+            .send({ data: null, msg: passData.msg });
     }
-    console.log(passData);
+    clientInfo.photo_uri = passData.data[0].photo_uri;
+    const passId = passData.data[0].passport_id;
 
-    // **** data should be transferred by session ****
-    // **** visa, stamp data should be added ****
-    // **** data should be transferred by session ****
+    const visaList = await new Promise((resolve) => {
+        query.getUser(
+            'GOVERN_FA_VISA_SURVEY',
+            'passport_id',
+            passId,
+            (err: any, data: any) => {
+                if (err) {
+                    console.log(err);
+                    return err;
+                } else {
+                    resolve(data);
+                }
+            }
+        );
+    });
+
+    const stampList = await new Promise((resolve) => {
+        query.getUser(
+            'GOVERN_FA_STAMP',
+            'passport_id',
+            passId,
+            (err: any, data: any) => {
+                if (err) {
+                    console.log(err);
+                    return err;
+                } else {
+                    resolve(data);
+                }
+            }
+        );
+    });
+
+    if (visaList && stampList) {
+        req.session.passportInfo = clientInfo;
+        req.session.visaList = visaList;
+        req.session.stampList = stampList;
+
+        res.status(200).send({
+            data: null,
+            msg: 'get passport information success',
+        });
+    }
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
