@@ -96,7 +96,7 @@ export const login = async (req: Request, res: Response) => {
                     } else {
                         const tokenData = {
                             did: dataFiltered.did,
-                            phoneNum: dataFiltered.phone_num,
+                            phone_num: dataFiltered.phone_num,
                         };
 
                         req.session.user_name = dataFiltered.user_name;
