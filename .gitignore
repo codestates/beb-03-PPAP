@@ -3,4 +3,5 @@ address
 */node_modules
 */.env
 */package-lock.json
+*/sessions
 node_modules
