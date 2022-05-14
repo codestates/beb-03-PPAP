@@ -7,8 +7,9 @@ const express = require("express");
 // import { issuerRoute } from "../routes/issuerRoute";
 // import { verifierRoute } from "../routes/verifierRoute.js";
 const cors = require("cors");
-const { issuerRoute } = require("../routes/issuerRoute");
-const { verifierRoute } = require("../routes/verifierRoute");
+const { adminRoute } = require("./routes/adminRoute");
+const { clientRoute } = require("./routes/clientRoute");
+import createIssuerDID from "./functions/createIssuerDID";
 
 const app = express();
 
@@ -25,13 +26,14 @@ const corsOptions = {
   credentials: true,
   methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
 };
+createIssuerDID();
 
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/issuer", issuerRoute);
-app.use("/verifier", verifierRoute);
+app.use("/admin", adminRoute);
+app.use("/client", clientRoute);
 
 app.listen(port, () => {
   console.log(`listening on port ${port}...`);
