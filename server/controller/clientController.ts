@@ -12,7 +12,7 @@ const clientAuth = async (authorization: any) => {
 };
 
 export const requestPassport = async (req: Request, res: Response) => {
-    const { photoURI } = req.body;
+    const { photo_uri } = req.body;
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
     // specify user using user data in DB
@@ -20,7 +20,7 @@ export const requestPassport = async (req: Request, res: Response) => {
         resolve(clientAuth(authorization));
     });
     // add user photo data
-    clientInfo.photoURI = photoURI;
+    clientInfo.photo_uri = photo_uri;
 
     // submit request for issuing passport
     await query.requestPassForm(clientInfo, (err: any, data: any) => {
@@ -28,11 +28,23 @@ export const requestPassport = async (req: Request, res: Response) => {
             console.log(err);
             res.status(400).send(err);
         }
-        if (!data) {
+        console.log(data);
+        if (data === '0') {
             // already exist request
+            // request form data would be returned?
             res.status(401).send({
                 data: null,
                 msg: 'Your request is already transfered',
+            });
+        } else if (data === '1') {
+            res.status(401).send({
+                data: null,
+                msg: 'You already have passport',
+            });
+        } else if (data === '2') {
+            res.status(401).send({
+                data: null,
+                msg: 'Your request is rejected',
             });
         } else {
             // no request -> submit new request to DB
@@ -57,6 +69,7 @@ export const getPassport = async (req: Request, res: Response) => {
     if (passData.statusCode) {
         res.status(passData.statusCode).send({ data: null, msg: passData.msg });
     }
+    console.log(passData);
 
     // **** data should be transferred by session ****
     // **** visa, stamp data should be added ****
@@ -64,7 +77,7 @@ export const getPassport = async (req: Request, res: Response) => {
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-    const { visaPurpose } = req.body;
+    const { visa_purpose } = req.body;
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
     // specify user using user data in DB
@@ -75,14 +88,16 @@ export const requestVisa = async (req: Request, res: Response) => {
     // recall passport
     const passData = await getOnlyPassport(clientInfo);
     if (passData.statusCode) {
-        res.status(passData.statusCode).send({ data: null, msg: passData.msg });
+        return res
+            .status(passData.statusCode)
+            .send({ data: null, msg: passData.msg });
     }
     clientInfo.passport_id = passData.data[0].passport_id;
 
     // find visa type
     const condOption = {
-        visa_purpose: visaPurpose,
-        countryCode: clientInfo.countryCode,
+        visa_purpose: visa_purpose,
+        country_code: clientInfo.country_code,
     };
     // check requested visa is available
     const visaType: any = await new Promise((resolve) => {
@@ -91,7 +106,7 @@ export const requestVisa = async (req: Request, res: Response) => {
             condOption,
             (err: any, data: any) => {
                 if (!data) {
-                    res.status(400).send({
+                    return res.status(400).send({
                         data: null,
                         msg: 'No available for your request',
                     });
