@@ -84,6 +84,7 @@ const Image = ({
         quality: 1,
       });
       if (!result.cancelled) {
+        console.log(result);
         onChangeImage(result.uri);
       }
     } catch (e) {
