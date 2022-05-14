@@ -6,6 +6,7 @@ import { Image, Input } from "../componenets";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { validateEmail, removeWhitespace } from "../utils/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { images } from "../utils/Images";
 
 const Container = styled.View`
   flex: 1;
@@ -56,7 +57,7 @@ const Login = ({ navigation }) => {
       extraScrollHeight={40}
     >
       <Container insets={insets}>
-        <Image />
+        <Image url={images.logo} />
         <Input
           label="Email"
           value={email}

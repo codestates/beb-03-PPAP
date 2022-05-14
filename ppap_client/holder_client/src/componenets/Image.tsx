@@ -11,8 +11,8 @@ const Container = styled.View`
 `;
 
 const StyledImage = styled.ImageBackground`
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
 `;
 
 const ButtonContainer = styled.Pressable`
@@ -92,14 +92,16 @@ const Image = ({
     }
   };
 
+  console.log(url);
+
   return (
     <Container>
       <StyledImage
         source={{
-          uri: "https://reactnative.dev/img/tiny_logo.png",
+          uri: url,
         }}
         style={imageStyle}
-        imageStyle={rounded ? { borderRadius: 50 } : { borderRadius: 0 }}
+        imageStyle={rounded ? { borderRadius: 80 } : { borderRadius: 0 }}
       >
         {showButton && <PhotoButton onPress={_handleEditButton} />}
       </StyledImage>

@@ -4,6 +4,7 @@ import styled from "styled-components/native";
 import { validateEmail, removeWhitespace } from "../utils/common";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Image, Input } from "../componenets";
+import { images } from "../utils/Images";
 
 const Container = styled.View`
   flex: 1;
@@ -29,7 +30,9 @@ const Signup = () => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [disabled, setDisabled] = useState(true);
-  const [photoUrl, setPhotoUrl] = useState("assets/testImg.svg");
+  const [photoUrl, setPhotoUrl] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/ppap-f8b5b.appspot.com/o/profile%2Fphoto.png?alt=media"
+  );
 
   useEffect(() => {
     let _errorMessage = "";
@@ -60,7 +63,7 @@ const Signup = () => {
       <Container>
         <Image
           rounded
-          source={{ uri: photoUrl }}
+          url={photoUrl}
           showButton
           onChangeImage={(url) => {
             console.log(url);
