@@ -24,15 +24,15 @@ export const getOnlyPassport = async (clientInfo: any) => {
             msg = `You don't have passport yet. Submit passport request first.`;
             statusCode = 401;
         }
-        if (tempData[0].successyn === '0') {
+        if (tempData[0].success_yn === '0') {
             // submitted request is not approved yet
             msg = 'your passport request is not approved yet.';
             statusCode = 401;
-        } else if (tempData[0].successyn === '2') {
+        } else if (tempData[0].success_yn === '2') {
             // submitted request is not approved yet
             msg = 'your passport request is rejected';
             statusCode = 401;
-        } else if (tempData[0].successyn === '1') {
+        } else if (tempData[0].success_yn === '1') {
             realData = tempData;
         }
 
