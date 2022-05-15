@@ -1,15 +1,16 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
-import { NavigationContainer } from "@react-navigation/native";
-import TabNavigation from "./navigations/TabNavigation";
+
+const Container = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+`;
 
 const App = () => {
-  return (
-    <NavigationContainer>
-      <TabNavigation />
-    </NavigationContainer>
-  );
+  return <Container></Container>;
 };
 
 const styles = StyleSheet.create({});
