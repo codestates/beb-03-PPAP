@@ -5,6 +5,7 @@ import { validateEmail, removeWhitespace } from "../utils/common";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Image, Input } from "../componenets";
 import { images } from "../utils/Images";
+import { uploadImage } from "../utils/firebase";
 
 const Container = styled.View`
   flex: 1;
@@ -66,15 +67,17 @@ const Signup = () => {
           url={photoUrl}
           showButton
           onChangeImage={(url) => {
-            console.log(url);
             setPhotoUrl(url);
-            console.log(photoUrl);
+            console.log(name);
+            uploadImage(photoUrl, name);
           }}
         />
         <Input
           label="Name"
           value={name}
-          onChangeText={(text) => setName(text)}
+          onChangeText={(text) => {
+            setName(text);
+          }}
           onSubmitEditing={() => {
             setName(name.trim());
           }}
