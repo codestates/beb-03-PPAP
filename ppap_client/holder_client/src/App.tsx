@@ -1,18 +1,45 @@
-import React from "react";
-import { View, StyleSheet, Text } from "react-native";
-import styled from "styled-components/native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Text, View } from "react-native";
+import Entypo from "@expo/vector-icons/Entypo";
+import * as SplashScreen from "expo-splash-screen";
+import * as Font from "expo-font";
 
-const Container = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: #fff;
-`;
+export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
 
-const App = () => {
-  return <Container></Container>;
-};
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await Font.loadAsync(Entypo.font);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
 
-const styles = StyleSheet.create({});
+    prepare();
+  }, []);
 
-export default App;
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
+
+  return (
+    <View
+      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+      onLayout={onLayoutRootView}
+    >
+      <Text>SplashScreen Demo! 👋</Text>
+      <Entypo name="rocket" size={30} />
+    </View>
+  );
+}
