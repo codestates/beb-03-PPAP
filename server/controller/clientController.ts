@@ -160,15 +160,6 @@ export const requestVisa = async (req: Request, res: Response) => {
   }
   clientInfo.passport_id = passData.data[0].passport_id;
 
-  // recall passport
-  const passData = await getOnlyPassport(clientInfo);
-  if (passData.statusCode) {
-    return res
-      .status(passData.statusCode)
-      .send({ data: null, msg: passData.msg });
-  }
-  clientInfo.passport_id = passData.data[0].passport_id;
-
   // find visa type
   const condOption = {
     visa_purpose: visa_purpose,
