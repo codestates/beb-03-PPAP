@@ -17,6 +17,6 @@ adminRoute.route("/makeVisa").post(makeVisa);
 adminRoute.route("/adminlogin").post(adminLogin);
 adminRoute.route("/passportRequests").get(getPassportRequests);
 adminRoute.route("/visaRequests").get(getVisaRequests);
-adminRoute.route("/getStamp/:entOrdep").get(getStamp);
+adminRoute.route("/getStamp").get(getStamp);
 
 module.exports.adminRoute = adminRoute;

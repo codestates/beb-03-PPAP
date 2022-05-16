@@ -151,17 +151,33 @@ export const makeVisa = async (req: Request, res: Response) => {
 // 입국 스탬프 조회할때
 export const getStamp = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
-  const stampFlag = req.params.entOrdep;
+  const stampFlag = req.query.entOrdep;
   if (!authorization) res.status(401).send({ message: "no Auth header" });
   const admin = await adminAuth(authorization);
   if (issuerDid.includes(admin.did)) {
-    let output: any = await getEntOrDepStamp(stampFlag, admin.country_code);
-    console.log(output);
-    if (output.length === 0) {
-      res.status(200).send({ message: "there is no stamp data" });
-    } else {
-      res.status(200).send({ output, message: "success" });
+    try {
+      let output: any = await getEntOrDepStamp(stampFlag, admin.country_code);
+      console.log("@@@@@@@@@@@@", output);
+      if (output.length === 0) {
+        res.status(200).send({ message: "there is no stamp data" });
+      } else {
+        res.status(200).send({ output, message: "success" });
+      }
+    } catch (e) {
+      res.status(400).send({ message: e });
     }
+
+    //   .then((err: any, data: any) => {
+    //   if (err) console.log(err);
+    //   if (data) console.log(data);
+    // });
+
+    // if (output) res.status(400).send({ message: "invalid entOrdep" });
+    // if (output.length === 0) {
+    //   res.status(200).send({ message: "there is no stamp data" });
+    // } else {
+    //   res.status(200).send({ output, message: "success" });
+    // }
   } else {
     // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
     res.status(401).send({ message: "Admin Auth fail" });
