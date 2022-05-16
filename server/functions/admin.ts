@@ -109,6 +109,27 @@ export const UpdateVisaReq = async (successyn: any, visa_survey_id: any) => {
   }
 };
 
+// 스탬프 조회 - 출국
+export const getEntOrDepStamp = async (entOrdep: any, countryCode: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      query.getUserStamp(entOrdep, countryCode, (err: any, data: any) => {
+        if (err) {
+          // error handling code goes here
+          console.log("ERROR : ", err);
+        } else {
+          if (data) {
+            resolve(data);
+          }
+        }
+      });
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
 // 도장 발행 함수
 export const makeStamp = async (
   entOrdep: any,
