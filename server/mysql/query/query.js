@@ -113,47 +113,29 @@ module.exports.getUserStamp = async function getUserStamp(
   callback
 ) {
   // 조건
-  const queryStr = `SELECT * FROM GOVERN_FA_STAMP S
+  let queryStr = `SELECT * FROM GOVERN_FA_STAMP S
   INNER JOIN GOVERN_FA_PASSPORT P
   ON P.passport_id = S.passport_id
   INNER JOIN GOVERN_USER_CLIENT C
   ON P.client_id = C.client_id`;
+
   switch (entOrdep) {
     case "0":
-      console.log("0");
-      await connection.query(
-        queryStr + `\n WHERE S.country_code = "${countryCode}"`,
-        function (err, result) {
-          if (err) callback(err, null);
-          else callback(null, result);
-        }
-      );
+      queryStr += `\n WHERE S.country_code = "${countryCode}"`;
       break;
     case "1":
-      console.log("1");
-      connection.query(
-        queryStr +
-          `\n WHERE S.ent_or_dep = "ent" AND S.country_code = "${countryCode}"`,
-        function (err, result) {
-          if (err) callback(err, null);
-          else callback(null, result);
-        }
-      );
+      queryStr += `\n WHERE S.ent_or_dep = "ent" AND S.country_code = "${countryCode}"`;
       break;
     case "2":
-      connection.query(
-        queryStr +
-          `\n WHERE S.ent_or_dep = "dep" AND S.country_code = "${countryCode}"`,
-        function (err, result) {
-          if (err) callback(err, null);
-          else callback(null, result);
-        }
-      );
+      queryStr += `\n WHERE S.ent_or_dep = "dep" AND S.country_code = "${countryCode}"`;
       break;
     default:
-      return { message: "invalid entOrdep" };
-      break;
+      queryStr = " ";
   }
+  await connection.query(queryStr, function (err, result) {
+    if (err) callback(err, null);
+    else callback(null, result);
+  });
 };
 
 // stamp table 업데이트 쿼리

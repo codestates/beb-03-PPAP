@@ -116,6 +116,7 @@ export const getEntOrDepStamp = async (entOrdep: any, countryCode: any) => {
       query.getUserStamp(entOrdep, countryCode, (err: any, data: any) => {
         if (err) {
           // error handling code goes here
+          reject(err);
           console.log("ERROR : ", err);
         } else {
           if (data) {
