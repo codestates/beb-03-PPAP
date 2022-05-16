@@ -171,10 +171,10 @@ export const requestVisa = async (req: Request, res: Response) => {
             'GOVERN_FA_VISA',
             condOption,
             (err: any, data: any) => {
-                if (!data) {
+                if (data.length === 0) {
                     return res.status(400).send({
                         data: null,
-                        msg: 'No available for your request',
+                        msg: 'No available visa for your request',
                     });
                 }
                 resolve(data);
