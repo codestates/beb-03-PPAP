@@ -173,6 +173,7 @@ export const findHolderDid = async (holder_did: any) => {
   }
 };
 
+// 출입국 도장 등록 함수
 export const updateStamp = async (
   passport_id: any,
   stamp_uri: any,

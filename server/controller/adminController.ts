@@ -148,32 +148,14 @@ export const makeVisa = async (req: Request, res: Response) => {
   }
 };
 
-// 출국 스탬프 조회할때
-export const getDepStamp = async (req: Request, res: Response) => {
-  const authorization = req.headers["authorization"];
-  if (!authorization) res.status(401).send({ message: "no Auth header" });
-  const admin = await adminAuth(authorization);
-  if (issuerDid.includes(admin.did)) {
-    let output: any = await getEntOrDepStamp("dep", admin.country_code);
-    console.log(output);
-    if (output.length === 0) {
-      res.status(200).send({ message: "there is no stamp data" });
-    } else {
-      res.status(200).send({ output, message: "success" });
-    }
-  } else {
-    // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
-    res.status(401).send({ message: "Admin Auth fail" });
-  }
-};
-
 // 입국 스탬프 조회할때
-export const getEntStamp = async (req: Request, res: Response) => {
+export const getStamp = async (req: Request, res: Response) => {
   const authorization = req.headers["authorization"];
+  const stampFlag = req.params.entOrdep;
   if (!authorization) res.status(401).send({ message: "no Auth header" });
   const admin = await adminAuth(authorization);
   if (issuerDid.includes(admin.did)) {
-    let output: any = await getEntOrDepStamp("ent", admin.country_code);
+    let output: any = await getEntOrDepStamp(stampFlag, admin.country_code);
     console.log(output);
     if (output.length === 0) {
       res.status(200).send({ message: "there is no stamp data" });
@@ -191,11 +173,6 @@ export const getEntStamp = async (req: Request, res: Response) => {
 // 1. vp verifyPresentation(홀더 did 확인)
 // 2. vc verifyCredential(여권, 비자 vc 확인, 이슈어 did 확인)
 // 3. 두 작업이 완료되면 스탬프 발행
-
-// 스탬프 발행 함수
-// 발급일자, 이미지를 ipfs에 json형태로 업로드
-// ipfs url을 db에 업로드
-
 export const verifyPassport = async (req: Request, res: Response) => {
   try {
     const authorization = req.headers["authorization"];
