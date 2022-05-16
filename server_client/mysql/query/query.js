@@ -1,12 +1,5 @@
 const connection = require('../config/mysql');
 
-module.exports.getAllUser = async function getClientUser(callback) {
-    connection.query('SELECT * from CLIENT_USER', function (err, result) {
-        if (err) callback(err, null);
-        else callback(null, result);
-    });
-};
-
 module.exports.getUser = async function getClientUser(
     findFlag,
     data,
@@ -21,7 +14,7 @@ module.exports.getUser = async function getClientUser(
     );
 };
 
-module.exports.createUser = async function getClientUser(userData, callback) {
+module.exports.createUser = async function createUser(userData, callback) {
     this.getUser('phone_num', userData.phone_num, (err, data) => {
         if (err) {
             console.log(err);
