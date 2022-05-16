@@ -21,8 +21,11 @@ export const getOnlyPassport = async (clientInfo: any) => {
         let realData: any = null;
         if (tempData.length === 0) {
             // no data in passport DB
-            msg = `You don't have passport yet. Submit passport request first.`;
-            statusCode = 401;
+            return {
+                statusCode: 401,
+                data: null,
+                msg: `You don't have passport yet. Submit passport request first.`,
+            };
         }
         if (tempData[0].success_yn === '0') {
             // submitted request is not approved yet
