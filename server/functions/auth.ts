@@ -26,15 +26,13 @@ export const auth = async (authorization: any) => {
                     userPhone,
                     (err: any, data: any) => {
                         if (err) {
-                            // error handling code goes here
+                            // error handling code goes her
                             console.log('ERROR : ', err);
                         } else {
                             if (data) {
-                                const transferObj: any = new Object();
-                                transferObj.did = tokenData.did;
-                                transferObj.client_id = data[0].client_id;
-                                transferObj.country_code = data[0].country_code;
-                                resolve(transferObj);
+                                const tempObj: any = Object.assign(data[0]);
+                                tempObj.did = tokenData.did;
+                                resolve(tempObj);
                             }
                         }
                     }

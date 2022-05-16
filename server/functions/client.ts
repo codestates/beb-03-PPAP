@@ -2,6 +2,7 @@ const query = require('../mysql/query/query');
 
 export const getOnlyPassport = async (clientInfo: any) => {
     return new Promise((resolve) => {
+        console.log(clientInfo);
         query.getUser(
             'GOVERN_FA_PASSPORT',
             'did',

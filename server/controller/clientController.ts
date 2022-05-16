@@ -7,7 +7,6 @@ import {
 import { getOnlyPassport } from '../functions/client';
 import { auth } from '../functions/auth';
 import createIssuerDID from '../functions/createIssuerDID';
-import { getDefaultLibFilePath } from 'typescript';
 
 const clientAuth = async (authorization: any) => {
     let output: any = await auth(authorization);
@@ -130,12 +129,12 @@ export const getPassport = async (req: Request, res: Response) => {
             },
         };
         const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer);
-        console.log(vcJwt);
+        // console.log(vcJwt);
 
-        req.session.vcJwt = vcJwt;
+        // req.session.vcJwt = vcJwt;
 
         res.status(200).send({
-            data: null,
+            data: { vcJwt: vcJwt },
             msg: 'get passport information success',
         });
     }
