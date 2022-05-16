@@ -1,9 +1,12 @@
 const query = require('../mysql/query/query');
-import { rejects } from 'assert';
 import { Request, Response, NextFunction } from 'express';
+import {
+    JwtCredentialPayload,
+    createVerifiableCredentialJwt,
+} from 'did-jwt-vc';
 import { getOnlyPassport } from '../functions/client';
-
 import { auth } from '../functions/auth';
+import createIssuerDID from '../functions/createIssuerDID';
 
 const clientAuth = async (authorization: any) => {
     let output: any = await auth(authorization);
@@ -28,7 +31,6 @@ export const requestPassport = async (req: Request, res: Response) => {
             console.log(err);
             res.status(400).send(err);
         }
-        console.log(data);
         if (data === '0') {
             // already exist request
             // request form data would be returned?
@@ -107,9 +109,23 @@ export const getPassport = async (req: Request, res: Response) => {
     });
 
     if (visaList && stampList) {
-        req.session.passportInfo = clientInfo;
-        req.session.visaList = visaList;
-        req.session.stampList = stampList;
+        const issuer: any = await createIssuerDID();
+        const vcPayload: JwtCredentialPayload = {
+            sub: clientInfo.did,
+            nbf: 1562950282,
+            vc: {
+                '@context': ['https://www.w3.org/2018/credentials/v1'],
+                type: ['VerifiableCredential'],
+                credentialSubject: {
+                    passportInfo: clientInfo,
+                    visaList: visaList,
+                    stampList: stampList,
+                },
+            },
+        };
+        const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer);
+
+        req.session.vcJwt = vcJwt;
 
         res.status(200).send({
             data: null,
