@@ -63,7 +63,7 @@ export const login = async (req: Request, res: Response) => {
 
     await query.getUser(
         'user_name',
-        loginData.userName,
+        loginData.user_name,
         async (err: any, data: any) => {
             if (err) {
                 // error handling code goes here

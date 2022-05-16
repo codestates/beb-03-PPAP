@@ -1,13 +1,15 @@
 const query = require("../mysql/query/query");
-import { rejects } from "assert";
 import { Request, Response, NextFunction } from "express";
+import {
+  JwtCredentialPayload,
+  createVerifiableCredentialJwt,
+} from "did-jwt-vc";
 import { getOnlyPassport } from "../functions/client";
-
 import { auth } from "../functions/auth";
+import createIssuerDID from "../functions/createIssuerDID";
 
 const clientAuth = async (authorization: any) => {
   let output: any = await auth(authorization);
-  // .then으로 resolve, reject 경우 나눠서 처리
   return output;
 };
 
@@ -20,6 +22,9 @@ export const requestPassport = async (req: Request, res: Response) => {
     resolve(clientAuth(authorization));
   });
   // add user photo data
+  if (!clientInfo) {
+    return res.status(401).send({ data: null, msg: "Invalid token" });
+  }
   clientInfo.photo_uri = photo_uri;
 
   // submit request for issuing passport
@@ -28,7 +33,6 @@ export const requestPassport = async (req: Request, res: Response) => {
       console.log(err);
       res.status(400).send(err);
     }
-    console.log(data);
     if (data === "0") {
       // already exist request
       // request form data would be returned?
@@ -63,6 +67,9 @@ export const getPassport = async (req: Request, res: Response) => {
   const clientInfo: any = await new Promise((resolve) => {
     resolve(clientAuth(authorization));
   });
+  if (!clientInfo) {
+    return res.status(401).send({ data: null, msg: "Invalid token" });
+  }
 
   // recall passport
   const passData = await getOnlyPassport(clientInfo);
@@ -107,9 +114,23 @@ export const getPassport = async (req: Request, res: Response) => {
   });
 
   if (visaList && stampList) {
-    req.session.passportInfo = clientInfo;
-    req.session.visaList = visaList;
-    req.session.stampList = stampList;
+    const issuer: any = await createIssuerDID();
+    const vcPayload: JwtCredentialPayload = {
+      sub: clientInfo.did,
+      nbf: 1562950282,
+      vc: {
+        "@context": ["https://www.w3.org/2018/credentials/v1"],
+        type: ["VerifiableCredential"],
+        credentialSubject: {
+          passportInfo: clientInfo,
+          visaList: visaList,
+          stampList: stampList,
+        },
+      },
+    };
+    const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer);
+
+    req.session.vcJwt = vcJwt;
 
     res.status(200).send({
       data: null,
@@ -126,6 +147,18 @@ export const requestVisa = async (req: Request, res: Response) => {
   const clientInfo: any = await new Promise((resolve) => {
     resolve(clientAuth(authorization));
   });
+  if (!clientInfo) {
+    return res.status(401).send({ data: null, msg: "Invalid token" });
+  }
+
+  // recall passport
+  const passData = await getOnlyPassport(clientInfo);
+  if (passData.statusCode) {
+    return res
+      .status(passData.statusCode)
+      .send({ data: null, msg: passData.msg });
+  }
+  clientInfo.passport_id = passData.data[0].passport_id;
 
   // recall passport
   const passData = await getOnlyPassport(clientInfo);
