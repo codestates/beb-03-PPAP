@@ -10,7 +10,6 @@ import createIssuerDID from '../functions/createIssuerDID';
 
 const clientAuth = async (authorization: any) => {
     let output: any = await auth(authorization);
-    // .then으로 resolve, reject 경우 나눠서 처리
     return output;
 };
 
@@ -23,6 +22,9 @@ export const requestPassport = async (req: Request, res: Response) => {
         resolve(clientAuth(authorization));
     });
     // add user photo data
+    if (!clientInfo) {
+        return res.status(401).send({ data: null, msg: 'Invalid token' });
+    }
     clientInfo.photo_uri = photo_uri;
 
     // submit request for issuing passport
@@ -65,6 +67,9 @@ export const getPassport = async (req: Request, res: Response) => {
     const clientInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
+    if (!clientInfo) {
+        return res.status(401).send({ data: null, msg: 'Invalid token' });
+    }
 
     // recall passport
     const passData = await getOnlyPassport(clientInfo);
@@ -142,6 +147,9 @@ export const requestVisa = async (req: Request, res: Response) => {
     const clientInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
+    if (!clientInfo) {
+        return res.status(401).send({ data: null, msg: 'Invalid token' });
+    }
 
     // recall passport
     const passData = await getOnlyPassport(clientInfo);

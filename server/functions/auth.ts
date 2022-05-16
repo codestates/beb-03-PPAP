@@ -2,6 +2,9 @@
 // access token 디코딩
 // 디코딩한 토큰에 휴대폰 번호 있는지 없는지 판단
 // 있으면 관리자 --> 어떤 관리자인지 db에서 검색
+
+import { resolve } from 'path';
+
 // 없으면 사용자 --> 어떤 사용자인지 db에서 검색
 const jwt = require('jsonwebtoken');
 const query = require('../mysql/query/query');
@@ -13,6 +16,9 @@ export const auth = async (authorization: any) => {
         const token = authorization;
         // decode data on access token
         const tokenData = await jwt.verify(token, accessTokenSecret);
+        if (!tokenData) {
+            return null;
+        }
         if (tokenData.phone_num) {
             // client authentication sequence
             const userPhone = tokenData.phone_num;
