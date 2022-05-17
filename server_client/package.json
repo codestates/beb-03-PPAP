@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node dist/app.js",
         "build": "tsc -p .",
-        "dev": "nodemon --watch \"./**/*.ts\" --exec \"ts-node\" ./index.ts"
+        "dev": "nodemon --exec \"ts-node\" index.ts --config nodemon.json"
     },
     "author": "",
     "license": "ISC",

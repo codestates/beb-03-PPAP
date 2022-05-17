@@ -21,6 +21,7 @@ const createIssuerDID = async () => {
       registry: didContractAdd,
     }) as Issuer;
     console.log(issuer.did);
+    return issuer;
   } catch (e) {
     console.log(e);
   }
