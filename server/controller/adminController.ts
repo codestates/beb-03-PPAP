@@ -224,6 +224,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
           // 여권, 비자, 스탬프 정보 client로 돌려주기
           const passport_info =
             verifiedVC.verifiableCredential.credentialSubject.passportInfo;
+          // visa_list : 어드민 국가 -> 최신날짜기준1개만 검사
           const visa_list =
             verifiedVC.verifiableCredential.credentialSubject.visaList;
           const stamp_list =
@@ -235,7 +236,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
             passport_info,
             visa_list,
             stamp_list,
-            messagae: "success",
+            message: "success",
           });
         }
         // 반복문 종료 후 stamp발행 실행
