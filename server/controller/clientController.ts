@@ -132,18 +132,15 @@ export const getPassport = async (req: Request, res: Response) => {
             issuer
         );
 
-        let vcVisaPayload: JwtCredentialPayload;
-        // console.log(visaList);
         const visaPromises = await visaList.map((elem: any, idx: number) => {
-            vcVisaPayload = {
+            const vcVisaPayload: JwtCredentialPayload = {
                 sub: clientInfo.did,
                 nbf: 1562950282,
                 vc: {
                     '@context': ['https://www.w3.org/2018/credentials/v1'],
                     type: ['VerifiableCredential'],
                     credentialSubject: {
-                        passportInfo: clientInfo,
-                        stampList: stampList,
+                        visa: elem,
                     },
                 },
             };
