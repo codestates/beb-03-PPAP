@@ -81,7 +81,7 @@ export const getPassport = async (req: Request, res: Response) => {
     clientInfo.photo_uri = passData.data[0].photo_uri;
     const passId = passData.data[0].passport_id;
 
-    const visaList = await new Promise((resolve) => {
+    const visaList: any = await new Promise((resolve) => {
         query.getUser(
             'GOVERN_FA_VISA_SURVEY',
             'passport_id',
@@ -115,7 +115,7 @@ export const getPassport = async (req: Request, res: Response) => {
 
     if (visaList && stampList) {
         const issuer: any = await createIssuerDID();
-        const vcPayload: JwtCredentialPayload = {
+        const vcPassPayload: JwtCredentialPayload = {
             sub: clientInfo.did,
             nbf: 1562950282,
             vc: {
@@ -123,17 +123,40 @@ export const getPassport = async (req: Request, res: Response) => {
                 type: ['VerifiableCredential'],
                 credentialSubject: {
                     passportInfo: clientInfo,
-                    visaList: visaList,
                     stampList: stampList,
                 },
             },
         };
-        const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer);
-        // console.log(vcJwt);
-        // req.session.vcJwt = vcJwt;
+        const vcPassJwt = await createVerifiableCredentialJwt(
+            vcPassPayload,
+            issuer
+        );
+
+        let vcVisaPayload: JwtCredentialPayload;
+        // console.log(visaList);
+        const visaPromises = await visaList.map((elem: any, idx: number) => {
+            vcVisaPayload = {
+                sub: clientInfo.did,
+                nbf: 1562950282,
+                vc: {
+                    '@context': ['https://www.w3.org/2018/credentials/v1'],
+                    type: ['VerifiableCredential'],
+                    credentialSubject: {
+                        passportInfo: clientInfo,
+                        stampList: stampList,
+                    },
+                },
+            };
+            const vcVisaJwtElem = createVerifiableCredentialJwt(
+                vcVisaPayload,
+                issuer
+            );
+            return vcVisaJwtElem;
+        });
+        const vcVisaJwt = await Promise.all(visaPromises);
 
         res.status(200).send({
-            data: { vcJwt: vcJwt },
+            data: { vcPassJwt: vcPassJwt, vcVisaJwt: vcVisaJwt },
             msg: 'get passport information success',
         });
     }
