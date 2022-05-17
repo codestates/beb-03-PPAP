@@ -34,7 +34,7 @@ const UserPassportTitle = styled.Text`
 const Passport = ({ navigation }) => {
   return (
     <Container>
-      <Pressable onPress={() => navigation.navigate("PassportDetailTab")}>
+      <Pressable onPress={() => navigation.navigate("PassportDetailStack")}>
         <UserPassport>
           <StyledLogo source={{ uri: images.color_logo }} />
           <UserPassportTitle>DID 여권</UserPassportTitle>

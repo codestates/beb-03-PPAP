@@ -10,6 +10,8 @@ import Visa from "./Visa";
 import VisaDetail from "./VisaDetail";
 import Stamps from "./Stamps";
 import QR from "./QR";
+import PassportRegister from "./PassportRegister";
+import VisaRegister from "./VisaRegister";
 
 export {
   Login,
@@ -24,4 +26,6 @@ export {
   VisaDetail,
   Stamps,
   QR,
+  PassportRegister,
+  VisaRegister,
 };

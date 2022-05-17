@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { Passport } from "../screens";
 import { createStackNavigator } from "@react-navigation/stack";
-import PassportDetailTab from "./PassportDetailTab";
+import PassportDetailStack from "./PassportDetailStack";
 
 const Stack = createStackNavigator();
 
@@ -13,7 +13,10 @@ const PassportStack = () => {
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Passport" component={Passport} />
-      <Stack.Screen name="PassportDetailTab" component={PassportDetailTab} />
+      <Stack.Screen
+        name="PassportDetailStack"
+        component={PassportDetailStack}
+      />
     </Stack.Navigator>
   );
 };

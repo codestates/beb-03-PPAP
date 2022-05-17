@@ -34,27 +34,28 @@ const MainTab = () => {
         tabBarShowLabel: true,
         tabBarActiveTintColor: theme.navy,
         tabBarInactiveTintColor: theme.lightgray,
+        headerShown: false,
       })}
     >
       <Tab.Screen
         name="PassportStack"
         component={PassportStack}
-        options={{ tabBarLabel: "DID 여권", headerTitle: "" }}
+        options={{ tabBarLabel: "DID 여권" }}
       />
       <Tab.Screen
         name="VisaStack"
         component={VisaStack}
-        options={{ tabBarLabel: "VISA", headerTitle: "" }}
+        options={{ tabBarLabel: "VISA" }}
       />
       <Tab.Screen
         name="LoginStack"
         component={LoginStack}
-        options={{ tabBarLabel: "로그인", headerTitle: "" }}
+        options={{ tabBarLabel: "로그인" }}
       />
       <Tab.Screen
         name="Setting"
         component={Setting}
-        options={{ tabBarLabel: "설정", headerTitle: "" }}
+        options={{ tabBarLabel: "설정" }}
       />
     </Tab.Navigator>
   );
