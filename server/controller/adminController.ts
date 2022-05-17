@@ -166,18 +166,6 @@ export const getStamp = async (req: Request, res: Response) => {
     } catch (e) {
       res.status(400).send({ message: e });
     }
-
-    //   .then((err: any, data: any) => {
-    //   if (err) console.log(err);
-    //   if (data) console.log(data);
-    // });
-
-    // if (output) res.status(400).send({ message: "invalid entOrdep" });
-    // if (output.length === 0) {
-    //   res.status(200).send({ message: "there is no stamp data" });
-    // } else {
-    //   res.status(200).send({ output, message: "success" });
-    // }
   } else {
     // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
     res.status(401).send({ message: "Admin Auth fail" });
@@ -232,31 +220,53 @@ export const verifyPassport = async (req: Request, res: Response) => {
             });
           }
           // TODO
-          // 조건문 더 추가(여권,비자검증)
+          // 여권, 비자, 스탬프 정보 client로 돌려주기
+          console.log(verifiedVC);
         }
         // 반복문 종료 후 stamp발행 실행
-        const stampurl = makeStamp(
-          entOrdep,
-          admin.country_code,
-          CountryIpfs[admin.country_code]
-        );
-        // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
-        const holderInfo: any = await findHolderDid(did);
-        console.log("holderInfo :", holderInfo);
-        const output: any = await updateStamp(
-          holderInfo.passport_id,
-          stampurl,
-          holderInfo.counrty_code,
-          365
-        );
-        console.log(output);
+        // 다른 라우터로 분리
+
         res.status(200).send({
-          message: "검증 성공, 출입국 도장 발행 완료",
-          stampurl,
+          message: "success",
         });
       } else {
         res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
       }
+    } else {
+      // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+      res.status(401).send({ message: "Admin Auth fail" });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const giveStamp = async (req: Request, res: Response) => {
+  try {
+    const authorization = req.headers["authorization"];
+    const { did, entOrdep } = req.body;
+    if (!authorization) res.status(401).send({ message: "no Auth header" });
+    if (!did || !entOrdep)
+      res.status(400).send({ message: "Check your Request Body data" });
+    const admin = await adminAuth(authorization);
+    if (issuerDid.includes(admin.did)) {
+      // entOrdep : 출입국정보
+      const stampurl = makeStamp(
+        entOrdep,
+        admin.country_code,
+        CountryIpfs[admin.country_code]
+      );
+      // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
+      const holderInfo: any = await findHolderDid(did);
+      console.log("holderInfo :", holderInfo);
+      const output: any = await updateStamp(
+        holderInfo.passport_id,
+        stampurl,
+        holderInfo.counrty_code,
+        365
+      );
+      console.log(output);
+      // Todo : 결과 확인후 응답전송
     } else {
       // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
       res.status(401).send({ message: "Admin Auth fail" });
