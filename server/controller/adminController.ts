@@ -19,6 +19,7 @@ import {
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
 import { getAdminDid } from "../functions/auth";
+import { id } from "ethers/lib/utils";
 
 // 관리자 로그인
 export const adminLogin = async (req: Request, res: Response) => {
@@ -183,8 +184,8 @@ export const verifyPassport = async (req: Request, res: Response) => {
     // entOrdep : 출입국정보
     // Departure - 출국
     // Entrance - 입국
-    const { did, vpJWT, entOrdep } = req.body;
-    if (!did || !vpJWT || !entOrdep)
+    const { did, vpJWT } = req.body; // 질문 : did가 여권 Db에 있는지 검사해야하나?
+    if (!did || !vpJWT)
       res.status(400).send({ message: "Please check your request " });
     const providerConfig = {
       name: "ganache",
@@ -193,7 +194,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
     };
     const ethrDidResolver = getResolver(providerConfig);
     const didResolver = new Resolver(ethrDidResolver);
-    console.log(vpJWT);
+    // console.log(vpJWT);
     if (!authorization) res.status(401).send({ message: "no Auth header" });
     const admin = await adminAuth(authorization);
     if (issuerDid.includes(admin.did)) {
@@ -221,14 +222,24 @@ export const verifyPassport = async (req: Request, res: Response) => {
           }
           // TODO
           // 여권, 비자, 스탬프 정보 client로 돌려주기
-          console.log(verifiedVC);
+          const passport_info =
+            verifiedVC.verifiableCredential.credentialSubject.passportInfo;
+          const visa_list =
+            verifiedVC.verifiableCredential.credentialSubject.visaList;
+          const stamp_list =
+            verifiedVC.verifiableCredential.credentialSubject.stampList;
+          console.log(`###PassportInfo : ${passport_info}`);
+          console.log(`###visaList : ${visa_list}`);
+          console.log(`###stampList : ${stamp_list}`);
+          res.status(200).send({
+            passport_info,
+            visa_list,
+            stamp_list,
+            messagae: "success",
+          });
         }
         // 반복문 종료 후 stamp발행 실행
         // 다른 라우터로 분리
-
-        res.status(200).send({
-          message: "success",
-        });
       } else {
         res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
       }
@@ -244,29 +255,42 @@ export const verifyPassport = async (req: Request, res: Response) => {
 export const giveStamp = async (req: Request, res: Response) => {
   try {
     const authorization = req.headers["authorization"];
-    const { did, entOrdep } = req.body;
+    const { did, entOrdep } = req.body; // entOrdep === 1 : ent, 2 : dep
     if (!authorization) res.status(401).send({ message: "no Auth header" });
     if (!did || !entOrdep)
       res.status(400).send({ message: "Check your Request Body data" });
     const admin = await adminAuth(authorization);
     if (issuerDid.includes(admin.did)) {
       // entOrdep : 출입국정보
-      const stampurl = makeStamp(
+      let ent_or_dep = "NO DATA";
+      if (entOrdep === "1") {
+        ent_or_dep = "ent";
+      } else if (entOrdep === "2") {
+        ent_or_dep = "dep";
+      } else {
+        res.status(400).send({ message: "invalid entOrdep" });
+      }
+      const stampurl = await makeStamp(
         entOrdep,
         admin.country_code,
         CountryIpfs[admin.country_code]
       );
+      console.log(stampurl);
       // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
       const holderInfo: any = await findHolderDid(did);
-      console.log("holderInfo :", holderInfo);
       const output: any = await updateStamp(
         holderInfo.passport_id,
         stampurl,
-        holderInfo.counrty_code,
-        365
+        admin.country_code,
+        365,
+        ent_or_dep
       );
-      console.log(output);
-      // Todo : 결과 확인후 응답전송
+      // 결과 확인후 응답전송
+      if (output.affectedRows === 1) {
+        res.status(200).send({ message: "Stamp update success" });
+      } else {
+        res.status(500).send({ message: "DB check" });
+      }
     } else {
       // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
       res.status(401).send({ message: "Admin Auth fail" });

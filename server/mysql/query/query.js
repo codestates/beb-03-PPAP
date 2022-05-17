@@ -144,12 +144,12 @@ module.exports.updateStampTable = async function updateStampTable(
   stamp_uri,
   country_code,
   stamp_expired_date,
+  ent_or_dep,
   callback
 ) {
   connection.query(
-    `UPDATE GOVERN_FA_STAMP
-    SET passport_id = '${passport_id}', stamp_uri = '${stamp_uri}', country_code = ${country_code}, stamp_expired_date = ${stamp_expired_date}
-    `,
+    `INSERT INTO GOVERN_FA_STAMP (passport_id, stamp_uri, country_code, stamp_expired_date, ent_or_dep)
+    VALUES ('${passport_id}','${stamp_uri}',"${country_code}","${stamp_expired_date}","${ent_or_dep}")`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
