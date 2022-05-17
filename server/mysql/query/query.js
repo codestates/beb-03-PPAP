@@ -1,5 +1,12 @@
 const connection = require("../config/mysql");
 
+module.exports.getAllData = async function getAllData(tableFlag, callback) {
+  connection.query(`SELECT * from ${tableFlag}`, function (err, result) {
+    if (err) callback(err, null);
+    else callback(null, result);
+  });
+};
+
 module.exports.getUser = async function getUser(
   tableFlag,
   findFlag,
