@@ -133,12 +133,10 @@ export const getUserInfo = async (req: Request, res: Response) => {
             } else {
                 const tempObj: any = Object.assign(data[0]);
                 delete tempObj.password;
-                return res
-                    .status(200)
-                    .send({
-                        data: tempObj,
-                        msg: 'get user information success',
-                    });
+                return res.status(200).send({
+                    data: tempObj,
+                    msg: 'get user information success',
+                });
             }
         }
     });
