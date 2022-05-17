@@ -129,18 +129,19 @@ export const getPassport = async (req: Request, res: Response) => {
       },
     };
     const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer);
-    console.log(vcJwt);
-    req.session.vcJwt = vcJwt;
+    // console.log(vcJwt);
+
+    // req.session.vcJwt = vcJwt;
 
     res.status(200).send({
-      data: null,
+      data: { vcJwt: vcJwt },
       msg: "get passport information success",
     });
   }
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-  const { visa_purpose } = req.body;
+  const { visa_purpose, target_country } = req.body;
   // JWT token from authorization header
   const authorization = req.headers["authorization"];
   // specify user using user data in DB
@@ -163,7 +164,7 @@ export const requestVisa = async (req: Request, res: Response) => {
   // find visa type
   const condOption = {
     visa_purpose: visa_purpose,
-    country_code: clientInfo.country_code,
+    country_code: target_country,
   };
   // check requested visa is available
   const visaType: any = await new Promise((resolve) => {
@@ -204,11 +205,3 @@ export const requestVisa = async (req: Request, res: Response) => {
     }
   });
 };
-
-// export const test = async (req: Request, res: Response) => {
-//     return new Promise((resolve) => {
-//         query.joinTables((req: any, res: any) => {
-//             console.log(res);
-//         });
-//     });
-// };

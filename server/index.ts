@@ -7,8 +7,8 @@ const express = require('express');
 // import { issuerRoute } from "../routes/issuerRoute";
 // import { verifierRoute } from "../routes/verifierRoute.js";
 const cors = require('cors');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
+// const session = require('express-session');
+// const FileStore = require('session-file-store')(session);
 const { adminRoute } = require('./routes/adminRoute');
 const { clientRoute } = require('./routes/clientRoute');
 import createIssuerDID from './functions/createIssuerDID';
@@ -26,14 +26,14 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-    session({
-        secret: 'asefwaefawerfewrg',
-        resave: false,
-        saveUninitialized: true,
-        store: new FileStore(),
-    })
-);
+// app.use(
+//     session({
+//         secret: 'asefwaefawerfewrg',
+//         resave: false,
+//         saveUninitialized: true,
+//         store: new FileStore(),
+//     })
+// );
 
 app.use('/admin', adminRoute);
 app.use('/client', clientRoute);
