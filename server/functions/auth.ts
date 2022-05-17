@@ -66,10 +66,12 @@ export const auth = async (authorization: any) => {
                 }
             }
         } catch (e) {
+            // catch invalid token error
             console.log(e);
             return e;
         }
     } catch (e) {
+        // catch no token error
         console.log(e);
         return e;
     }
