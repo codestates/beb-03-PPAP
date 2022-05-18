@@ -35,30 +35,39 @@ export const requestPassport = async (req: Request, res: Response) => {
             console.log('ERROR : ', err);
             res.status(400).send(err);
         }
-        if (data === '0') {
-            // already exist request
-            res.status(401).send({
-                data: null,
-                msg: 'Your request is already transfered',
-            });
-        } else if (data === '1') {
-            // already exist passport
-            res.status(401).send({
-                data: null,
-                msg: 'You already have passport',
-            });
-        } else if (data === '2') {
-            // rejected passport
-            res.status(401).send({
-                data: null,
-                msg: 'Your request is rejected',
-            });
-        } else {
+        if (data.insertId) {
             // no request -> submit new request to DB
-            res.status(200).send({
-                data: null,
-                msg: 'Your request is sucessfully submitted',
-            });
+            query.getUser(
+                'GOVERN_FA_PASSPORT',
+                'client_id',
+                clientInfo.client_id,
+                (err: any, data: any) => {
+                    res.status(200).send({
+                        requestedData: data[0],
+                        msg: 'Your request is sucessfully submitted',
+                    });
+                }
+            );
+        } else {
+            if (data.success_yn === '0') {
+                // already exist request
+                res.status(401).send({
+                    data: null,
+                    msg: 'Your request is already transfered',
+                });
+            } else if (data.success_yn === '1') {
+                // already exist passport
+                res.status(401).send({
+                    data: null,
+                    msg: 'You already have passport',
+                });
+            } else if (data.success_yn === '2') {
+                // rejected passport
+                res.status(401).send({
+                    data: null,
+                    msg: 'Your request is rejected',
+                });
+            }
         }
     });
 };

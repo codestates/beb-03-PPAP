@@ -190,7 +190,7 @@ module.exports.requestPassForm = async function requestPassForm(
                     );
                 } else {
                     // request already exists
-                    callback(null, data[0].success_yn);
+                    callback(null, data[0]);
                 }
             }
         }
