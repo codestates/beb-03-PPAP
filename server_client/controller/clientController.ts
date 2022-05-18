@@ -99,22 +99,24 @@ export const login = async (req: Request, res: Response) => {
                             phone_num: dataFiltered.phone_num,
                         };
 
-                        req.session.user_name = dataFiltered.user_name;
-                        req.session.user_birth = dataFiltered.user_birth;
-                        req.session.did = dataFiltered.did;
-                        req.session.phone_num = dataFiltered.phone_num;
+                        // req.session.user_name = dataFiltered.user_name;
+                        // req.session.user_birth = dataFiltered.user_birth;
+                        // req.session.did = dataFiltered.did;
+                        // req.session.phone_num = dataFiltered.phone_num;
 
                         const accessToken = genAccessToken(tokenData);
-                        res.send({ data: accessToken, msg: 'Login success!' });
+                        res.send({
+                            data: {
+                                accessToken: accessToken,
+                                userData: dataFiltered,
+                            },
+                            msg: 'Login success!',
+                        });
                     }
                 }
             }
         }
     );
-};
-
-export const test = async (req: Request, res: Response) => {
-    res.send({ msg: 'For test!' });
 };
 
 // module.exports = { register, authClient };

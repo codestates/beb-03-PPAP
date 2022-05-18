@@ -131,15 +131,23 @@ export const getEntOrDepStamp = async (entOrdep: any, countryCode: any) => {
   }
 };
 
-// 도장 발행 함수
+// 도장 IPFS 발행 함수
 export const makeStamp = async (
   entOrdep: any,
   country_code: any,
   country_img_url: any
 ) => {
+  let ent_or_dep = "NO DATA";
+  if (entOrdep === "1") {
+    ent_or_dep = "entrance";
+  } else if (entOrdep === "2") {
+    ent_or_dep = "departure";
+  } else {
+    return null;
+  }
   const metaData = {
     timeStamp: new Date(),
-    Immigration: entOrdep,
+    Immigration: ent_or_dep,
     countryCode: country_code,
     countryImg: country_img_url,
   };
@@ -179,7 +187,8 @@ export const updateStamp = async (
   passport_id: any,
   stamp_uri: any,
   country_code: any,
-  stamp_expired_date: any
+  stamp_expired_date: any,
+  ent_or_dep: any
 ) => {
   try {
     return new Promise((resolve, reject) => {
@@ -188,6 +197,7 @@ export const updateStamp = async (
         stamp_uri,
         country_code,
         stamp_expired_date,
+        ent_or_dep,
         (err: any, data: any) => {
           if (err) {
             // error handling code goes here

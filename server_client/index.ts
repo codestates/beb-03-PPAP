@@ -1,27 +1,27 @@
 import express from 'express';
 const cors = require('cors');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
+// const session = require('express-session');
+// const FileStore = require('session-file-store')(session);
 const { clientRoute } = require('./routes/clientRoute.js');
 
 const app = express();
 
 const port = 4001;
 
-const corsOptions = { origin: `http://localhost:${port}` };
+const corsOptions = { origin: `http://localhost:3000` };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-    session({
-        secret: 'asefwaefawerfewrg',
-        resave: false,
-        saveUninitialized: true,
-        store: new FileStore(),
-    })
-);
+// app.use(
+//     session({
+//         secret: 'asefwaefawerfewrg',
+//         resave: false,
+//         saveUninitialized: true,
+//         store: new FileStore(),
+//     })
+// );
 
 app.use('/clientAuth', clientRoute);
 

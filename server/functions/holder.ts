@@ -22,7 +22,7 @@ export const getOnlyPassport = async (clientInfo: any) => {
         if (tempData.length === 0) {
             // no data in passport DB
             return {
-                statusCode: 401,
+                statusCode: 400,
                 data: null,
                 msg: `You don't have passport yet. Submit passport request first.`,
             };
@@ -32,9 +32,9 @@ export const getOnlyPassport = async (clientInfo: any) => {
             msg = 'your passport request is not approved yet.';
             statusCode = 401;
         } else if (tempData[0].success_yn === '2') {
-            // submitted request is not approved yet
+            // submitted request is rejected
             msg = 'your passport request is rejected';
-            statusCode = 401;
+            statusCode = 403;
         } else if (tempData[0].success_yn === '1') {
             realData = tempData;
         }

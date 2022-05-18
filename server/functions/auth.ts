@@ -12,61 +12,68 @@ export const auth = async (authorization: any) => {
     try {
         const token = authorization;
         // decode data on access token
-        const tokenData = await jwt.verify(token, accessTokenSecret);
-        if (!tokenData) {
-            return null;
-        }
-        if (tokenData.phone_num) {
-            // client authentication sequence
-            const userPhone = tokenData.phone_num;
-            return new Promise((resolve, reject) => {
-                query.getUser(
-                    'GOVERN_USER_CLIENT',
-                    'phone_num',
-                    userPhone,
-                    (err: any, data: any) => {
-                        if (err) {
-                            // error handling code goes here
-                            console.log('ERROR : ', err);
-                        } else {
-                            if (data) {
-                                const transferObj: any = new Object();
-                                transferObj.did = tokenData.did;
-                                transferObj.client_id = data[0].client_id;
-                                transferObj.country_code = data[0].country_code;
-                                resolve(transferObj);
-                            }
-                        }
-                    }
-                );
-            });
-        } else {
-            // 관리자 인증 로직
-            if (tokenData.did) {
-                // did로 관리자 검색
-                const adminDID = tokenData.did;
-                console.log('=======', adminDID);
+        try {
+            const tokenData = await jwt.verify(token, accessTokenSecret);
+            if (tokenData.phone_num) {
+                // client authentication sequence
+                const userPhone = tokenData.phone_num;
                 return new Promise((resolve, reject) => {
                     query.getUser(
-                        'GOVERN_USER_ADMIN',
-                        'did',
-                        adminDID,
+                        'GOVERN_USER_CLIENT',
+                        'phone_num',
+                        userPhone,
                         (err: any, data: any) => {
                             if (err) {
                                 // error handling code goes here
                                 console.log('ERROR : ', err);
                             } else {
                                 if (data) {
-                                    resolve(data[0]);
+                                    const transferObj: any = new Object();
+                                    transferObj.did = tokenData.did;
+                                    transferObj.client_id = data[0].client_id;
+                                    transferObj.country_code =
+                                        data[0].country_code;
+                                    resolve(transferObj);
                                 }
                             }
                         }
                     );
                 });
+            } else {
+                // 관리자 인증 로직
+                if (tokenData.did) {
+                    // did로 관리자 검색
+                    const adminDID = tokenData.did;
+                    console.log('=======', adminDID);
+                    return new Promise((resolve, reject) => {
+                        query.getUser(
+                            'GOVERN_USER_ADMIN',
+                            'did',
+                            adminDID,
+                            (err: any, data: any) => {
+                                if (err) {
+                                    // error handling code goes here
+                                    reject(err);
+                                    console.log('ERROR : ', err);
+                                } else {
+                                    if (data) {
+                                        resolve(data[0]);
+                                    }
+                                }
+                            }
+                        );
+                    });
+                }
             }
+        } catch (e) {
+            // catch invalid token error
+            console.log(e);
+            return e;
         }
     } catch (e) {
+        // catch no token error
         console.log(e);
+        return e;
     }
 };
 
