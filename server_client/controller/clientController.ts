@@ -60,7 +60,7 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const loginData = req.body;
-  console.log(loginData);
+
   await query.getUser(
     "user_name",
     loginData.user_name,
@@ -70,7 +70,6 @@ export const login = async (req: Request, res: Response) => {
         console.log("ERROR : ", err);
       } else {
         if (data.length === 0) {
-          console.log(data);
           res.send({
             data: null,
             msg: "Wrong username or no data exists!",
@@ -103,17 +102,15 @@ export const login = async (req: Request, res: Response) => {
             // req.session.did = dataFiltered.did;
             // req.session.phone_num = dataFiltered.phone_num;
 
-                        const accessToken = genAccessToken(tokenData);
-                        res.send({
-                            data: {
-                                accessToken: accessToken,
-                                userData: dataFiltered,
-                            },
-                            msg: 'Login success!',
-                        });
-                    }
-                }
-            }
+            const accessToken = genAccessToken(tokenData);
+            res.send({
+              data: {
+                accessToken: accessToken,
+                userData: dataFiltered,
+              },
+              msg: "Login success!",
+            });
+          }
         }
       }
     }
