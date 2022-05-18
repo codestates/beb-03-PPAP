@@ -187,6 +187,17 @@ export const verifyPassport = async (req: Request, res: Response) => {
     const { did, vpJWT } = req.body; // 질문 : did가 여권 Db에 있는지 검사해야하나?
     if (!did || !vpJWT)
       res.status(400).send({ message: "Please check your request " });
+    try {
+      const holderFinding: any = await findHolderDid(did);
+      console.log(holderFinding);
+      if (!holderFinding) res.status(400).send({ message: "Invalid DID" });
+      else {
+        // holder가 있어야지 아래 코드들이 동작하도록 재구성
+      }
+    } catch (e) {
+      res.status(400).send({ ERROR: e });
+    }
+
     const providerConfig = {
       name: "ganache",
       rpcUrl: "http://localhost:7545",
