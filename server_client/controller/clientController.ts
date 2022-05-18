@@ -103,11 +103,6 @@ export const login = async (req: Request, res: Response) => {
             // req.session.did = dataFiltered.did;
             // req.session.phone_num = dataFiltered.phone_num;
 
-<<<<<<< HEAD
-            const accessToken = genAccessToken(tokenData);
-            res.send({ data: accessToken, msg: "Login success!" });
-          }
-=======
                         const accessToken = genAccessToken(tokenData);
                         res.send({
                             data: {
@@ -119,41 +114,10 @@ export const login = async (req: Request, res: Response) => {
                     }
                 }
             }
->>>>>>> fe99a03e272ef0483cee88f102f44fae7fbca7ff
         }
       }
     }
   );
 };
 
-<<<<<<< HEAD
-export const getUserInfo = async (req: Request, res: Response) => {
-  // JWT token from authorization header
-  const authorization = req.headers["authorization"];
-  const tokenData = await jwt.verify(authorization, accessTokenSecret);
-  if (!tokenData) {
-    return res.status(401).send({ data: null, msg: "Invalid token" });
-  }
-  // specify user using user data in DB
-  await query.getUser("did", tokenData.did, (err: any, data: any) => {
-    if (err) {
-      // error handling code goes her
-      console.log("ERROR : ", err);
-    } else {
-      if (data.length === 0) {
-        return res.status(400).send({ data: null, msg: "no data matched" });
-      } else {
-        const tempObj: any = Object.assign(data[0]);
-        delete tempObj.password;
-        return res.status(200).send({
-          data: tempObj,
-          msg: "get user information success",
-        });
-      }
-    }
-  });
-};
-
-=======
->>>>>>> fe99a03e272ef0483cee88f102f44fae7fbca7ff
 // module.exports = { register, authClient };
