@@ -9,9 +9,15 @@ const express = require("express");
 const cors = require("cors");
 // const session = require('express-session');
 // const FileStore = require('session-file-store')(session);
+<<<<<<< HEAD
 const { adminRoute } = require("./routes/adminRoute");
 const { clientRoute } = require("./routes/clientRoute");
 import createIssuerDID from "./functions/createIssuerDID";
+=======
+const { adminRoute } = require('./routes/adminRoute');
+const { holderRoute } = require('./routes/holderRoute');
+import createIssuerDID from './functions/createIssuerDID';
+>>>>>>> fe99a03e272ef0483cee88f102f44fae7fbca7ff
 
 const app = express();
 
@@ -42,8 +48,13 @@ app.use(express.urlencoded({ extended: true }));
 //     })
 // );
 
+<<<<<<< HEAD
 app.use("/admin", adminRoute);
 app.use("/client", clientRoute);
+=======
+app.use('/admin', adminRoute);
+app.use('/holder', holderRoute);
+>>>>>>> fe99a03e272ef0483cee88f102f44fae7fbca7ff
 
 app.listen(port, () => {
   console.log(`listening on port ${port}...`);

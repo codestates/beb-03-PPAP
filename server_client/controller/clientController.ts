@@ -103,15 +103,30 @@ export const login = async (req: Request, res: Response) => {
             // req.session.did = dataFiltered.did;
             // req.session.phone_num = dataFiltered.phone_num;
 
+<<<<<<< HEAD
             const accessToken = genAccessToken(tokenData);
             res.send({ data: accessToken, msg: "Login success!" });
           }
+=======
+                        const accessToken = genAccessToken(tokenData);
+                        res.send({
+                            data: {
+                                accessToken: accessToken,
+                                userData: dataFiltered,
+                            },
+                            msg: 'Login success!',
+                        });
+                    }
+                }
+            }
+>>>>>>> fe99a03e272ef0483cee88f102f44fae7fbca7ff
         }
       }
     }
   );
 };
 
+<<<<<<< HEAD
 export const getUserInfo = async (req: Request, res: Response) => {
   // JWT token from authorization header
   const authorization = req.headers["authorization"];
@@ -139,4 +154,6 @@ export const getUserInfo = async (req: Request, res: Response) => {
   });
 };
 
+=======
+>>>>>>> fe99a03e272ef0483cee88f102f44fae7fbca7ff
 // module.exports = { register, authClient };
