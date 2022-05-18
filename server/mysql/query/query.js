@@ -21,7 +21,7 @@ module.exports.getTargetData = async function getTargetData(
 };
 
 // query using multiple condition
-module.exports.getUserMultiCond = async function getUserMultiCond(
+module.exports.getMultiCondData = async function getMultiCondData(
     tableFlag,
     findCond,
     callback

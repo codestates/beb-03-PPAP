@@ -13,6 +13,7 @@ export const auth = async (authorization: any) => {
     const token = authorization;
     // decode data on access token
     try {
+<<<<<<< Updated upstream
       const tokenData = await jwt.verify(token, accessTokenSecret);
       if (tokenData.phone_num) {
         // client authentication sequence
@@ -33,6 +34,61 @@ export const auth = async (authorization: any) => {
                   transferObj.client_id = data[0].client_id;
                   transferObj.country_code = data[0].country_code;
                   resolve(transferObj);
+=======
+        const token = authorization;
+        // decode data on access token
+        try {
+            const tokenData = await jwt.verify(token, accessTokenSecret);
+            if (tokenData.phone_num) {
+                // client authentication sequence
+                const userPhone = tokenData.phone_num;
+                return new Promise((resolve, reject) => {
+                    query.getTargetData(
+                        'GOVERN_USER_CLIENT',
+                        'phone_num',
+                        userPhone,
+                        (err: any, data: any) => {
+                            if (err) {
+                                // error handling code goes here
+                                console.log('ERROR : ', err);
+                            } else {
+                                if (data) {
+                                    const transferObj: any = new Object();
+                                    transferObj.did = tokenData.did;
+                                    transferObj.client_id = data[0].client_id;
+                                    transferObj.country_code =
+                                        data[0].country_code;
+                                    resolve(transferObj);
+                                }
+                            }
+                        }
+                    );
+                });
+            } else {
+                // 관리자 인증 로직
+                if (tokenData.did) {
+                    // did로 관리자 검색
+                    const adminDID = tokenData.did;
+                    console.log('=======', adminDID);
+                    return new Promise((resolve, reject) => {
+                        query.getTargetData(
+                            'GOVERN_USER_ADMIN',
+                            'did',
+                            adminDID,
+                            (err: any, data: any) => {
+                                if (err) {
+                                    // error handling code goes here
+                                    reject(err);
+                                    console.log('ERROR : ', err);
+                                } else {
+                                    if (data) {
+                                        resolve(data[0]);
+                                    }
+                                }
+                            }
+                        );
+                    });
+>>>>>>> Stashed changes
                 }
               }
             }
@@ -78,6 +134,7 @@ export const auth = async (authorization: any) => {
 
 // password로 db에서 관리자 찾아주는 함수
 export const getAdminDid = async (id: any, password: any) => {
+<<<<<<< Updated upstream
   try {
     return new Promise((resolve, reject) => {
       query.getTargetData(
@@ -103,6 +160,39 @@ export const getAdminDid = async (id: any, password: any) => {
                     userId: data[0].userId,
                     password: null,
                   });
+=======
+    try {
+        return new Promise((resolve, reject) => {
+            query.getTargetData(
+                'GOVERN_USER_ADMIN',
+                'user_id',
+                id,
+                (err: any, data: any) => {
+                    if (err) {
+                        // error handling code goes here
+                        console.log('ERROR : ', err);
+                    } else {
+                        if (data.length === 0) {
+                            resolve({
+                                userId: null,
+                                password: null,
+                            });
+                        } else {
+                            bcrypt
+                                .compare(password, data[0].password)
+                                .then((res: any) => {
+                                    if (res) {
+                                        resolve(data[0]);
+                                    } else {
+                                        resolve({
+                                            userId: data[0].userId,
+                                            password: null,
+                                        });
+                                    }
+                                });
+                        }
+                    }
+>>>>>>> Stashed changes
                 }
               });
             }
