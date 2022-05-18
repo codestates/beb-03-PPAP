@@ -3,5 +3,5 @@ export const theme = {
   gold: "#DCBE78",
   darkgray: "#3C3C3B",
   lightgray: "#888888",
-  lightBG: "#FFFFFF",
+  background: "#FFFFFF",
 };

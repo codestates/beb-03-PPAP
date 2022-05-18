@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { Login, Signup } from "../screens";
 import { createStackNavigator } from "@react-navigation/stack";
+import PassportStack from "./PassportStack";
 
 const Stack = createStackNavigator();
 

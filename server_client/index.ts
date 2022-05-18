@@ -1,14 +1,18 @@
-import express from 'express';
-const cors = require('cors');
+import express from "express";
+const cors = require("cors");
 // const session = require('express-session');
 // const FileStore = require('session-file-store')(session);
-const { clientRoute } = require('./routes/clientRoute.js');
+const { clientRoute } = require("./routes/clientRoute.js");
 
 const app = express();
 
 const port = 4001;
 
-const corsOptions = { origin: `http://localhost:${port}` };
+const corsOptions = {
+  origin: ["exp://q6-xk2.ressom.holder-client.exp.direct:80"],
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
+};
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -23,8 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 //     })
 // );
 
-app.use('/clientAuth', clientRoute);
+app.use("/clientAuth", clientRoute);
 
 app.listen(port, () => {
-    console.log(`listening on port ${port}...`);
+  console.log(`listening on port ${port}...`);
 });

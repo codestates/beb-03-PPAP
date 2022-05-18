@@ -2,21 +2,22 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
 
-const Container = styled.View`
-  flex: 1;
-  justify-content: center;
+const Container = styled.Pressable`
   align-items: center;
-  background-color: #fff;
+  width: 70%;
+  padding: 10px;
 `;
 
-const PassportDetail = ({ navigation }) => {
+const Title = styled.Text``;
+
+const SubButton = ({ title, onPress }) => {
   return (
-    <Container>
-      <Text>Passport Detail</Text>
+    <Container onPress={onPress}>
+      <Title>{title}</Title>
     </Container>
   );
 };
 
 const styles = StyleSheet.create({});
 
-export default PassportDetail;
+export default SubButton;

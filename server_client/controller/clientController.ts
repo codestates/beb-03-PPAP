@@ -1,145 +1,142 @@
-import { Request, Response } from 'express';
-const query = require('../mysql/query/query');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const { hashRound, accessTokenSecret } = require('../config');
-import { EthrDID } from 'ethr-did';
-import { ethers } from 'ethers';
+import { Request, Response } from "express";
+const query = require("../mysql/query/query");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { hashRound, accessTokenSecret } = require("../config");
+import { EthrDID } from "ethr-did";
+import { ethers } from "ethers";
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
 
-const didContractAdd = '0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca';
-const rpcUrl = 'http://localhost:7545';
+const didContractAdd = "0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca";
+const rpcUrl = "http://localhost:7545";
 var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 var contractAddress = didContractAdd; //local
 
 const passHash = async (pass: String) => {
-    const salt = await bcrypt.genSalt(Number(hashRound));
-    const hashedPass = await bcrypt.hash(pass, salt);
-    return hashedPass;
+  const salt = await bcrypt.genSalt(Number(hashRound));
+  const hashedPass = await bcrypt.hash(pass, salt);
+  return hashedPass;
 };
 
 const genAccessToken = (data: any) => {
-    return jwt.sign(data, accessTokenSecret, {
-        expiresIn: '1d',
-    });
+  return jwt.sign(data, accessTokenSecret, {
+    expiresIn: "1d",
+  });
 };
 
 export const register = async (req: Request, res: Response) => {
-    const userData = req.body;
+  const userData = req.body;
 
-    const keypair = EthrDID.createKeyPair();
-    const holder = new EthrDID({
-        provider,
-        identifier: keypair.identifier,
-        privateKey: keypair.privateKey,
-        rpcUrl,
-        chainNameOrId: 'ganache',
-        registry: contractAddress,
-    });
-    userData.did = holder.did;
+  const keypair = EthrDID.createKeyPair();
+  const holder = new EthrDID({
+    provider,
+    identifier: keypair.identifier,
+    privateKey: keypair.privateKey,
+    rpcUrl,
+    chainNameOrId: "ganache",
+    registry: contractAddress,
+  });
+  userData.did = holder.did;
 
-    const hashed = await passHash(userData.password);
-    userData.password = hashed;
+  const hashed = await passHash(userData.password);
+  userData.password = hashed;
 
-    await query.createUser(userData, (err: any, data: any) => {
-        if (err) {
-            // error handling code goes here
-            console.log('ERROR : ', err);
-        } else {
-            if (data) {
-                res.send({
-                    data: null,
-                    msg: 'Your data successfully registered!',
-                });
-            } else {
-                res.send({ data: null, msg: 'Your data already exists!' });
-            }
-        }
-    });
+  await query.createUser(userData, (err: any, data: any) => {
+    if (err) {
+      // error handling code goes here
+      console.log("ERROR : ", err);
+    } else {
+      if (data) {
+        res.send({
+          data: null,
+          msg: "Your data successfully registered!",
+        });
+      } else {
+        res.send({ data: null, msg: "Your data already exists!" });
+      }
+    }
+  });
 };
 
 export const login = async (req: Request, res: Response) => {
-    const loginData = req.body;
+  const loginData = req.body;
+  console.log(loginData);
+  await query.getUser(
+    "user_name",
+    loginData.user_name,
+    async (err: any, data: any) => {
+      if (err) {
+        // error handling code goes here
+        console.log("ERROR : ", err);
+      } else {
+        if (data.length === 0) {
+          console.log(data);
+          res.send({
+            data: null,
+            msg: "Wrong username or no data exists!",
+          });
+        } else {
+          const promises = await data.map(async (elem: any) => {
+            const compareBoolean = await bcrypt.compare(
+              loginData.password,
+              elem.password
+            );
+            return compareBoolean;
+          });
+          const compareBoolArr = await Promise.all(promises);
+          const dataFiltered = data.filter((elem: any, idx: number) => {
+            return compareBoolArr[idx];
+          })[0];
+          if (!dataFiltered) {
+            res.status(401).send({
+              data: null,
+              msg: "Wrong password!",
+            });
+          } else {
+            const tokenData = {
+              did: dataFiltered.did,
+              phone_num: dataFiltered.phone_num,
+            };
 
-    await query.getUser(
-        'user_name',
-        loginData.user_name,
-        async (err: any, data: any) => {
-            if (err) {
-                // error handling code goes here
-                console.log('ERROR : ', err);
-            } else {
-                if (data.length === 0) {
-                    res.send({
-                        data: null,
-                        msg: 'Wrong username or no data exists!',
-                    });
-                } else {
-                    const promises = await data.map(async (elem: any) => {
-                        const compareBoolean = await bcrypt.compare(
-                            loginData.password,
-                            elem.password
-                        );
-                        return compareBoolean;
-                    });
-                    const compareBoolArr = await Promise.all(promises);
-                    const dataFiltered = data.filter(
-                        (elem: any, idx: number) => {
-                            return compareBoolArr[idx];
-                        }
-                    )[0];
-                    if (!dataFiltered) {
-                        res.status(401).send({
-                            data: null,
-                            msg: 'Wrong password!',
-                        });
-                    } else {
-                        const tokenData = {
-                            did: dataFiltered.did,
-                            phone_num: dataFiltered.phone_num,
-                        };
+            // req.session.user_name = dataFiltered.user_name;
+            // req.session.user_birth = dataFiltered.user_birth;
+            // req.session.did = dataFiltered.did;
+            // req.session.phone_num = dataFiltered.phone_num;
 
-                        // req.session.user_name = dataFiltered.user_name;
-                        // req.session.user_birth = dataFiltered.user_birth;
-                        // req.session.did = dataFiltered.did;
-                        // req.session.phone_num = dataFiltered.phone_num;
-
-                        const accessToken = genAccessToken(tokenData);
-                        res.send({ data: accessToken, msg: 'Login success!' });
-                    }
-                }
-            }
+            const accessToken = genAccessToken(tokenData);
+            res.send({ data: accessToken, msg: "Login success!" });
+          }
         }
-    );
+      }
+    }
+  );
 };
 
 export const getUserInfo = async (req: Request, res: Response) => {
-    // JWT token from authorization header
-    const authorization = req.headers['authorization'];
-    const tokenData = await jwt.verify(authorization, accessTokenSecret);
-    if (!tokenData) {
-        return res.status(401).send({ data: null, msg: 'Invalid token' });
+  // JWT token from authorization header
+  const authorization = req.headers["authorization"];
+  const tokenData = await jwt.verify(authorization, accessTokenSecret);
+  if (!tokenData) {
+    return res.status(401).send({ data: null, msg: "Invalid token" });
+  }
+  // specify user using user data in DB
+  await query.getUser("did", tokenData.did, (err: any, data: any) => {
+    if (err) {
+      // error handling code goes her
+      console.log("ERROR : ", err);
+    } else {
+      if (data.length === 0) {
+        return res.status(400).send({ data: null, msg: "no data matched" });
+      } else {
+        const tempObj: any = Object.assign(data[0]);
+        delete tempObj.password;
+        return res.status(200).send({
+          data: tempObj,
+          msg: "get user information success",
+        });
+      }
     }
-    // specify user using user data in DB
-    await query.getUser('did', tokenData.did, (err: any, data: any) => {
-        if (err) {
-            // error handling code goes her
-            console.log('ERROR : ', err);
-        } else {
-            if (data.length === 0) {
-                return res
-                    .status(400)
-                    .send({ data: null, msg: 'no data matched' });
-            } else {
-                const tempObj: any = Object.assign(data[0]);
-                delete tempObj.password;
-                return res.status(200).send({
-                    data: tempObj,
-                    msg: 'get user information success',
-                });
-            }
-        }
-    });
+  });
 };
 
 // module.exports = { register, authClient };

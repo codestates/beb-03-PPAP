@@ -7,10 +7,15 @@ import { theme } from "./theme";
 import { ThemeProvider } from "styled-components/native";
 import Navigation from "./navigations";
 import styled from "styled-components/native";
+import { createStore } from "redux";
+import rootReducer from "./modules";
+import { Provider } from "react-redux";
 
 const Container = styled.View`
   flex: 1;
 `;
+
+const store = createStore(rootReducer);
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -42,10 +47,12 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container onLayout={onLayoutRootView}>
-        <Navigation />
-      </Container>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Container onLayout={onLayoutRootView}>
+          <Navigation />
+        </Container>
+      </ThemeProvider>
+    </Provider>
   );
 }
