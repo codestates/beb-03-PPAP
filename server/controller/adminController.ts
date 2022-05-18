@@ -19,7 +19,6 @@ import {
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
 import { getAdminDid } from "../functions/auth";
-import { id } from "ethers/lib/utils";
 
 // 관리자 로그인
 export const adminLogin = async (req: Request, res: Response) => {
