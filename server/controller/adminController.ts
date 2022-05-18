@@ -207,6 +207,11 @@ export const verifyPassport = async (req: Request, res: Response) => {
         // vp서명자가 홀더일 때만 vc검증과정 진행
         // vc검증시작
         const vcArr = verifiedVP.payload.vp.verifiableCredential; // vc어레이추출
+        let VClist = {
+          passport_info: null,
+          visa: null,
+          stamp_list: null,
+        };
         console.log(vcArr);
         for (let i = 0; i < vcArr.length; i++) {
           let verifiedVC = await verifyCredential(vcArr[i], didResolver);
@@ -222,25 +227,33 @@ export const verifyPassport = async (req: Request, res: Response) => {
           }
           // TODO
           // 여권, 비자, 스탬프 정보 client로 돌려주기
-          const passport_info =
-            verifiedVC.verifiableCredential.credentialSubject.passportInfo;
-          // visa_list : 어드민 국가 -> 최신날짜기준1개만 검사
-          const visa_list =
-            verifiedVC.verifiableCredential.credentialSubject.visaList;
-          const stamp_list =
-            verifiedVC.verifiableCredential.credentialSubject.stampList;
-          console.log(`###PassportInfo : ${passport_info}`);
-          console.log(`###visaList : ${visa_list}`);
-          console.log(`###stampList : ${stamp_list}`);
-          res.status(200).send({
-            passport_info,
-            visa_list,
-            stamp_list,
-            message: "success",
-          });
+          // 1. passportInfo + stampLoist
+          if (verifiedVC.verifiableCredential.credentialSubject.passportInfo) {
+            const passport_info =
+              verifiedVC.verifiableCredential.credentialSubject.passportInfo;
+            const stamp_list =
+              verifiedVC.verifiableCredential.credentialSubject.stampList;
+            VClist.passport_info = passport_info;
+            // stamp는 없을수도 있으니까 예외처리
+            if (stamp_list) VClist.stamp_list = stamp_list;
+          }
+          // 2. visaList
+          else {
+            // visa_list : 어드민 국가 -> 최신날짜기준1개만 검사// 애초에 1개만 옴
+            const visa = verifiedVC.verifiableCredential.credentialSubject.visa;
+            VClist.visa = visa;
+          }
+
+          console.log(`###PassportInfo : ${VClist.passport_info}`);
+          console.log(`###visaList : ${VClist.visa}`);
+          console.log(`###stampList : ${VClist.stamp_list}`);
         }
         // 반복문 종료 후 stamp발행 실행
         // 다른 라우터로 분리
+        res.status(200).send({
+          VClist,
+          message: "success",
+        });
       } else {
         res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
       }
