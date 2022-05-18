@@ -92,6 +92,7 @@ export const getPassport = async (req: Request, res: Response) => {
           res.status(400).send(err);
         }
         if (data.insertId) {
+<<<<<<< Updated upstream
           // no request -> submit new request to DB
           query.getUser(
             "GOVERN_FA_PASSPORT",
@@ -102,6 +103,39 @@ export const getPassport = async (req: Request, res: Response) => {
                 requestedData: data[0],
                 msg: "Your request is sucessfully submitted",
               });
+=======
+            // no request -> submit new request to DB
+            query.getUser(
+                'GOVERN_FA_PASSPORT',
+                'client_id',
+                clientInfo.client_id,
+                (err: any, data: any) => {
+                    res.status(200).send({
+                        requestedData: data[0],
+                        msg: 'Your request is sucessfully submitted',
+                    });
+                }
+            );
+        } else {
+            if (data.success_yn === '0') {
+                // already exist request
+                res.status(401).send({
+                    data: null,
+                    msg: 'Your request is already transfered and not approved yet',
+                });
+            } else if (data.success_yn === '1') {
+                // already exist passport
+                res.status(401).send({
+                    data: null,
+                    msg: 'You already have passport',
+                });
+            } else if (data.success_yn === '2') {
+                // rejected passport
+                res.status(401).send({
+                    data: null,
+                    msg: 'Your request is rejected',
+                });
+>>>>>>> Stashed changes
             }
           );
         } else {
@@ -212,6 +246,7 @@ export const requestVisa = async (req: Request, res: Response) => {
   }
   clientInfo.passport_id = passData.data[0].passport_id;
 
+<<<<<<< Updated upstream
   // find visa type
   const condOption = {
     visa_purpose: visa_purpose,
@@ -228,6 +263,27 @@ export const requestVisa = async (req: Request, res: Response) => {
             data: null,
             msg: "No available visa for your request",
           });
+=======
+    // submit request for issuing visa
+    await query.requestVisaForm(holderInfo, (err: any, data: any) => {
+        if (err) {
+            console.log('ERROR : ', err);
+            res.status(400).send(err);
+        }
+        console.log(data);
+        if (data.insertId) {
+            // no request -> submit new request to DB
+            res.status(200).send({
+                data: null,
+                msg: 'Your request is sucessfully submitted',
+            });
+        } else {
+            // already exist request
+            res.status(401).send({
+                data: null,
+                msg: 'Your request is already transfered',
+            });
+>>>>>>> Stashed changes
         }
         resolve(data);
       }
