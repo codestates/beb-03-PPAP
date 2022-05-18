@@ -7,7 +7,7 @@ module.exports.getAllData = async function getAllData(tableFlag, callback) {
     });
 };
 
-module.exports.getUser = async function getUser(
+module.exports.getTargetData = async function getTargetData(
     tableFlag,
     findFlag,
     data,
@@ -169,7 +169,7 @@ module.exports.requestPassForm = async function requestPassForm(
     callback
 ) {
     // find user using id(clientId)
-    this.getUser(
+    this.getTargetData(
         'GOVERN_FA_PASSPORT',
         'client_id',
         reqForm.client_id,
@@ -222,7 +222,7 @@ module.exports.requestVisaForm = async function requestVisaForm(
                     );
                 } else {
                     // request already exists
-                    callback(null, null);
+                    callback(null, data[0]);
                 }
             }
         }
