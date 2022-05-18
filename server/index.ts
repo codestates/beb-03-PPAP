@@ -10,7 +10,7 @@ const cors = require('cors');
 // const session = require('express-session');
 // const FileStore = require('session-file-store')(session);
 const { adminRoute } = require('./routes/adminRoute');
-const { holderRoute } = require('./routes/clientRoute');
+const { holderRoute } = require('./routes/holderRoute');
 import createIssuerDID from './functions/createIssuerDID';
 
 const app = express();

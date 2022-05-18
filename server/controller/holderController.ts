@@ -4,7 +4,7 @@ import {
     JwtCredentialPayload,
     createVerifiableCredentialJwt,
 } from 'did-jwt-vc';
-import { getOnlyPassport } from '../functions/client';
+import { getOnlyPassport } from '../functions/holder';
 import { auth } from '../functions/auth';
 import createIssuerDID from '../functions/createIssuerDID';
 
@@ -15,12 +15,14 @@ const clientAuth = async (authorization: any) => {
 
 export const requestPassport = async (req: Request, res: Response) => {
     const { photo_uri } = req.body;
+
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
     // specify user using user data in DB
     const clientInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
+    // case when token is not valid
     if (clientInfo.name == 'JsonWebTokenError') {
         return res.status(400).send({ data: null, msg: 'invaild token' });
     }
@@ -30,22 +32,23 @@ export const requestPassport = async (req: Request, res: Response) => {
     // submit request for issuing passport
     await query.requestPassForm(clientInfo, (err: any, data: any) => {
         if (err) {
-            console.log(err);
+            console.log('ERROR : ', err);
             res.status(400).send(err);
         }
         if (data === '0') {
             // already exist request
-            // request form data would be returned?
             res.status(401).send({
                 data: null,
                 msg: 'Your request is already transfered',
             });
         } else if (data === '1') {
+            // already exist passport
             res.status(401).send({
                 data: null,
                 msg: 'You already have passport',
             });
         } else if (data === '2') {
+            // rejected passport
             res.status(401).send({
                 data: null,
                 msg: 'Your request is rejected',
@@ -64,23 +67,27 @@ export const getPassport = async (req: Request, res: Response) => {
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
     // specify user using user data in DB
-    const clientInfo: any = await new Promise((resolve) => {
+    const holderInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
-    if (clientInfo.name == 'JsonWebTokenError') {
+    // case when token is not valid
+    if (holderInfo.name == 'JsonWebTokenError') {
         return res.status(400).send({ data: null, msg: 'invaild token' });
     }
 
     // recall passport
-    const passData = await getOnlyPassport(clientInfo);
+    const passData = await getOnlyPassport(holderInfo);
     if (passData.statusCode) {
         return res
             .status(passData.statusCode)
             .send({ data: null, msg: passData.msg });
     }
-    clientInfo.photo_uri = passData.data[0].photo_uri;
-    const passId = passData.data[0].passport_id;
+    // add photo on passport into holderInfo object
+    holderInfo.photo_uri = passData.data[0].photo_uri;
 
+    // specify owner of passport to get visa, stamp list
+    const passId = passData.data[0].passport_id;
+    // get visa list
     const visaList: any = await new Promise((resolve) => {
         query.getUser(
             'GOVERN_FA_VISA_SURVEY',
@@ -88,7 +95,7 @@ export const getPassport = async (req: Request, res: Response) => {
             passId,
             (err: any, data: any) => {
                 if (err) {
-                    console.log(err);
+                    console.log('ERROR : ', err);
                     return err;
                 } else {
                     resolve(data);
@@ -97,6 +104,7 @@ export const getPassport = async (req: Request, res: Response) => {
         );
     });
 
+    // get stamp list
     const stampList = await new Promise((resolve) => {
         query.getUser(
             'GOVERN_FA_STAMP',
@@ -104,7 +112,7 @@ export const getPassport = async (req: Request, res: Response) => {
             passId,
             (err: any, data: any) => {
                 if (err) {
-                    console.log(err);
+                    console.log('ERROR : ', err);
                     return err;
                 } else {
                     resolve(data);
@@ -114,27 +122,32 @@ export const getPassport = async (req: Request, res: Response) => {
     });
 
     if (visaList && stampList) {
+        // get issuer sign (not only issuer DID) to make VC
         const issuer: any = await createIssuerDID();
+
+        // vc payload which contains passport and stamp data
         const vcPassPayload: JwtCredentialPayload = {
-            sub: clientInfo.did,
+            sub: holderInfo.did,
             nbf: 1562950282,
             vc: {
                 '@context': ['https://www.w3.org/2018/credentials/v1'],
                 type: ['VerifiableCredential'],
                 credentialSubject: {
-                    passportInfo: clientInfo,
+                    passportInfo: holderInfo,
                     stampList: stampList,
                 },
             },
         };
+        // create vc as JWT token under issuer signing
         const vcPassJwt = await createVerifiableCredentialJwt(
             vcPassPayload,
             issuer
         );
 
+        // vc payload which contains visa -> to deal multiple visa
         const visaPromises = await visaList.map((elem: any, idx: number) => {
             const vcVisaPayload: JwtCredentialPayload = {
-                sub: clientInfo.did,
+                sub: holderInfo.did,
                 nbf: 1562950282,
                 vc: {
                     '@context': ['https://www.w3.org/2018/credentials/v1'],
@@ -150,6 +163,7 @@ export const getPassport = async (req: Request, res: Response) => {
             );
             return vcVisaJwtElem;
         });
+        // deal multiple promise element
         const vcVisaJwt = await Promise.all(visaPromises);
 
         res.status(200).send({
@@ -161,36 +175,40 @@ export const getPassport = async (req: Request, res: Response) => {
 
 export const requestVisa = async (req: Request, res: Response) => {
     const { visa_purpose, target_country } = req.body;
+
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
     // specify user using user data in DB
-    const clientInfo: any = await new Promise((resolve) => {
+    const holderInfo: any = await new Promise((resolve) => {
         resolve(clientAuth(authorization));
     });
-    if (clientInfo.name == 'JsonWebTokenError') {
+    // case when token is not valid
+    if (holderInfo.name == 'JsonWebTokenError') {
         return res.status(400).send({ data: null, msg: 'invaild token' });
     }
 
     // recall passport
-    const passData = await getOnlyPassport(clientInfo);
+    const passData = await getOnlyPassport(holderInfo);
     if (passData.statusCode) {
         return res
             .status(passData.statusCode)
             .send({ data: null, msg: passData.msg });
     }
-    clientInfo.passport_id = passData.data[0].passport_id;
+    // specify owner of passport
+    holderInfo.passport_id = passData.data[0].passport_id;
 
-    // find visa type
+    // option to find visa type
     const condOption = {
         visa_purpose: visa_purpose,
         country_code: target_country,
     };
-    // check requested visa is available
+    // get visa type under pre-setted option
     const visaType: any = await new Promise((resolve) => {
         query.getUserMultiCond(
             'GOVERN_FA_VISA',
             condOption,
             (err: any, data: any) => {
+                // requested visa doesn't exist
                 if (data.length === 0) {
                     return res.status(400).send({
                         data: null,
@@ -201,12 +219,13 @@ export const requestVisa = async (req: Request, res: Response) => {
             }
         );
     });
-    clientInfo.visa_id = visaType[0].visa_id;
+    // specify requested visa type
+    holderInfo.visa_id = visaType[0].visa_id;
 
-    // submit request for issuing passport
-    await query.requestVisaForm(clientInfo, (err: any, data: any) => {
+    // submit request for issuing visa
+    await query.requestVisaForm(holderInfo, (err: any, data: any) => {
         if (err) {
-            console.log(err);
+            console.log('ERROR : ', err);
             res.status(400).send(err);
         }
         if (!data) {
@@ -229,7 +248,6 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
     // specify user using user data in DB
     await query.getAllData('GOVERN_FA_VISA', (err: any, data: any) => {
         if (err) {
-            // error handling code goes her
             console.log('ERROR : ', err);
         } else {
             if (data.length === 0) {

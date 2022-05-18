@@ -13,4 +13,4 @@ holderRoute.route('/reqVisa').post(requestVisa);
 holderRoute.route('/getPass').get(getPassport);
 holderRoute.route('/getAvailVisa').get(getAvailableVisa);
 
-module.exports.clientRoute = holderRoute;
+module.exports.holderRoute = holderRoute;
