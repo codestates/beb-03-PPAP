@@ -88,10 +88,42 @@ export const getPassport = async (req: Request, res: Response) => {
       passId,
       (err: any, data: any) => {
         if (err) {
-          console.log(err);
-          return err;
+          console.log("ERROR : ", err);
+          res.status(400).send(err);
+        }
+        if (data.insertId) {
+          // no request -> submit new request to DB
+          query.getUser(
+            "GOVERN_FA_PASSPORT",
+            "client_id",
+            clientInfo.client_id,
+            (err: any, data: any) => {
+              res.status(200).send({
+                requestedData: data[0],
+                msg: "Your request is sucessfully submitted",
+              });
+            }
+          );
         } else {
-          resolve(data);
+          if (data.success_yn === "0") {
+            // already exist request
+            res.status(401).send({
+              data: null,
+              msg: "Your request is already transfered",
+            });
+          } else if (data.success_yn === "1") {
+            // already exist passport
+            res.status(401).send({
+              data: null,
+              msg: "You already have passport",
+            });
+          } else if (data.success_yn === "2") {
+            // rejected passport
+            res.status(401).send({
+              data: null,
+              msg: "Your request is rejected",
+            });
+          }
         }
       }
     );
@@ -229,7 +261,6 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
   // specify user using user data in DB
   await query.getAllData("GOVERN_FA_VISA", (err: any, data: any) => {
     if (err) {
-      // error handling code goes her
       console.log("ERROR : ", err);
     } else {
       if (data.length === 0) {
