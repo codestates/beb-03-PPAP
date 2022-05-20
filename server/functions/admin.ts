@@ -161,7 +161,7 @@ export const makeStamp = async (
 export const findHolderDid = async (holder_did: any) => {
   try {
     return new Promise((resolve, reject) => {
-      query.getPassportForStamp(holder_did, (err: any, data: any) => {
+      query.getUserByDid(holder_did, (err: any, data: any) => {
         if (err) {
           // error handling code goes here
           console.log("ERROR : ", err);

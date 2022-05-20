@@ -18,7 +18,7 @@ export const auth = async (authorization: any) => {
                 // client authentication sequence
                 const userPhone = tokenData.phone_num;
                 return new Promise((resolve, reject) => {
-                    query.getUser(
+                    query.getTargetData(
                         'GOVERN_USER_CLIENT',
                         'phone_num',
                         userPhone,
@@ -46,7 +46,7 @@ export const auth = async (authorization: any) => {
                     const adminDID = tokenData.did;
                     console.log('=======', adminDID);
                     return new Promise((resolve, reject) => {
-                        query.getUser(
+                        query.getTargetData(
                             'GOVERN_USER_ADMIN',
                             'did',
                             adminDID,
@@ -81,7 +81,7 @@ export const auth = async (authorization: any) => {
 export const getAdminDid = async (id: any, password: any) => {
     try {
         return new Promise((resolve, reject) => {
-            query.getUser(
+            query.getTargetData(
                 'GOVERN_USER_ADMIN',
                 'user_id',
                 id,
