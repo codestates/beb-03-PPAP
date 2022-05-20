@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="copyright">
         &copy; Copyright{" "}
         <strong>
-          <span>PPAP</span>
+          <span>NiceAdmin</span>
         </strong>
         . All Rights Reserved
       </div>

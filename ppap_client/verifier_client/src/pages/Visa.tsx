@@ -3,7 +3,7 @@ import Breadcrumb from "./components/Breadcrumb";
 import { useEffect } from "react";
 import VisaIssuranceList from './components/VisaIssuanceList'
 const Visa = () => {
-  const pageName = 'Visa application list';
+  const pageName = 'Visa issuance list';
   useEffect(() => {
   }, []);
 

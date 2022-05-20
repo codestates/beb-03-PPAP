@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import axios from "axios";
+import axios, {AxiosResponse} from 'axios';
 import { useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch} from "react-redux";
@@ -24,9 +24,11 @@ const Login = () => {
     const body = { id: username, password: password };
     axios
       .post(process.env.REACT_APP_SERVER_ADMIN_URL + "/admin/adminlogin", body)
-      .then((data) => data.data)
-      .then((jwtToken) => {
-        const userInfo = { username, jwtToken };
+      .then((response)=> response.data)
+      .then((data) => {
+        const jwtToken = data.data;
+        const profileUrl = data.profile_url;
+        const userInfo = { username, jwtToken, profileUrl};
         dispatch(setUser(userInfo));
         window.location.replace("/");
         navigate("/");

@@ -15,7 +15,7 @@ const Sidebar = () => {
           </Link>
         </li>
 
-        <li className="nav-heading">Issuer</li>
+        <li className="nav-heading">LIST</li>
         <li className="nav-item">
           <a
             className="nav-link collapsed"
@@ -35,7 +35,7 @@ const Sidebar = () => {
             <li>
               <Link className="nav-link " to="/passport">
                 <i className="bi bi-circle"></i>
-                <span>Passport Application list</span>
+                <span>Passport issuance list</span>
               </Link>
             </li>
           </ul>
@@ -62,7 +62,7 @@ const Sidebar = () => {
             <li>
               <Link className="nav-link" to="/visa">
                 <i className="bi bi-circle"></i>
-                <span>Visa Application List</span>
+                <span>Visa issuance list</span>
               </Link>
             </li>
           </ul>
@@ -70,7 +70,6 @@ const Sidebar = () => {
       </ul>
 
       <ul className="sidebar-nav" id="sidebar-nav3">
-        <li className="nav-heading">Verifier</li>
         <li className="nav-item">
           <a
             className="nav-link collapsed"
@@ -79,7 +78,7 @@ const Sidebar = () => {
             href="#"
           >
             <i className="bi bi-gem"></i>
-            <span>Immigration Inspection</span>
+            <span>Immigration stamp</span>
             <i className="bi bi-chevron-down ms-auto"></i>
           </a>
           <ul
@@ -88,15 +87,37 @@ const Sidebar = () => {
             data-bs-parent="#sidebar-nav"
           >
             <li>
-              <Link className="nav-link " to="/passport">
+              <Link className="nav-link " to="/stamp">
                 <i className="bi bi-circle"></i>
-                <span>Immigration</span>
+                <span>Immigration stamp list</span>
               </Link>
             </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul className="sidebar-nav" id="sidebar-nav3">
+        <li className="nav-heading">VERIFICATION</li>
+        <li className="nav-item">
+          <a
+            className="nav-link collapsed"
+            data-bs-target="#icons-nav4"
+            data-bs-toggle="collapse"
+            href="#"
+          >
+            <i className="bi bi-gem"></i>
+            <span>Immigration Control</span>
+            <i className="bi bi-chevron-down ms-auto"></i>
+          </a>
+          <ul
+            id="icons-nav4"
+            className="nav-content collapse "
+            data-bs-parent="#sidebar-nav"
+          >
             <li>
-              <Link className="nav-link " to="/passport">
+              <Link className="nav-link " to="/immigration">
                 <i className="bi bi-circle"></i>
-                <span>Inspection</span>
+                <span>Immigraion</span>
               </Link>
             </li>
           </ul>

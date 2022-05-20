@@ -4,7 +4,13 @@ import Header from "./pages/components/Header";
 import Sidebar from "./pages/components/Sidebar";
 import Passport from "./pages/Passport";
 import PassportDetail from "./pages/PassportDetail";
+import VisaDetail from "./pages/VisaDetail";
 import Visa from "./pages/Visa";
+import Stamp from "./pages/Stamp";
+import StampDetail from "./pages/StampDetail";
+
+import Immigration from "./pages/Immigration";
+
 import Mains from "./pages/Mains";
 
 import { useState, useEffect } from "react";
@@ -41,6 +47,12 @@ function App() {
         <Route path="/passport/detail/:id" element={<PassportDetail />} />
 
         <Route path="/visa" element={<Visa />} />
+        <Route path="/visa/detail/:id" element={<VisaDetail />} />
+
+        <Route path="/stamp" element={<Stamp />} />
+        <Route path="/stamp/detail/:id" element={<StampDetail />} />
+
+        <Route path="/immigration" element={<Immigration />} />
         </Routes>
         <Footer />
       </BrowserRouter>
