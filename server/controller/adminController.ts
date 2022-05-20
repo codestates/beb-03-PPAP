@@ -186,76 +186,55 @@ export const verifyPassport = async (req: Request, res: Response) => {
     const { did, vpJWT } = req.body; // 질문 : did가 여권 Db에 있는지 검사해야하나?
     if (!did || !vpJWT)
       res.status(400).send({ message: "Please check your request " });
-    try {
-      // *** user_client 테이블에서 조회하도록 변경
-      // const holderFinding: any = await findHolderDid(did);
-      // console.log(holderFinding);
-      // if (!holderFinding) res.status(400).send({ message: "Invalid DID" });
-      // else {
-      // holder가 있어야지 아래 코드들이 동작하도록 재구성
-      const providerConfig = {
-        name: "ganache",
-        rpcUrl: "http://localhost:7545",
-        registry: didContractAdd,
-      };
-      const ethrDidResolver = getResolver(providerConfig);
-      const didResolver = new Resolver(ethrDidResolver);
-      // console.log(vpJWT);
-      if (!authorization) res.status(401).send({ message: "no Auth header" });
-      const admin = await adminAuth(authorization);
-      if (issuerDid.includes(admin.did)) {
-        // issuer did 확인 후 검증 진행
-        // vp 디코딩
-        const verifiedVP = await verifyPresentation(vpJWT, didResolver);
-        console.log(verifiedVP.payload.iss);
-        if (verifiedVP.payload.iss === did) {
-          // vp서명자 === 홀더인지확인
-          // vp서명자가 홀더일 때만 vc검증과정 진행
-          // vc검증시작
-          const vcArr = verifiedVP.payload.vp.verifiableCredential; // vc어레이추출
-          let VClist = {
-            passport_info: null,
-            visa: null,
-            stamp_list: null,
-          };
-          console.log(vcArr);
-          for (let i = 0; i < vcArr.length; i++) {
-            let verifiedVC = await verifyCredential(vcArr[i], didResolver);
-            console.log("verifiedVC@@@", verifiedVC);
-            console.log(`vc발급자 : ${verifiedVC.payload.iss}`); // vc발급자는 issuer did와 같아야함
-            console.log(`여권, 비자 vc 확인, 이슈어 did 확인...`);
-            if (!issuerDid.includes(verifiedVC.payload.iss)) {
-              // issuerDID가 아닌 vc가 있으면 바로 오류 응답
-              // 어떤 vc에서 에러났는지 알려주면 좋을듯
-              res.status(400).send({
-                message: "vc 서명자가 issuer가 아닙니다.",
-              });
-            }
-            // TODO
-            // 여권, 비자, 스탬프 정보 client로 돌려주기
-            // 1. passportInfo
-            if (
-              verifiedVC.verifiableCredential.credentialSubject.passportInfo
-            ) {
-              const passport_info =
-                verifiedVC.verifiableCredential.credentialSubject.passportInfo;
-              VClist.passport_info = passport_info;
-            } else if (verifiedVC.verifiableCredential.credentialSubject.visa) {
-              const visa =
-                verifiedVC.verifiableCredential.credentialSubject.visa;
-              VClist.visa = visa;
-            } else {
-              // visa_list : 어드민 국가 -> 최신날짜기준1개만 검사// 애초에 1개만 옴
-              if (verifiedVC.verifiableCredential.credentialSubject.stampInfo) {
-                const stamp_list =
-                  verifiedVC.verifiableCredential.credentialSubject.stampInfo;
-                VClist.stamp_list = stamp_list;
-              }
-            }
-
-            console.log(`###PassportInfo : ${VClist.passport_info}`);
-            console.log(`###visaList : ${VClist.visa}`);
-            console.log(`###stampList : ${VClist.stamp_list}`);
+    const providerConfig = {
+      name: "ganache",
+      rpcUrl: "http://localhost:7545",
+      registry: didContractAdd,
+    };
+    const ethrDidResolver = getResolver(providerConfig);
+    const didResolver = new Resolver(ethrDidResolver);
+    // console.log(vpJWT);
+    if (!authorization) res.status(401).send({ message: "no Auth header" });
+    const admin = await adminAuth(authorization);
+    if (issuerDid.includes(admin.did)) {
+      // issuer did 확인 후 검증 진행
+      // vp 디코딩
+      const verifiedVP = await verifyPresentation(vpJWT, didResolver);
+      console.log(verifiedVP.payload.iss);
+      if (verifiedVP.payload.iss === did) {
+        // vp서명자 === 홀더인지확인
+        // vp서명자가 홀더일 때만 vc검증과정 진행
+        // vc검증시작
+        const vcArr = verifiedVP.payload.vp.verifiableCredential; // vc어레이추출
+        let VClist = {
+          passport_info: null,
+          visa: null,
+          stamp_list: null,
+        };
+        console.log(vcArr);
+        for (let i = 0; i < vcArr.length; i++) {
+          let verifiedVC = await verifyCredential(vcArr[i], didResolver);
+          console.log("verifiedVC@@@", verifiedVC);
+          console.log(`vc발급자 : ${verifiedVC.payload.iss}`); // vc발급자는 issuer did와 같아야함
+          console.log(`여권, 비자 vc 확인, 이슈어 did 확인...`);
+          if (!issuerDid.includes(verifiedVC.payload.iss)) {
+            // issuerDID가 아닌 vc가 있으면 바로 오류 응답
+            // 어떤 vc에서 에러났는지 알려주면 좋을듯
+            res.status(400).send({
+              message: "vc 서명자가 issuer가 아닙니다.",
+            });
+          }
+          // TODO
+          // 여권, 비자, 스탬프 정보 client로 돌려주기
+          // 1. passportInfo + stampLoist
+          if (verifiedVC.verifiableCredential.credentialSubject.passportInfo) {
+            const passport_info =
+              verifiedVC.verifiableCredential.credentialSubject.passportInfo;
+            const stamp_list =
+              verifiedVC.verifiableCredential.credentialSubject.stampList;
+            VClist.passport_info = passport_info;
+            // stamp는 없을수도 있으니까 예외처리
+            if (stamp_list) VClist.stamp_list = stamp_list;
           }
           // 반복문 종료 후 stamp발행 실행
           // 다른 라우터로 분리

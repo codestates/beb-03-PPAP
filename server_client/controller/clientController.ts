@@ -1,4 +1,3 @@
-import { updateStamp } from "./../../server/functions/admin";
 import { Request, Response } from "express";
 const query = require("../mysql/query/query");
 const jwt = require("jsonwebtoken");
@@ -6,8 +5,6 @@ const bcrypt = require("bcrypt");
 const { hashRound, accessTokenSecret } = require("../config");
 import { EthrDID } from "ethr-did";
 import { ethers } from "ethers";
-import { id } from "ethers/lib/utils";
-import { resolve } from "path/posix";
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
 
 const didContractAdd = "0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca";
@@ -118,70 +115,6 @@ export const login = async (req: Request, res: Response) => {
       }
     }
   );
-};
-
-export const storePassportVC = async (req: Request, res: Response) => {
-  const { passportVC, phoneNum } = req.body;
-  // 이미 있으면 업데이트(만료개념)
-  // 아니면 그냥 저장
-  try {
-    await query.isPassport(phoneNum, async (err: any, data: any) => {
-      if (data.length === 0) {
-        //No data
-        await query.createVC(
-          "CLIENT_STORAGE_PASSPORT_VC",
-          phoneNum,
-          passportVC,
-          (err: any, data: any) => {
-            console.log(data);
-            if (data.affectedRows === 1) {
-              res.status(200).send({ message: "Add passport VC success" });
-            } else {
-              res.status(400).send({ message: "Add passport VC fail" });
-            }
-          }
-        );
-      } else {
-        //With data
-        await query.updateVC(
-          "CLIENT_STORAGE_PASSPORT_VC",
-          phoneNum,
-          passportVC,
-          (err: any, data: any) => {
-            console.log(data);
-            if (data.affectedRows === 1) {
-              res.status(200).send({ message: "Update passport VC success" });
-            } else {
-              res.status(400).send({ message: "Update passport VC fail" });
-            }
-          }
-        );
-      }
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const storeVisaVC = async (req: Request, res: Response) => {
-  const { visaVC, phoneNum } = req.body;
-  try {
-    await query.createVC(
-      "CLIENT_STORAGE_VISA_VC",
-      phoneNum,
-      visaVC,
-      (err: any, data: any) => {
-        console.log(data);
-        if (data.affectedRows === 1) {
-          res.status(200).send({ message: "Add visa VC success" });
-        } else {
-          res.status(400).send({ message: "Add visa VC fail" });
-        }
-      }
-    );
-  } catch (e) {
-    console.log(e);
-  }
 };
 
 export const storeStampVC = async (req: Request, res: Response) => {
