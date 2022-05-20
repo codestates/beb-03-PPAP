@@ -4,9 +4,12 @@ import {
     JwtCredentialPayload,
     createVerifiableCredentialJwt,
 } from 'did-jwt-vc';
+import { Resolver } from 'did-resolver';
+import { getResolver } from 'ethr-did-resolver';
 import { getOnlyPassport } from '../functions/holder';
 import { auth } from '../functions/auth';
 import createIssuerDID from '../functions/createIssuerDID';
+const didContractAdd = '0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca';
 
 const clientAuth = async (authorization: any) => {
     let output: any = await auth(authorization);
@@ -35,6 +38,14 @@ export const requestPassport = async (req: Request, res: Response) => {
             console.log('ERROR : ', err);
             res.status(400).send(err);
         }
+        console.log(data);
+        if (!data) {
+            return res.status(400).send({
+                data: null,
+                msg: `You already have passport VC.`,
+            });
+        }
+
         if (data.insertId) {
             // no request -> submit new request to DB
             query.getTargetData(
@@ -59,20 +70,20 @@ export const requestPassport = async (req: Request, res: Response) => {
                 // already exist passport
                 res.status(401).send({
                     data: null,
-                    msg: 'You already have passport',
+                    msg: 'You already have passport. Get your passport.',
                 });
             } else if (data.success_yn === '2') {
                 // rejected passport
                 res.status(401).send({
                     data: null,
-                    msg: 'Your request is rejected',
+                    msg: 'Your request is rejected.',
                 });
             }
         }
     });
 };
 
-export const getPassport = async (req: Request, res: Response) => {
+export const issuePassVC = async (req: Request, res: Response) => {
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
     // specify user using user data in DB
@@ -97,93 +108,37 @@ export const getPassport = async (req: Request, res: Response) => {
     // specify owner of passport to get visa, stamp list
     const passId = passData.data[0].passport_id;
     // get visa list
-    const visaList: any = await new Promise((resolve) => {
-        query.getTargetData(
-            'GOVERN_FA_VISA_SURVEY',
-            'passport_id',
-            passId,
-            (err: any, data: any) => {
-                if (err) {
-                    console.log('ERROR : ', err);
-                    return err;
-                } else {
-                    resolve(data);
-                }
-            }
-        );
-    });
 
-    // get stamp list
-    const stampList = await new Promise((resolve) => {
-        query.getTargetData(
-            'GOVERN_FA_STAMP',
-            'passport_id',
-            passId,
-            (err: any, data: any) => {
-                if (err) {
-                    console.log('ERROR : ', err);
-                    return err;
-                } else {
-                    resolve(data);
-                }
-            }
-        );
-    });
+    // get issuer sign (not only issuer DID) to make VC
+    const issuer: any = await createIssuerDID();
 
-    if (visaList && stampList) {
-        // get issuer sign (not only issuer DID) to make VC
-        const issuer: any = await createIssuerDID();
-
-        // vc payload which contains passport and stamp data
-        const vcPassPayload: JwtCredentialPayload = {
-            sub: holderInfo.did,
-            nbf: 1562950282,
-            vc: {
-                '@context': ['https://www.w3.org/2018/credentials/v1'],
-                type: ['VerifiableCredential'],
-                credentialSubject: {
-                    passportInfo: holderInfo,
-                    stampList: stampList,
-                },
+    // vc payload which contains passport and stamp data
+    const vcPassPayload: JwtCredentialPayload = {
+        sub: holderInfo.did,
+        nbf: 1562950282,
+        vc: {
+            '@context': ['https://www.w3.org/2018/credentials/v1'],
+            type: ['VerifiableCredential'],
+            credentialSubject: {
+                passportInfo: holderInfo,
             },
-        };
-        // create vc as JWT token under issuer signing
-        const vcPassJwt = await createVerifiableCredentialJwt(
-            vcPassPayload,
-            issuer
-        );
+        },
+    };
+    // create vc as JWT token under issuer signing
+    console.log(issuer);
+    const vcPassJwt = await createVerifiableCredentialJwt(
+        vcPassPayload,
+        issuer
+    );
 
-        // vc payload which contains visa -> to deal multiple visa
-        const visaPromises = await visaList.map((elem: any, idx: number) => {
-            const vcVisaPayload: JwtCredentialPayload = {
-                sub: holderInfo.did,
-                nbf: 1562950282,
-                vc: {
-                    '@context': ['https://www.w3.org/2018/credentials/v1'],
-                    type: ['VerifiableCredential'],
-                    credentialSubject: {
-                        visa: elem,
-                    },
-                },
-            };
-            const vcVisaJwtElem = createVerifiableCredentialJwt(
-                vcVisaPayload,
-                issuer
-            );
-            return vcVisaJwtElem;
-        });
-        // deal multiple promise element
-        const vcVisaJwt = await Promise.all(visaPromises);
-
-        res.status(200).send({
-            data: { vcPassJwt: vcPassJwt, vcVisaJwt: vcVisaJwt },
-            msg: 'get passport information success',
-        });
-    }
+    res.status(200).send({
+        data: { vcPassJwt: vcPassJwt },
+        msg: 'get passport information success',
+    });
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-    const { visa_purpose, target_country } = req.body;
+    const { visa_purpose, target_country, vcPassJwt } = req.body;
 
     // JWT token from authorization header
     const authorization = req.headers['authorization'];
@@ -196,71 +151,81 @@ export const requestVisa = async (req: Request, res: Response) => {
         return res.status(400).send({ data: null, msg: 'invaild token' });
     }
 
-    // recall passport
-    const passData = await getOnlyPassport(holderInfo);
-    if (passData.statusCode) {
-        return res
-            .status(passData.statusCode)
-            .send({ data: null, msg: passData.msg });
-    }
-    // specify owner of passport
-    holderInfo.passport_id = passData.data[0].passport_id;
-
-    // option to find visa type
-    const condOption = {
-        visa_purpose: visa_purpose,
-        country_code: target_country,
+    const issuer: any = await createIssuerDID();
+    const providerConfig = {
+        name: 'ganache',
+        rpcUrl: 'http://localhost:7545',
+        registry: didContractAdd,
     };
-    // get visa type under pre-setted option
-    const visaType: any = await new Promise((resolve) => {
-        query.getMultiCondData(
-            'GOVERN_FA_VISA',
-            condOption,
-            (err: any, data: any) => {
-                // requested visa doesn't exist
-                if (data.length === 0) {
-                    return res.status(400).send({
-                        data: null,
-                        msg: 'No available visa for your request',
-                    });
-                }
-                resolve(data);
-            }
-        );
-    });
-    // specify requested visa type
-    holderInfo.visa_id = visaType[0].visa_id;
+    const ethrDidResolver = getResolver(providerConfig);
+    const didResolver = new Resolver(ethrDidResolver);
+    // const verifiedVP = await verifyPresentation(vpJWT, didResolver);
 
-    // submit request for issuing visa
-    await query.requestVisaForm(holderInfo, (err: any, data: any) => {
-        if (err) {
-            console.log('ERROR : ', err);
-            res.status(400).send(err);
-        }
-        if (data.insertId) {
-            const condOption = {
-                passport_id: holderInfo.passport_id,
-                visa_id: holderInfo.visa_id,
-            };
-            // no request -> submit new request to DB
-            query.getMultiCondData(
-                'GOVERN_FA_VISA_SURVEY',
-                condOption,
-                (err: any, data: any) => {
-                    res.status(200).send({
-                        requestedData: data[0],
-                        msg: 'Your request is sucessfully submitted',
-                    });
-                }
-            );
-        } else {
-            // already exist request
-            res.status(401).send({
-                data: null,
-                msg: 'Your request is already transfered',
-            });
-        }
-    });
+    // // recall passport
+    // const passData = await getOnlyPassport(holderInfo);
+    // if (passData.statusCode) {
+    //     return res
+    //         .status(passData.statusCode)
+    //         .send({ data: null, msg: passData.msg });
+    // }
+    // // specify owner of passport
+    // holderInfo.passport_id = passData.data[0].passport_id;
+
+    // // option to find visa type
+    // const condOption = {
+    //     visa_purpose: visa_purpose,
+    //     country_code: target_country,
+    // };
+    // // get visa type under pre-setted option
+    // const visaType: any = await new Promise((resolve) => {
+    //     query.getMultiCondData(
+    //         'GOVERN_FA_VISA',
+    //         condOption,
+    //         (err: any, data: any) => {
+    //             // requested visa doesn't exist
+    //             if (data.length === 0) {
+    //                 return res.status(400).send({
+    //                     data: null,
+    //                     msg: 'No available visa for your request',
+    //                 });
+    //             }
+    //             resolve(data);
+    //         }
+    //     );
+    // });
+    // // specify requested visa type
+    // holderInfo.visa_id = visaType[0].visa_id;
+
+    // // submit request for issuing visa
+    // await query.requestVisaForm(holderInfo, (err: any, data: any) => {
+    //     if (err) {
+    //         console.log('ERROR : ', err);
+    //         res.status(400).send(err);
+    //     }
+    //     if (data.insertId) {
+    //         const condOption = {
+    //             passport_id: holderInfo.passport_id,
+    //             visa_id: holderInfo.visa_id,
+    //         };
+    //         // no request -> submit new request to DB
+    //         query.getMultiCondData(
+    //             'GOVERN_FA_VISA_SURVEY',
+    //             condOption,
+    //             (err: any, data: any) => {
+    //                 res.status(200).send({
+    //                     requestedData: data[0],
+    //                     msg: 'Your request is sucessfully submitted',
+    //                 });
+    //             }
+    //         );
+    //     } else {
+    //         // already exist request
+    //         res.status(401).send({
+    //             data: null,
+    //             msg: 'Your request is already transfered',
+    //         });
+    //     }
+    // });
 };
 
 export const getAvailableVisa = async (req: Request, res: Response) => {
@@ -296,3 +261,67 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
         }
     });
 };
+
+// const visaList: any = await new Promise((resolve) => {
+//     query.getTargetData(
+//         'GOVERN_FA_VISA_SURVEY',
+//         'passport_id',
+//         passId,
+//         (err: any, data: any) => {
+//             if (err) {
+//                 console.log('ERROR : ', err);
+//                 return err;
+//             } else {
+//                 resolve(data);
+//             }
+//         }
+//     );
+// });
+
+// // get stamp list
+// const stampList = await new Promise((resolve) => {
+//     query.getTargetData(
+//         'GOVERN_FA_STAMP',
+//         'passport_id',
+//         passId,
+//         (err: any, data: any) => {
+//             if (err) {
+//                 console.log('ERROR : ', err);
+//                 return err;
+//             } else {
+//                 resolve(data);
+//             }
+//         }
+//     );
+// });
+
+// // vc payload which contains visa -> to deal multiple visa
+// const visaPromises = await visaList.map((elem: any, idx: number) => {
+//     const vcVisaPayload: JwtCredentialPayload = {
+//         sub: holderInfo.did,
+//         nbf: 1562950282,
+//         vc: {
+//             '@context': ['https://www.w3.org/2018/credentials/v1'],
+//             type: ['VerifiableCredential'],
+//             credentialSubject: {
+//                 visa: elem,
+//             },
+//         },
+//     };
+//     const vcVisaJwtElem = createVerifiableCredentialJwt(
+//         vcVisaPayload,
+//         issuer
+//     );
+//     return vcVisaJwtElem;
+// });
+// // deal multiple promise element
+// const vcVisaJwt = await Promise.all(visaPromises);
+
+export const test = async (req: Request, res: Response) => {};
+// const vpPayload: JwtPresentationPayload = {
+//   vp: {
+//     "@context": ["https://www.w3.org/2018/credentials/v1"],
+//     type: ["VerifiablePresentation"],
+//     verifiableCredential: [vcJwt],
+//   },
+// };
