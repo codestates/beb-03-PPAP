@@ -1,7 +1,12 @@
 import { getEntOrDepStamp } from "./../functions/admin";
 import { Request, Response, NextFunction } from "express";
 const { didContractAdd, issuerDid } = require("../config");
-import { verifyCredential, verifyPresentation } from "did-jwt-vc";
+import {
+  JwtCredentialPayload,
+  verifyCredential,
+  verifyPresentation,
+  createVerifiableCredentialJwt,
+} from "did-jwt-vc";
 const jwt = require("jsonwebtoken");
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
@@ -19,6 +24,7 @@ import {
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
 import { getAdminDid } from "../functions/auth";
+import createIssuerDID from "../functions/createIssuerDID";
 
 // 관리자 로그인
 export const adminLogin = async (req: Request, res: Response) => {
@@ -288,35 +294,72 @@ export const giveStamp = async (req: Request, res: Response) => {
       res.status(400).send({ message: "Check your Request Body data" });
     const admin = await adminAuth(authorization);
     if (issuerDid.includes(admin.did)) {
-      // entOrdep : 출입국정보
-      let ent_or_dep = "NO DATA";
-      if (entOrdep === "1") {
-        ent_or_dep = "ent";
-      } else if (entOrdep === "2") {
-        ent_or_dep = "dep";
-      } else {
-        res.status(400).send({ message: "invalid entOrdep" });
-      }
-      const stampurl = await makeStamp(
-        entOrdep,
-        admin.country_code,
-        CountryIpfs[admin.country_code]
-      );
-      console.log(stampurl);
-      // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
-      const holderInfo: any = await findHolderDid(did);
-      const output: any = await updateStamp(
-        holderInfo.passport_id,
-        stampurl,
-        admin.country_code,
-        365,
-        ent_or_dep
-      );
-      // 결과 확인후 응답전송
-      if (output.affectedRows === 1) {
-        res.status(200).send({ message: "Stamp update success" });
-      } else {
-        res.status(500).send({ message: "DB check" });
+      try {
+        const holderInfo: any = await findHolderDid(did);
+        // entOrdep : 출입국정보
+        console.log(holderInfo);
+        let ent_or_dep = "NO DATA";
+        if (entOrdep === "1") {
+          ent_or_dep = "ent";
+        } else if (entOrdep === "2") {
+          ent_or_dep = "dep";
+        } else {
+          res.status(400).send({ message: "invalid entOrdep" });
+        }
+        const stampurl = await makeStamp(
+          entOrdep,
+          admin.country_code,
+          CountryIpfs[admin.country_code]
+        );
+        console.log(stampurl);
+        // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
+
+        const issuer: any = await createIssuerDID();
+        const stampVcPayload: JwtCredentialPayload = {
+          sub: did,
+          nbf: 1562950282,
+          vc: {
+            "@context": ["https://www.w3.org/2018/credentials/v1"],
+            type: ["VerifiableCredential", "PassportCredential"],
+            credentialSubject: {
+              stampInfo: {
+                stamp_uri: stampurl,
+                ent_or_dep: ent_or_dep,
+                country_code: admin.country_code,
+                creation_date: new Date(),
+              },
+            },
+          },
+        };
+
+        const stampVcJwt = await createVerifiableCredentialJwt(
+          stampVcPayload,
+          issuer
+        );
+
+        // GOVERN_FA_STAMP 의 필요성 논의
+        // 발행자가 adminController가 되어버림..
+        // CLIENT_STORAGE_STAMP_VC에만 저장해도 됨
+        // CLIENT_STORAGE_STAMP_VC에만 저장 -> getStampVC에서 계속 가져와서 볼 수 있도록..? VP 만들어 보낼때도 여기서 긁어서 보내기?
+
+        // // updateStamp -> 이거도 없애도 될듯?(storeStampvc가 클라이언트 디바이스에 저장하니까..)
+        // const output: any = await updateStamp(
+        //   holderInfo.passport_id,
+        //   stampurl,
+        //   admin.country_code,
+        //   365,
+        //   ent_or_dep
+        // );
+
+        // // 결과 확인후 응답전송
+        // if (output.affectedRows === 1) {
+        //   res.status(200).send({ message: "Stamp update success", stampVcJwt });
+        // } else {
+        //   res.status(500).send({ message: "DB check" });
+        // }
+        res.status(200).send({ vcJwt: stampVcJwt, message: "success" });
+      } catch (e) {
+        res.status(400).send({ message: e });
       }
     } else {
       // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
