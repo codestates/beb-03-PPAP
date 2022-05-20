@@ -21,7 +21,7 @@ module.exports.getTargetData = async function getTargetData(
 };
 
 // query using multiple condition
-module.exports.getUserMultiCond = async function getUserMultiCond(
+module.exports.getMultiCondData = async function getMultiCondData(
     tableFlag,
     findCond,
     callback
@@ -173,22 +173,44 @@ module.exports.requestPassForm = async function requestPassForm(
         'GOVERN_FA_PASSPORT',
         'client_id',
         reqForm.client_id,
-        (err, data) => {
+        async (err, data) => {
             if (err) {
                 console.log(err);
             } else {
                 if (data.length === 0) {
-                    // none request -> newly transfer
-                    connection.query(
-                        `INSERT INTO GOVERN_FA_PASSPORT (client_id, did, photo_uri, success_yn) VALUES ('${
-                            reqForm.client_id
-                        }','${reqForm.did}','${reqForm.photo_uri}','${0}')`,
-                        function (err, result) {
-                            if (err) callback(err, null);
-                            else callback(null, result);
-                        }
-                    );
+                    const isPassport = await new Promise((resolve) => {
+                        this.getTargetData(
+                            'GOVERN_USER_CLIENT',
+                            'did',
+                            reqForm.did,
+                            (err, data) => {
+                                if (err) {
+                                    console.log(err);
+                                    return err;
+                                } else {
+                                    resolve(data);
+                                }
+                            }
+                        );
+                    });
+
+                    if (isPassport.length == 0) {
+                        // none request and empty did -> newly transfer
+                        connection.query(
+                            `INSERT INTO GOVERN_FA_PASSPORT (client_id, did, photo_uri, success_yn) VALUES ('${
+                                reqForm.client_id
+                            }','${reqForm.did}','${reqForm.photo_uri}','${0}')`,
+                            function (err, result) {
+                                if (err) callback(err, null);
+                                else callback(null, result);
+                            }
+                        );
+                    } else {
+                        // none request but did exist -> already have did
+                        callback(null, null);
+                    }
                 } else {
+                    // console.log(data);
                     // request already exists
                     callback(null, data[0]);
                 }
