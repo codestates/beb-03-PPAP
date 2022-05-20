@@ -17,7 +17,6 @@ const LoginStack = ({ navigation, route }) => {
 
   useEffect(() => {
     if (isAlertFocused(route)) {
-      console.log("동작");
       navigation.setOptions({
         tabBarStyle: { display: "none" },
       });

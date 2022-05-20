@@ -50,22 +50,29 @@ const Login = ({ navigation }) => {
 
   const loginBtnClickHandler = () => {
     console.log(userName, password);
-    dispatch(setSpinnerStatus(true));
+    // dispatch(setSpinnerStatus(true));
     axios
       .post("https://ppap.loca.lt/clientAuth/login", {
         user_name: userName,
         password,
       })
       .then((payload) => {
-        const { data, msg } = payload.data;
-        dispatch(setSpinnerStatus(false));
-        if (data) {
-          dispatch(setUser(data));
-          navigation.navigate("PassportStack");
-        } else {
-          setErrorMsg("잘못된 로그인 정보입니다");
-        }
-      });
+        console.log(payload);
+        // const { data, msg } = payload.data;
+        // console.log(data, msg);
+        // dispatch(setSpinnerStatus(false));
+        // if (msg === "Login success!") {
+        //   dispatch(setUser(data));
+        //   navigation.navigate("PassportStack");
+        // } else if (msg === "Wrong username or no data exists!") {
+        //   setErrorMsg("잘못된 로그인 정보입니다");
+        // } else if (msg === "Wrong password!") {
+        //   setErrorMsg("잘못된 로그인 정보입니다");
+        // } else {
+        //   setErrorMsg("잘못된 로그인 정보입니다");
+        // }
+      })
+      .catch((e) => console.error(e));
   };
 
   return (

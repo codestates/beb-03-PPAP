@@ -70,11 +70,13 @@ export const login = async (req: Request, res: Response) => {
         console.log("ERROR : ", err);
       } else {
         if (data.length === 0) {
+          console.log("진입 1");
           res.send({
             data: null,
             msg: "Wrong username or no data exists!",
           });
         } else {
+          console.log("진입 2");
           const promises = await data.map(async (elem: any) => {
             const compareBoolean = await bcrypt.compare(
               loginData.password,
