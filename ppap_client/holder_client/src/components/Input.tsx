@@ -17,7 +17,7 @@ const Label = styled.Text`
   color: ${({ theme }) => theme.darkgray};
 `;
 
-const StyledTextInput = styled.TextInput`
+const StyledTextInput = styled.TextInput.attrs({})`
   background-color: #fff;
   border: 2px #eee solid;
   border-radius: 30px;
@@ -30,22 +30,27 @@ const Input = ({
   isPassword,
   maxLength,
   onChangeText,
+  isUpperCase,
+  placeholder,
 }: {
   label: string;
   isPassword?: boolean;
   maxLength?: number;
   onChangeText?: Function;
+  isUpperCase?: boolean;
+  placeholder?: string;
 }) => {
   return (
     <Container>
       <Label>{label}</Label>
       <StyledTextInput
         secureTextEntry={isPassword}
-        autoCapitalize="none"
+        autoCapitalize={isUpperCase ? "characters" : "none"}
         autoCorrect={false}
         textContentType="none"
         maxLength={maxLength}
         onChangeText={onChangeText}
+        placeholder={placeholder}
       />
     </Container>
   );

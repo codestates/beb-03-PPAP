@@ -1,7 +1,8 @@
-import React from "react";
-import { View, StyleSheet, Text, Dimensions, Pressable } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
 import styled from "styled-components/native";
-import { images } from "../utils/images";
+import { useSelector } from "react-redux";
+import { UserPassport } from "../components";
 
 const Container = styled.View`
   flex: 1;
@@ -10,37 +11,17 @@ const Container = styled.View`
   background-color: #fff;
 `;
 
-const StyledLogo = styled.ImageBackground`
-  width: 50%;
-  height: 50%;
-`;
-
-const UserPassport = styled.View`
-  background-color: ${({ theme }) => theme.navy};
-  width: 300px;
-  height: 450px;
-  border-radius: 30px;
-  justify-content: center;
-  padding: 24px;
-  /* align-items: center; */
-`;
-
-const UserPassportTitle = styled.Text`
-  color: #fff;
-  font-size: 24px;
-  font-weight: 700;
-`;
-
 const Passport = ({ navigation }) => {
+  const userInfo = useSelector((state) => state.userReducer).data;
+
   return (
     <Container>
-      <Pressable onPress={() => navigation.navigate("PassportDetailStack")}>
-        <UserPassport>
-          <StyledLogo source={{ uri: images.color_logo }} />
-          <UserPassportTitle>DID 여권</UserPassportTitle>
-          <Text style={{ color: "#fff" }}>김코딩</Text>
-        </UserPassport>
-      </Pressable>
+      <UserPassport
+        onPress={() => navigation.navigate("PassportDetailStack")}
+        mainText={userInfo ? "DID 여권" : "로그인을 진행해주세요"}
+        subText={userInfo ? userInfo.userData.user_name : ""}
+        isLogined={!!userInfo}
+      />
     </Container>
   );
 };

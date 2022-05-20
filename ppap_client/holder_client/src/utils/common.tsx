@@ -1,5 +1,5 @@
 export const isValidPhoneNumber = (phoneNumber: string) => {
-  const regex = /[0-9A-Za-z]+@[A-Za-z]+\.[A-Za-z]{3}$/;
+  const regex = /^[0-9]{11,15}$/;
   return regex.test(phoneNumber);
 };
 

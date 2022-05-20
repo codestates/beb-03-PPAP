@@ -3,20 +3,26 @@ import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
 
 const Container = styled.View`
-  flex: 1;
-  justify-content: center;
   align-items: center;
-  background-color: #fff;
+  margin-bottom: 30px;
+`;
+const StyledImage = styled.ImageBackground`
+  width: 100px;
+  height: 100px;
 `;
 
-const ResultAlert = () => {
+const Image = ({ url }: { url: string }) => {
   return (
     <Container>
-      <Text>모든 설정이 완료되었습니다</Text>
+      <StyledImage
+        source={{
+          uri: url,
+        }}
+      ></StyledImage>
     </Container>
   );
 };
 
 const styles = StyleSheet.create({});
 
-export default ResultAlert;
+export default Image;

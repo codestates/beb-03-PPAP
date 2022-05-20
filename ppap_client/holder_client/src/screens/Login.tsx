@@ -3,21 +3,17 @@ import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
 import { removeWhitespace, isValidName } from "../utils/common";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { MainButton, SubButton, Input } from "../components";
+import { MainButton, SubButton, Input, MainText } from "../components";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../modules/userReducer";
+import { setSpinnerStatus } from "../modules/spinnerReducer";
 
 const Container = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
   background-color: ${({ theme }) => theme.background};
-`;
-
-const LoginTitle = styled.Text`
-  font-size: 24px;
-  font-weight: 700;
 `;
 
 const Wrapper = styled.View`
@@ -54,30 +50,34 @@ const Login = ({ navigation }) => {
 
   const loginBtnClickHandler = () => {
     console.log(userName, password);
+    dispatch(setSpinnerStatus(true));
     axios
       .post("https://ppap.loca.lt/clientAuth/login", {
         user_name: userName,
         password,
       })
       .then((payload) => {
-        const { data: token, msg } = payload.data;
-        console.log(token);
-        dispatch(setUser(token));
-        // token
-        //   ? navigation.navigate("PassportStack")
-        //   : setErrorMsg("잘못된 로그인 정보입니다");
+        const { data, msg } = payload.data;
+        dispatch(setSpinnerStatus(false));
+        if (data) {
+          dispatch(setUser(data));
+          navigation.navigate("PassportStack");
+        } else {
+          setErrorMsg("잘못된 로그인 정보입니다");
+        }
       });
   };
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
       <Container>
-        <LoginTitle>로그인</LoginTitle>
+        <MainText title="로그인" />
         <Wrapper>
           <Input
             label="이름"
             maxLength={15}
             onChangeText={userNameChangeHandler}
+            isUpperCase={true}
           />
           <Input
             label="비밀번호"
@@ -94,7 +94,7 @@ const Login = ({ navigation }) => {
         />
         <SubButton
           title="회원가입"
-          onPress={() => console.log("회원가입 버튼 클릭")}
+          onPress={() => navigation.navigate("Signup")}
         />
       </Container>
     </KeyboardAwareScrollView>

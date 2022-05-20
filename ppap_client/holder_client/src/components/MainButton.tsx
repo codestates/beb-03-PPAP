@@ -2,9 +2,11 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
 
-const Container = styled.Pressable`
+const Container = styled.Pressable.attrs((props) => ({
+  width: props.width || "70%",
+}))`
   align-items: center;
-  width: 70%;
+  /* width: 70%; */
   padding: 10px;
   border-radius: 30px;
   background-color: ${({ theme, disabled }) =>
@@ -21,13 +23,15 @@ const MainButton = ({
   title,
   onPress,
   disabled,
+  width,
 }: {
   title: string;
   onPress: Function;
   disabled?: boolean;
+  width?: string;
 }) => {
   return (
-    <Container onPress={onPress} disabled={disabled}>
+    <Container onPress={onPress} disabled={disabled} width={width}>
       <Title>{title}</Title>
     </Container>
   );

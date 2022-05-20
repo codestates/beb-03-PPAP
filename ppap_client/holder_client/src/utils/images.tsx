@@ -5,4 +5,5 @@ export const images = {
   logo: `${prefix}/logo.jpg?alt=media`,
   photo: `${prefix}/profile%2Fphoto.png?alt=media`,
   color_logo: `${prefix}/color-logo.png?alt=media`,
+  confirm: `${prefix}/confirm.png?alt=media`,
 };

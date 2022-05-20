@@ -4,9 +4,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import LoginStack from "./LoginStack";
 import PassportStack from "./PassportStack";
 import VisaStack from "./VisaStack";
-import { Setting } from "../screens";
+import { Setting, MyPage } from "../screens";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemeContext } from "styled-components/native";
+import { useSelector } from "react-redux";
 
 const TabIcon = ({ name, size, color }) => {
   return <MaterialCommunityIcons name={name} size={size} color={color} />;
@@ -16,6 +17,7 @@ const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
   const theme = useContext(ThemeContext);
+  const userInfo = useSelector((state) => state.userReducer).data;
 
   return (
     <Tab.Navigator
@@ -25,7 +27,8 @@ const MainTab = () => {
           let name = "";
           if (route.name === "PassportStack") name = "airplane";
           else if (route.name === "VisaStack") name = "application";
-          else if (route.name === "LoginStack") name = "account";
+          else if (route.name === "LoginStack" || route.name === "MyPage")
+            name = "account";
           else name = "more";
 
           return TabIcon({ ...props, name });
@@ -47,11 +50,20 @@ const MainTab = () => {
         component={VisaStack}
         options={{ tabBarLabel: "VISA" }}
       />
-      <Tab.Screen
-        name="LoginStack"
-        component={LoginStack}
-        options={{ tabBarLabel: "로그인" }}
-      />
+      {userInfo ? (
+        <Tab.Screen
+          name="MyPage"
+          component={MyPage}
+          options={{ tabBarLabel: "마이페이지" }}
+        />
+      ) : (
+        <Tab.Screen
+          name="LoginStack"
+          component={LoginStack}
+          options={{ tabBarLabel: "로그인" }}
+        />
+      )}
+
       <Tab.Screen
         name="Setting"
         component={Setting}
