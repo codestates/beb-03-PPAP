@@ -90,7 +90,7 @@ export const login = async (req: Request, res: Response) => {
             return compareBoolArr[idx];
           })[0];
           if (!dataFiltered) {
-            res.status(401).send({
+            res.send({
               data: null,
               msg: "Wrong password!",
             });
