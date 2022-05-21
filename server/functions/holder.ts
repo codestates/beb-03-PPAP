@@ -2,6 +2,7 @@ const query = require('../mysql/query/query');
 
 export const getApprovedPassportData = async (holderInfo: any) => {
     return new Promise((resolve) => {
+        // designate user using did
         query.getTargetData(
             'GOVERN_FA_PASSPORT',
             'did',
@@ -81,6 +82,7 @@ export const getApprovedVisaData = async (reqVisaInfo: any) => {
         visa_survey_id: reqVisaInfo.visa_survey_id,
     };
     return new Promise((resolve) => {
+        // search user's visa requset via input visa_survey_id
         query.getMultiCondData(
             'GOVERN_FA_VISA_SURVEY',
             condOption,
@@ -102,6 +104,7 @@ export const getApprovedVisaData = async (reqVisaInfo: any) => {
         }
         const cond = ['visa_id', 'visa_id'];
         const realData: any = await new Promise(async (resolve) => {
+            // designate user using visa_survey_id
             await query.joinTable(
                 'GOVERN_FA_VISA_SURVEY',
                 'GOVERN_FA_VISA',
@@ -121,6 +124,7 @@ export const getApprovedVisaData = async (reqVisaInfo: any) => {
                         });
                     }
                     const tempObj = Object.assign(data[0]);
+                    // delete unnecessary key:value
                     delete tempObj.visa_id;
                     delete tempObj.success_yn;
                     delete tempObj.visa_survey_id;
