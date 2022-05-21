@@ -206,7 +206,7 @@ export const storeStampVC = async (req: Request, res: Response) => {
 };
 
 export const getPassportVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_PASSPORT_VC",
@@ -226,7 +226,7 @@ export const getPassportVC = async (req: Request, res: Response) => {
 };
 
 export const getVisaVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_VISA_VC",
@@ -246,7 +246,7 @@ export const getVisaVC = async (req: Request, res: Response) => {
 };
 
 export const getStampVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_STAMP_VC",

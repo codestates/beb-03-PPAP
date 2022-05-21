@@ -10,7 +10,7 @@ const cors = require("cors");
 // const session = require('express-session');
 // const FileStore = require('session-file-store')(session);
 const { adminRoute } = require("./routes/adminRoute");
-const { holderRoute } = require("./routes/holderRoute");
+const { clientRoute } = require("./routes/clientRoute");
 import createIssuerDID from "./functions/createIssuerDID";
 
 const app = express();
@@ -19,7 +19,14 @@ dotenv.config({ path: "./.env" });
 
 const port = 4000;
 
-const corsOptions = { origin: `http://localhost:3000` };
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "exp://q6-xk2.ressom.holder-client.exp.direct:80",
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
+};
 createIssuerDID();
 
 app.use(cors(corsOptions));
@@ -36,7 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 // );
 
 app.use("/admin", adminRoute);
-app.use("/holder", holderRoute);
+app.use("/client", clientRoute);
 
 app.listen(port, () => {
   console.log(`listening on port ${port}...`);

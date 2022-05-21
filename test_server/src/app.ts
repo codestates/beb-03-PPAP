@@ -1,12 +1,19 @@
 import express, { Request, Response, NextFunction } from "express";
-const connection = require("./mysql/config/mysql");
-const query = require("./mysql/query/query");
-const cors = require("cors");
+// import connection from "./mysql/config/mysql";
+import query from "./mysql/query/query";
+import cors from "cors";
 const app = express();
-const authRouter = require("./routes/auth");
-const holderDIDRouter = require("./routes/holderDID");
+import authRouter from "./routes/auth";
+import holderDIDRouter from "./routes/holderDID";
 
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: ["exp://ks-299.ressom.nomadweather.exp.direct:80"],
+    credentials: true,
+    methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
+  })
+);
 app.use(express.json());
 
 app.use("/auth", authRouter);

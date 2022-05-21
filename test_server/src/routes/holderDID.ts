@@ -42,4 +42,4 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
   startGanacheServerAndDeployEthrDidRegistry();
 });
 
-module.exports = router;
+export default router;
