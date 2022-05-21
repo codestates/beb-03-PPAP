@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import { updateStamp } from "./../../server/functions/admin";
+=======
+>>>>>>> 3187c610b4e8d4a783b7f6206bf77c30e8070c55
 import { Request, Response } from "express";
 const query = require("../mysql/query/query");
 const jwt = require("jsonwebtoken");
@@ -6,8 +9,11 @@ const bcrypt = require("bcrypt");
 const { hashRound, accessTokenSecret } = require("../config");
 import { EthrDID } from "ethr-did";
 import { ethers } from "ethers";
+<<<<<<< HEAD
 import { id } from "ethers/lib/utils";
 import { resolve } from "path/posix";
+=======
+>>>>>>> 3187c610b4e8d4a783b7f6206bf77c30e8070c55
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
 
 const didContractAdd = "0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca";
@@ -91,6 +97,7 @@ export const login = async (req: Request, res: Response) => {
           })[0];
           if (!dataFiltered) {
             res.send({
+<<<<<<< HEAD
               data: null,
               msg: "Wrong password!",
             });
@@ -107,6 +114,8 @@ export const login = async (req: Request, res: Response) => {
 
             const accessToken = genAccessToken(tokenData);
             res.send({
+=======
+>>>>>>> 3187c610b4e8d4a783b7f6206bf77c30e8070c55
               data: {
                 accessToken: accessToken,
                 userData: dataFiltered,
@@ -118,6 +127,7 @@ export const login = async (req: Request, res: Response) => {
       }
     }
   );
+<<<<<<< HEAD
 };
 
 export const storePassportVC = async (req: Request, res: Response) => {
@@ -182,6 +192,8 @@ export const storeVisaVC = async (req: Request, res: Response) => {
   } catch (e) {
     console.log(e);
   }
+=======
+>>>>>>> 3187c610b4e8d4a783b7f6206bf77c30e8070c55
 };
 
 export const storeStampVC = async (req: Request, res: Response) => {

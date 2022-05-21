@@ -1,12 +1,30 @@
-import React from "react";
-
+import React, { useState, useEffect} from 'react';
+import { useSelector,useDispatch} from "react-redux";
+import { unsetUser } from "../../redux/userReducer";
+import { useNavigate } from 'react-router-dom';
 const Header = () => {
+  //리듀스에 저장되어있는 userInfo가지고오기
+  const userInfo = useSelector((state:any) => state.userReducer).data;
+  const [userInfoProfile, setUserInfoProfile] = useState(userInfo);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  //로그아웃 구현
+  const onSignOutSubmit = async () => {
+    dispatch(unsetUser());
+    window.location.replace("/");
+    navigate("/");
+  };
+
+  useEffect(() => {
+  }, []);
+
   return (
     <header id="header" className="header fixed-top d-flex align-items-center">
       <div className="d-flex align-items-center justify-content-between">
         <a href="/" className="logo d-flex align-items-center">
           <img src="assets/img/logo.png" alt="" />
-          <span className="d-none d-lg-block">Passport Verifier</span>
+          <span className="d-none d-lg-block">Passport Admin</span>
         </a>
         <i className="bi bi-list toggle-sidebar-btn"></i>
       </div>
@@ -207,20 +225,25 @@ const Header = () => {
               href="#"
               data-bs-toggle="dropdown"
             >
-              <img
-                src="assets/img/profile-img.jpg"
-                alt="Profile"
-                className="rounded-circle"
-              />
-              <span className="d-none d-md-block dropdown-toggle ps-2">
-                K. Anderson
-              </span>
+              {userInfoProfile != null ? (
+                <img
+                  src={userInfo.profileUrl}
+                  alt="Profile"
+                  className="rounded-circle"
+                />
+              ) : null}
+              {userInfoProfile != null ? (
+                <span className="d-none d-md-block dropdown-toggle ps-2">
+                  {userInfo.username}
+                </span>
+              ) : null}
             </a>
 
             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
               <li className="dropdown-header">
-                <h6>Kevin Anderson</h6>
-                <span>Web Designer</span>
+                {userInfoProfile != null ? <h6>{userInfo.username}</h6> : null}
+
+                <span>ISSURE</span>
               </li>
               <li>
                 <hr className="dropdown-divider" />
@@ -266,10 +289,15 @@ const Header = () => {
               </li>
 
               <li>
-                <a className="dropdown-item d-flex align-items-center" href="#">
+                <button
+                  type="submit"
+                  title="Sign Out"
+                  className="dropdown-item d-flex align-items-center"
+                  onClick={onSignOutSubmit}
+                >
                   <i className="bi bi-box-arrow-right"></i>
                   <span>Sign Out</span>
-                </a>
+                </button>
               </li>
             </ul>
           </li>
