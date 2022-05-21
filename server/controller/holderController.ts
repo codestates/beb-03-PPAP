@@ -284,3 +284,67 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
         }
     });
 };
+
+// const visaList: any = await new Promise((resolve) => {
+//     query.getTargetData(
+//         'GOVERN_FA_VISA_SURVEY',
+//         'passport_id',
+//         passId,
+//         (err: any, data: any) => {
+//             if (err) {
+//                 console.log('ERROR : ', err);
+//                 return err;
+//             } else {
+//                 resolve(data);
+//             }
+//         }
+//     );
+// });
+
+// // get stamp list
+// const stampList = await new Promise((resolve) => {
+//     query.getTargetData(
+//         'GOVERN_FA_STAMP',
+//         'passport_id',
+//         passId,
+//         (err: any, data: any) => {
+//             if (err) {
+//                 console.log('ERROR : ', err);
+//                 return err;
+//             } else {
+//                 resolve(data);
+//             }
+//         }
+//     );
+// });
+
+// // vc payload which contains visa -> to deal multiple visa
+// const visaPromises = await visaList.map((elem: any, idx: number) => {
+//     const vcVisaPayload: JwtCredentialPayload = {
+//         sub: holderInfo.did,
+//         nbf: 1562950282,
+//         vc: {
+//             '@context': ['https://www.w3.org/2018/credentials/v1'],
+//             type: ['VerifiableCredential'],
+//             credentialSubject: {
+//                 visa: elem,
+//             },
+//         },
+//     };
+//     const vcVisaJwtElem = createVerifiableCredentialJwt(
+//         vcVisaPayload,
+//         issuer
+//     );
+//     return vcVisaJwtElem;
+// });
+// // deal multiple promise element
+// const vcVisaJwt = await Promise.all(visaPromises);
+
+export const test = async (req: Request, res: Response) => {};
+// const vpPayload: JwtPresentationPayload = {
+//   vp: {
+//     "@context": ["https://www.w3.org/2018/credentials/v1"],
+//     type: ["VerifiablePresentation"],
+//     verifiableCredential: [vcJwt],
+//   },
+// };

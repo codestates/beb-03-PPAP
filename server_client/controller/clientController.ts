@@ -117,4 +117,84 @@ export const login = async (req: Request, res: Response) => {
   );
 };
 
+export const storeStampVC = async (req: Request, res: Response) => {
+  const { stampVC, phoneNum } = req.body;
+  try {
+    await query.createVC(
+      "CLIENT_STORAGE_STAMP_VC",
+      phoneNum,
+      stampVC,
+      (err: any, data: any) => {
+        console.log(data);
+        if (data.affectedRows === 1) {
+          res.status(200).send({ message: "Add stamp VC success" });
+        } else {
+          res.status(400).send({ message: "Add stamp VC fail" });
+        }
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getPassportVC = async (req: Request, res: Response) => {
+  const { phoneNum } = req.body;
+  try {
+    await query.getVC(
+      "CLIENT_STORAGE_PASSPORT_VC",
+      phoneNum,
+      (err: any, data: any) => {
+        console.log(data);
+        if (data.length !== 0) {
+          res.status(200).send({ data: data[0] });
+        } else {
+          res.status(400).send({ message: "No passport data" });
+        }
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getVisaVC = async (req: Request, res: Response) => {
+  const { phoneNum } = req.body;
+  try {
+    await query.getVC(
+      "CLIENT_STORAGE_VISA_VC",
+      phoneNum,
+      (err: any, data: any) => {
+        console.log(data);
+        if (data.length !== 0) {
+          res.status(200).send({ data });
+        } else {
+          res.status(400).send({ message: "No visa data" });
+        }
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getStampVC = async (req: Request, res: Response) => {
+  const { phoneNum } = req.body;
+  try {
+    await query.getVC(
+      "CLIENT_STORAGE_STAMP_VC",
+      phoneNum,
+      (err: any, data: any) => {
+        console.log(data);
+        if (data.length !== 0) {
+          res.status(200).send({ data });
+        } else {
+          res.status(400).send({ message: "No stamp data" });
+        }
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
 // module.exports = { register, authClient };

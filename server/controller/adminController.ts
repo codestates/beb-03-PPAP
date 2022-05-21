@@ -19,7 +19,6 @@ import {
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
 import { getAdminDid } from "../functions/auth";
-import { id } from "ethers/lib/utils";
 
 // 관리자 로그인
 export const adminLogin = async (req: Request, res: Response) => {
@@ -237,29 +236,22 @@ export const verifyPassport = async (req: Request, res: Response) => {
             // stamp는 없을수도 있으니까 예외처리
             if (stamp_list) VClist.stamp_list = stamp_list;
           }
-          // 2. visaList
-          else {
-            // visa_list : 어드민 국가 -> 최신날짜기준1개만 검사// 애초에 1개만 옴
-            const visa = verifiedVC.verifiableCredential.credentialSubject.visa;
-            VClist.visa = visa;
-          }
-
-          console.log(`###PassportInfo : ${VClist.passport_info}`);
-          console.log(`###visaList : ${VClist.visa}`);
-          console.log(`###stampList : ${VClist.stamp_list}`);
+          // 반복문 종료 후 stamp발행 실행
+          // 다른 라우터로 분리
+          res.status(200).send({
+            VClist,
+            message: "success",
+          });
+        } else {
+          res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
         }
-        // 반복문 종료 후 stamp발행 실행
-        // 다른 라우터로 분리
-        res.status(200).send({
-          VClist,
-          message: "success",
-        });
       } else {
-        res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
+        // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+        res.status(401).send({ message: "Admin Auth fail" });
       }
-    } else {
-      // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
-      res.status(401).send({ message: "Admin Auth fail" });
+      // }
+    } catch (e) {
+      res.status(400).send({ ERROR: e });
     }
   } catch (e) {
     console.log(e);
