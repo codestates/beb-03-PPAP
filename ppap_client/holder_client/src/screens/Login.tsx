@@ -58,7 +58,7 @@ const Login = ({ navigation }) => {
       })
       .then((payload) => {
         const { data, msg } = payload.data;
-        console.log(data, msg);
+        // console.log(data, msg);
         dispatch(setSpinnerStatus(false));
         if (msg === "Login success!") {
           dispatch(setUser(data));

@@ -206,7 +206,10 @@ export const storeStampVC = async (req: Request, res: Response) => {
 };
 
 export const getPassportVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  // const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
+
+  console.log(phoneNum);
   try {
     await query.getVC(
       "CLIENT_STORAGE_PASSPORT_VC",
@@ -216,7 +219,7 @@ export const getPassportVC = async (req: Request, res: Response) => {
         if (data.length !== 0) {
           res.status(200).send({ data: data[0] });
         } else {
-          res.status(400).send({ message: "No passport data" });
+          res.send({ message: "No passport data" });
         }
       }
     );
