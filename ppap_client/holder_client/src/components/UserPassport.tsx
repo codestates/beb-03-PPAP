@@ -28,17 +28,19 @@ const UserPassport = ({
   onPress,
   mainText,
   subText,
-  isLogined,
+  isValidPassport,
 }: {
   onPress?: Function;
   mainText?: string;
   subText?: string;
-  isLogined?: boolean;
+  isValidPassport?: boolean;
 }) => {
   return (
     <Pressable onPress={onPress}>
-      <Cover isLogined={isLogined}>
-        <StyledLogo source={isLogined ? { uri: images.color_logo } : {}} />
+      <Cover isLogined={isValidPassport}>
+        <StyledLogo
+          source={isValidPassport ? { uri: images.color_logo } : {}}
+        />
         <UserPassportTitle>{mainText}</UserPassportTitle>
         <Text style={{ color: "#fff" }}>{subText}</Text>
       </Cover>
