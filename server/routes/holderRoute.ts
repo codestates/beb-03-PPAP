@@ -17,6 +17,6 @@ holderRoute.route("/issuePassVC").get(issuePassVC);
 // holderRoute.route('/issueVisaVC').get(issueVisaVC);
 // holderRoute.route('/issueStampVC').get(issueStampVC);
 holderRoute.route("/getAvailVisa").get(getAvailableVisa);
-holderRoute.route("/test").get(getAvailableVisa);
+holderRoute.route("/test").get(test);
 
 module.exports.holderRoute = holderRoute;

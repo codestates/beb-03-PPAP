@@ -43,7 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 // );
 
 app.use("/admin", adminRoute);
-app.use("/client", holderRoute);
+app.use("/holder", holderRoute);
 
 app.listen(port, () => {
   console.log(`listening on port ${port}...`);

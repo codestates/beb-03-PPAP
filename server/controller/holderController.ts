@@ -1,8 +1,13 @@
 const query = require("../mysql/query/query");
+const jwt = require("jsonwebtoken");
 import { Request, Response, NextFunction } from "express";
 import {
   JwtCredentialPayload,
   createVerifiableCredentialJwt,
+  JwtPresentationPayload,
+  createVerifiablePresentationJwt,
+  verifyPresentation,
+  verifyCredential,
 } from "did-jwt-vc";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
@@ -10,6 +15,7 @@ import { getOnlyPassport } from "../functions/holder";
 import { auth } from "../functions/auth";
 import createIssuerDID from "../functions/createIssuerDID";
 const didContractAdd = "0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca";
+const { accessTokenSecret } = require("../config");
 
 const clientAuth = async (authorization: any) => {
   let output: any = await auth(authorization);
@@ -38,7 +44,7 @@ export const requestPassport = async (req: Request, res: Response) => {
       console.log("ERROR : ", err);
       res.status(400).send(err);
     }
-    console.log(data);
+
     if (!data) {
       return res.status(400).send({
         data: null,
@@ -46,7 +52,7 @@ export const requestPassport = async (req: Request, res: Response) => {
       });
     }
 
-    if (data.insertId) {
+    if (data.affectedRows === 1) {
       // no request -> submit new request to DB
       query.getTargetData(
         "GOVERN_FA_PASSPORT",
@@ -70,7 +76,7 @@ export const requestPassport = async (req: Request, res: Response) => {
         // already exist passport
         res.status(401).send({
           data: null,
-          msg: "You already have passport. Get your passport.",
+          msg: "Your passport is approved. Get your passport.",
         });
       } else if (data.success_yn === "2") {
         // rejected passport
@@ -125,17 +131,32 @@ export const issuePassVC = async (req: Request, res: Response) => {
     },
   };
   // create vc as JWT token under issuer signing
-  console.log(issuer);
+  // console.log(issuer);
   const vcPassJwt = await createVerifiableCredentialJwt(vcPassPayload, issuer);
+
+  const condOption = { did: holderInfo.did, client_id: holderInfo.client_id };
+
+  await query.updateAndDelete(
+    "GOVERN_USER_CLIENT",
+    "GOVERN_FA_PASSPORT",
+    condOption,
+    (err: any, data: any) => {
+      if (err) {
+        console.log("ERROR : ", err);
+        res.status(400).send(err);
+      }
+      console.log(data);
+    }
+  );
 
   res.status(200).send({
     data: { vcPassJwt: vcPassJwt },
-    msg: "get passport information success",
+    msg: "get passport vc success",
   });
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-  const { visa_purpose, target_country, vcPassJwt } = req.body;
+  const { visa_purpose, target_country, vpPassJwt } = req.body;
 
   // JWT token from authorization header
   const authorization = req.headers["authorization"];
@@ -156,7 +177,14 @@ export const requestVisa = async (req: Request, res: Response) => {
   };
   const ethrDidResolver = getResolver(providerConfig);
   const didResolver = new Resolver(ethrDidResolver);
-  // const verifiedVP = await verifyPresentation(vpJWT, didResolver);
+  const verifiedVP = await verifyPresentation(vpPassJwt, didResolver);
+  const vcPass = verifiedVP.payload.vp.verifiableCredential[0];
+  const verifiedVC = await verifyCredential(vcPass, didResolver);
+  // verifiedVC.payload.vc.credentialSubject.passportInfo);
+  // const token =
+  // const tokenData = await jwt.verify(token, accessTokenSecret);
+
+  // const verifiedVC = await verifyCredential(vpJwt, didResolver);
 
   // // recall passport
   // const passData = await getOnlyPassport(holderInfo);
@@ -312,11 +340,27 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
 // // deal multiple promise element
 // const vcVisaJwt = await Promise.all(visaPromises);
 
-export const test = async (req: Request, res: Response) => {};
-// const vpPayload: JwtPresentationPayload = {
-//   vp: {
-//     "@context": ["https://www.w3.org/2018/credentials/v1"],
-//     type: ["VerifiablePresentation"],
-//     verifiableCredential: [vcJwt],
-//   },
-// };
+export const test = async (req: Request, res: Response) => {
+  const { vcJwt } = req.body;
+  // console.log(vcJwt);
+  const issuer: any = await createIssuerDID();
+  const vpPayload: JwtPresentationPayload = {
+    vp: {
+      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      type: ["VerifiablePresentation"],
+      verifiableCredential: [vcJwt],
+    },
+  };
+  const vpJwt = await createVerifiablePresentationJwt(vpPayload, issuer);
+  console.log(vpJwt);
+  const providerConfig = {
+    name: "ganache",
+    rpcUrl: "http://localhost:7545",
+    registry: didContractAdd,
+  };
+  const ethrDidResolver = getResolver(providerConfig);
+  const didResolver = new Resolver(ethrDidResolver);
+  const verifiedVP = await verifyPresentation(vpJwt, didResolver);
+
+  // console.log(verifiedVP);
+};
