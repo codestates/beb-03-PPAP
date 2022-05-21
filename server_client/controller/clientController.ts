@@ -62,7 +62,7 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const loginData = req.body;
+  const loginData = req.query;
 
   await query.getUser(
     "user_name",
