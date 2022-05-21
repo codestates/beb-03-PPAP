@@ -10,6 +10,7 @@ import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 // import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { verifyCredential } from "did-jwt-vc";
+import { startGanacheServerAndDeployEthrDidRegistry } from "./vcJWTdecode";
 
 const Container = styled.View`
   flex: 1;
@@ -27,7 +28,7 @@ const Passport = ({ navigation }) => {
     "eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUGFzc3BvcnRDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InBhc3Nwb3J0SW5mbyI6eyJ1c2VyX25hbWUiOiJIT05HIEdJTERPTkciLCJjb3VudHJ5X2NvZGUiOiJLT1IiLCJhZ2UiOiIxOCIsInNleCI6Ik0iLCJiaXJ0aCI6IjE5OTIwMTAxIiwicGVyc29uYWxfaWQiOiIwNDA2MTcxMDAwMDAwIiwiZGlkIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyZDk0MTcwNTdmMWE5YWE4MzA3YTg4N2ZjNWJiMTQ5OTY2NmRlM2UxMGM2YWZmZDdlYjlmNWY2Njk4YTM2ZjczNyIsInBob3RvX3VyaSI6Imh0dHBzOi8vaW1hZ2VzLnVuc3BsYXNoLmNvbS9waG90by0xNTc2ODI4ODMxMDIyLWNhNDFkMzkwNWZiNz9peGxpYj1yYi0xLjIuMSZpeGlkPU1ud3hNakEzZkRCOE1IeHdhRzkwYnkxd1lXZGxmSHg4ZkdWdWZEQjhmSHg4JmF1dG89Zm9ybWF0JmZpdD1jcm9wJnc9MTAyMyZxPTgwIiwiY3JlYXRpb25fZGF0ZSI6IjIwMjItMDUtMTIgMDU6NTE6MjMifX19LCJzdWIiOiJkaWQ6ZXRocjpnYW5hY2hlOjB4MkQ2QTNGMGNFNjRBN2M5RjQzRGE5YjI4MjUzQ0E1NmQxOTJmODIxZSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDczNzYyNTI3NTM1MjMzQ0RhRjkwODU4QTJEMUM5ODI0M2E3QzNFNzEifQ.8kDho0Ya2p5HJ_UGmzLmb-zUOrtDbwLtaoTsWohI9nAxlwUkeSN4Xd4BRH_hm1TpHcUQp-XInlt5DCJt-fs15gE"
   );
 
-  const userInfo = useSelector((state) => state.userReducer).data;
+  const userInfo = useSelector((state: any) => state.userReducer).data;
   if (userInfo) {
     const { accessToken, userData } = userInfo;
 
@@ -47,10 +48,11 @@ const Passport = ({ navigation }) => {
         // 여권 발급 신청
       } else {
         console.log("여권 있음");
+        // startGanacheServerAndDeployEthrDidRegistry();
         // 여권 VC를 가져와야 함
         // console.log(payload);
-        // const verifiedVC = await verifyCredential(payload, didResolver);
-        // console.log(verifiedVC);
+        const verifiedVC = await verifyCredential(payload, didResolver);
+        console.log(verifiedVC);
         console.log(didResolver);
       }
     });
