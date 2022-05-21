@@ -166,6 +166,7 @@ module.exports.requestPassForm = async function requestPassForm(
     reqForm,
     callback
 ) {
+    console.log(reqForm.did);
     // find user using id(clientId)
     this.getTargetData(
         'GOVERN_FA_PASSPORT',
@@ -176,11 +177,15 @@ module.exports.requestPassForm = async function requestPassForm(
                 console.log(err);
             } else {
                 if (data.length === 0) {
+                    const condOption = {
+                        did: reqForm.did,
+                        user_name: reqForm.user_name,
+                    };
+
                     const isPassport = await new Promise((resolve) => {
-                        this.getTargetData(
+                        this.getMultiCondData(
                             'GOVERN_USER_CLIENT',
-                            'did',
-                            reqForm.did,
+                            condOption,
                             (err, data) => {
                                 if (err) {
                                     console.log(err);
@@ -208,7 +213,6 @@ module.exports.requestPassForm = async function requestPassForm(
                         callback(null, null);
                     }
                 } else {
-                    // console.log(data);
                     // request already exists
                     callback(null, data[0]);
                 }
@@ -223,8 +227,7 @@ module.exports.requestVisaForm = async function requestVisaForm(
 ) {
     // find visa request
     connection.query(
-        `SELECT * FROM GOVERN_FA_VISA_SURVEY WHERE passport_id='${reqForm.passport_id}' AND visa_id='${reqForm.visa_id}'`,
-        reqForm.client_id,
+        `SELECT * FROM GOVERN_FA_VISA_SURVEY WHERE did='${reqForm.did}' AND visa_id='${reqForm.visa_id}'`,
         (err, data) => {
             if (err) {
                 console.log(err);
@@ -232,8 +235,8 @@ module.exports.requestVisaForm = async function requestVisaForm(
                 if (data.length === 0) {
                     // none request -> newly transfer
                     connection.query(
-                        `INSERT INTO GOVERN_FA_VISA_SURVEY (passport_id, visa_id, success_yn) VALUES ('${
-                            reqForm.passport_id
+                        `INSERT INTO GOVERN_FA_VISA_SURVEY (did, visa_id, success_yn) VALUES ('${
+                            reqForm.did
                         }','${reqForm.visa_id}','${0}')`,
                         function (err, result) {
                             if (err) callback(err, null);
@@ -249,25 +252,47 @@ module.exports.requestVisaForm = async function requestVisaForm(
     );
 };
 
-module.exports.updateAndDelete = async function updateDid(
-    updateTableFlag,
-    deleteTableFlag,
-    condOption,
+module.exports.deleteRow = async function deleteRow(
+    tableFlag,
+    findFlag,
+    data,
     callback
 ) {
-    let queryMsg = `UPDATE ${updateTableFlag} SET did='${condOption.did}' WHERE client_id = '${condOption.client_id}'`;
+    const queryMsg = `DELETE FROM ${tableFlag} WHERE ${findFlag} = '${data}'`;
+    connection.query(queryMsg, function (err, result) {
+        if (err) callback(err, null);
+        else callback(null, result);
+    });
+};
 
+module.exports.updateRow = async function updateRow(
+    tableFlag,
+    updateCond,
+    callback
+) {
+    let queryMsg = `UPDATE ${tableFlag} SET ${updateCond.setCond}='${updateCond.setVal}' WHERE ${updateCond.findCond} = '${updateCond.findVal}'`;
     connection.query(queryMsg, function (err, result) {
         if (err) {
             console.log(err);
         } else {
-            if (result.affectedRows === 1) {
-                queryMsg = `DELETE FROM ${deleteTableFlag} WHERE client_id = '${condOption.client_id}'`;
-                connection.query(queryMsg, (err, result) => {
-                    if (err) callback(err, null);
-                    else callback(null, result);
-                });
-            }
+            if (err) callback(err, null);
+            else callback(null, result);
         }
+    });
+};
+
+module.exports.joinTable = async function joinTables(
+    tableFlag,
+    joinTable,
+    cond,
+    findFlag,
+    data,
+    callback
+) {
+    let queryMsg = `SELECT * FROM ${tableFlag} INNER JOIN ${joinTable} ON ${tableFlag}.${cond[0]} = ${joinTable}.${cond[1]} WHERE ${tableFlag}.${findFlag} = '${data}'`;
+
+    connection.query(queryMsg, function (err, result) {
+        if (err) callback(err, null);
+        else callback(null, result);
     });
 };
