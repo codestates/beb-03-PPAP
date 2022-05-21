@@ -9,7 +9,7 @@ const app = express();
 const port = 4001;
 
 const corsOptions = {
-  origin: ["exp://q6-xk2.ressom.holder-client.exp.direct:80"],
+  origin: ["*"],
   credentials: true,
   methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
 };
