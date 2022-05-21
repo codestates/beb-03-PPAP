@@ -58,14 +58,20 @@ const Login = ({ navigation }) => {
       })
       .then((payload) => {
         const { data, msg } = payload.data;
+        // console.log(data, msg);
         dispatch(setSpinnerStatus(false));
-        if (data) {
+        if (msg === "Login success!") {
           dispatch(setUser(data));
           navigation.navigate("PassportStack");
+        } else if (msg === "Wrong username or no data exists!") {
+          setErrorMsg("잘못된 로그인 정보입니다");
+        } else if (msg === "Wrong password!") {
+          setErrorMsg("잘못된 로그인 정보입니다");
         } else {
           setErrorMsg("잘못된 로그인 정보입니다");
         }
-      });
+      })
+      .catch((e) => console.error(e));
   };
 
   return (

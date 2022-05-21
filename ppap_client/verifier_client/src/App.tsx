@@ -3,18 +3,38 @@ import Footer from "./pages/components/Footer";
 import Header from "./pages/components/Header";
 import Sidebar from "./pages/components/Sidebar";
 import Passport from "./pages/Passport";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
+import PassportDetail from "./pages/PassportDetail";
+import VisaDetail from "./pages/VisaDetail";
+import Visa from "./pages/Visa";
+import Stamp from "./pages/Stamp";
+import StampDetail from "./pages/StampDetail";
+
+import Immigration from "./pages/Immigration";
+
+import Mains from "./pages/Mains";
+
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 
 function App() {
-
-  const [userInfo, setUserInfo] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
+  const userInfo = useSelector((state:any) => state.userReducer).data;
+  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
-    
+    const userInfo = getUserInfo();
+    if(userInfo!=null){
+      setIsLogin(true)
+    }else{
+      setIsLogin(false);
+    }
   }, []); //[]비어있으면 최초 실행 , 안에 값이 들어있으면 해당 값이 변경될때마다 실행 
+
+
+  const getUserInfo = () =>{
+   
+    return userInfo;
+  }
 
   return(
     <div className="App">
@@ -22,8 +42,17 @@ function App() {
         <Header />
         {isLogin?<Sidebar />:null}
         <Routes>
-          {isLogin? <Route path="/main" element={<Dashboard />} />:<Route path="/" element={<Login />} />}
-          <Route path="/passport" element={<Passport />} />
+        <Route path="/" element={<Mains />} />
+        <Route path="/passport" element={<Passport />} />
+        <Route path="/passport/detail/:id" element={<PassportDetail />} />
+
+        <Route path="/visa" element={<Visa />} />
+        <Route path="/visa/detail/:id" element={<VisaDetail />} />
+
+        <Route path="/stamp" element={<Stamp />} />
+        <Route path="/stamp/detail/:id" element={<StampDetail />} />
+
+        <Route path="/immigration" element={<Immigration />} />
         </Routes>
         <Footer />
       </BrowserRouter>
