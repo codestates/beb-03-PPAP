@@ -6,3 +6,5 @@ address
 node_modules
 package-lock.json
 */sessions
+.DS_store
+node_modules
