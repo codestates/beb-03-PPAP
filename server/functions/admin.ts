@@ -164,6 +164,7 @@ export const findHolderDid = async (holder_did: any) => {
       query.getUserByDid(holder_did, (err: any, data: any) => {
         if (err) {
           // error handling code goes here
+          reject(err);
           console.log("ERROR : ", err);
         } else {
           if (data) {
@@ -171,6 +172,8 @@ export const findHolderDid = async (holder_did: any) => {
               const holder = data[0];
               // 도장 등록 함수(addStampToDb) resolve
               resolve(holder);
+            } else {
+              resolve({ message: "No matched user" });
             }
           }
         }
