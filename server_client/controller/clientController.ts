@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const { hashRound, accessTokenSecret } = require("../config");
 import { EthrDID } from "ethr-did";
 import { ethers } from "ethers";
+import { Wallet } from "@ethersproject/wallet";
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
 
 const didContractAdd = process.env.DIDCONTRACTADD;
@@ -29,32 +30,39 @@ export const register = async (req: Request, res: Response) => {
   const userData = req.body;
 
   const keypair = EthrDID.createKeyPair();
+  const txSigner = new Wallet(keypair.privateKey, provider);
   const holder = new EthrDID({
+    txSigner,
     provider,
-    identifier: keypair.identifier,
-    privateKey: keypair.privateKey,
+    ...keypair,
     rpcUrl,
     chainNameOrId: "ganache",
     registry: contractAddress,
   });
+
   userData.did = holder.did;
 
   const hashed = await passHash(userData.password);
   userData.password = hashed;
 
-  await query.createUser(userData, (err: any, data: any) => {
+  await query.createUser(userData, async (err: any, data1: any) => {
     if (err) {
       // error handling code goes here
       console.log("ERROR : ", err);
+    }
+    if (data1.affectedRows === 1) {
+      await query.getUser(
+        "phone_num",
+        data1.phone_num,
+        (err: any, data2: any) => {
+          res.send({
+            data: { userData: data2[0], keypair: keypair },
+            msg: "Your data successfully registered!",
+          });
+        },
+      );
     } else {
-      if (data) {
-        res.send({
-          data: null,
-          msg: "Your data successfully registered!",
-        });
-      } else {
-        res.send({ data: null, msg: "Your data already exists!" });
-      }
+      res.send({ data: null, msg: "Your data already exists!" });
     }
   });
 };
