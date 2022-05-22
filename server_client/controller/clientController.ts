@@ -60,8 +60,7 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const loginData = req.query;
-
+  const loginData = req.body;
   await query.getUser(
     "user_name",
     loginData.user_name,
@@ -77,7 +76,6 @@ export const login = async (req: Request, res: Response) => {
           });
         } else {
           const promises = await data.map(async (elem: any) => {
-            console.log(elem);
             const compareBoolean = await bcrypt.compare(
               loginData.password,
               elem.password,
