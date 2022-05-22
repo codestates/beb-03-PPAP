@@ -1,17 +1,17 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { PassportDetail, Stamps, QR, PassportRegister } from "../screens";
+import { PassportDetail, Stamps, QR } from "../screens";
 
 const Stack = createStackNavigator();
 
-const PassportDetailStack = () => {
+const PassportDetailStack = ({ route }) => {
+  console.log(route?.params);
   return (
     <Stack.Navigator screenOptions={{ headerShown: true, headerTitle: "" }}>
       <Stack.Screen name="PassportDetail" component={PassportDetail} />
       <Stack.Screen name="Stamps" component={Stamps} />
       <Stack.Screen name="QR" component={QR} />
-      <Stack.Screen name="PassportRegister" component={PassportRegister} />
     </Stack.Navigator>
   );
 };

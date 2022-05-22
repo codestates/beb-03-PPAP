@@ -62,8 +62,8 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const loginData = req.query;
-
+  const loginData = req.body;
+  console.log(loginData);
   await query.getUser(
     "user_name",
     loginData.user_name,
@@ -90,7 +90,7 @@ export const login = async (req: Request, res: Response) => {
             return compareBoolArr[idx];
           })[0];
           if (!dataFiltered) {
-            res.status(401).send({
+            res.send({
               data: null,
               msg: "Wrong password!",
             });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
 
@@ -9,12 +9,8 @@ const Container = styled.View`
   background-color: #fff;
 `;
 
-const PassportDetail = ({ navigation }) => {
-  return (
-    <Container>
-      <Text>Passport Detail</Text>
-    </Container>
-  );
+const PassportDetail = ({ navigation, route }) => {
+  return <Container>PassportDetail</Container>;
 };
 
 const styles = StyleSheet.create({});

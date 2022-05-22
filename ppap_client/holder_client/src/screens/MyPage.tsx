@@ -17,7 +17,7 @@ const MyPage = ({ navigation }) => {
 
   const logout = () => {
     dispatch(unsetUser());
-    navigation.navigate("PassportStack");
+    navigation.navigate("Passport");
   };
 
   return (
