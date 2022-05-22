@@ -17,7 +17,7 @@ import {
 } from '../functions/holder';
 import { auth } from '../functions/auth';
 import createIssuerDID from '../functions/createIssuerDID';
-const didContractAdd = '0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca';
+const didContractAdd = '0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8';
 
 const clientAuth = async (authorization: any) => {
     let output: any = await auth(authorization);
@@ -246,18 +246,22 @@ export const requestVisa = async (req: Request, res: Response) => {
     let passData: any;
     const providerConfig = {
         name: 'ganache',
-        rpcUrl: 'http://localhost:7545',
+        rpcUrl: 'http://192.168.35.214:7545',
         registry: didContractAdd,
     };
     const ethrDidResolver = getResolver(providerConfig);
     const didResolver = new Resolver(ethrDidResolver);
     // consider a case when passport VP Jwt token is invalid
     try {
+        console.log(vpPassJwt);
         const verifiedVP = await verifyPresentation(vpPassJwt, didResolver);
-        const vcPass = verifiedVP.payload.vp.verifiableCredential[0];
-        const verifiedVC = await verifyCredential(vcPass, didResolver);
-        passData = verifiedVC.payload.vc.credentialSubject.passportInfo;
+       
+         const vcPass = verifiedVP.payload.vp.verifiableCredential[0];
+         const verifiedVC = await verifyCredential(vcPass, didResolver);
+         passData = verifiedVC.payload.vc.credentialSubject.passportInfo;
+      
     } catch (e) {
+        console.log(e)
         return res
             .status(400)
             .send({ data: null, msg: 'invalid input passport VP' });
@@ -451,7 +455,7 @@ export const test = async (req: Request, res: Response) => {
     console.log(vpJwt);
     const providerConfig = {
         name: 'ganache',
-        rpcUrl: 'http://localhost:7545',
+        rpcUrl: 'http://192.168.35.214:7545',
         registry: didContractAdd,
     };
     const ethrDidResolver = await getResolver(providerConfig);
