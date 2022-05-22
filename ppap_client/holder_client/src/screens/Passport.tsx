@@ -23,8 +23,8 @@ const verifiedVC = async (payload)=>{
   payload= 'eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InBhc3Nwb3J0SW5mbyI6eyJkaWQiOiJkaWQ6ZXRocjpnYW5hY2hlOjB4MDIwZmU2YWVjZWM2OTkzMmMxNWEwNTNlZTUwNmI0MmM5N2FhYWI4OGQ1YjgwM2RiMDJhNTI5ODU1NTMxMGIwYjI3IiwiY2xpZW50X2lkIjoxNiwiY291bnRyeV9jb2RlIjoiS09SIn19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.S_-Cc-7tCz7hguEX4JpeJ6_-11xzPXY-KXl-7PKqxO8xDgck4sy_QVRv0w4w1j69cISq0PztMV_7M-H9cZsWHwE'
   const providerConfig = {
     name: "ganache",
-    rpcUrl: "http://192.168.35.214:7545",
-    registry: "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8",
+    rpcUrl: "http://192.168.1.132:7545",
+    registry: "0x15CD7F5b57718b17eD0CacF3386aAad54C65a234",
   };
   const ethrDidResolver = await getResolver(providerConfig);
   const didResolver:any = await new Resolver(ethrDidResolver);
@@ -78,20 +78,19 @@ const Passport = ({ navigation }) => {
       jwt_decode(accessToken);
 
     AsyncStorage.getItem("@passport_jwt").then(async (payload) => {
-     
       if (payload === null) {
         console.log("여권 없음");
         setScreenName("PassportRegister");
-        
+
         // 여권 발급 신청
         setPassport(false);
 
-        verifiedVC(payload)
+        verifiedVC(payload);
       } else {
         console.log("여권 있음");
         setScreenName("PassportDetailStack");
         // 여권 VC를 가져와야 함
-      
+
         // const verifiedVC = await verifyCredential(payload, didResolver);
         // console.log(didResolver);
         setPassport(true);
