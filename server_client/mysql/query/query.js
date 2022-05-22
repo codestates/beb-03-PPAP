@@ -32,7 +32,7 @@ module.exports.createUser = async function createUser(userData, callback) {
     } else {
       if (data.length === 0) {
         connection.query(
-          `INSERT INTO CLIENT_USER (user_name, password, phone_num, did) VALUES ('${userData.user_name}','${userData.password}','${userData.phone_num}','${userData.did}')`,
+          `INSERT INTO CLIENT_USER (user_name, password, phone_num, did, user_birth) VALUES ('${userData.user_name}','${userData.password}','${userData.phone_num}','${userData.did}','${userData.user_birth}')`,
           function (err, result) {
             if (err) callback(err, null);
             else callback(null, result);

@@ -53,7 +53,7 @@ export const register = async (req: Request, res: Response) => {
     if (data1.affectedRows === 1) {
       await query.getUser(
         "phone_num",
-        data1.phone_num,
+        userData.phone_num,
         (err: any, data2: any) => {
           res.send({
             data: { userData: data2[0], keypair: keypair },
