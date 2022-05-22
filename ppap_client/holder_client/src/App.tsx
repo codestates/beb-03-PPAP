@@ -10,6 +10,7 @@ import styled from "styled-components/native";
 import { createStore } from "redux";
 import rootReducer from "./modules";
 import { Provider } from "react-redux";
+import '../shim';
 
 const Container = styled.View`
   flex: 1;

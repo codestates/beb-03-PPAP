@@ -10,7 +10,7 @@ import { id } from "ethers/lib/utils";
 import { resolve } from "path/posix";
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
 
-const didContractAdd = "0x87BDF06D9c66421Af59167c9DA71E08eB4F09Dca";
+const didContractAdd = "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8";
 const rpcUrl = "http://localhost:7545";
 var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 var contractAddress = didContractAdd; //local
@@ -104,7 +104,6 @@ export const login = async (req: Request, res: Response) => {
             // req.session.user_birth = dataFiltered.user_birth;
             // req.session.did = dataFiltered.did;
             // req.session.phone_num = dataFiltered.phone_num;
-
             const accessToken = genAccessToken(tokenData);
             res.send({
               data: {

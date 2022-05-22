@@ -9,7 +9,7 @@ const app = express();
 const port = 4001;
 
 const corsOptions = {
-  origin: "*",
+  origin: ["*"],
   credentials: true,
   methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
 };

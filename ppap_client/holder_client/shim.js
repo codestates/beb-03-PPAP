@@ -21,6 +21,9 @@ if (typeof localStorage !== "undefined") {
   localStorage.debug = isDev ? "*" : "";
 }
 
+// If using the crypto shim, uncomment the following line to ensure
+// crypto is loaded first, so it can populate global.crypto
+// require('crypto')
 if (require("./package.json").dependencies["react-native-crypto"]) {
   const algos = require("browserify-sign/algos");
   if (!algos.sha256) {
@@ -57,6 +60,3 @@ if (require("./package.json").dependencies["react-native-crypto"]) {
     return arr;
   }
 }
-// If using the crypto shim, uncomment the following line to ensure
-// crypto is loaded first, so it can populate global.crypto
-// require('crypto')
