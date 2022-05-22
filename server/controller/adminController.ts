@@ -212,7 +212,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
       // holder가 있어야지 아래 코드들이 동작하도록 재구성
       const providerConfig = {
         name: "ganache",
-        rpcUrl: "http://localhost:7545",
+        rpcUrl: process.env.RPC_URL,
         registry: didContractAdd,
       };
       const ethrDidResolver = getResolver(providerConfig);
