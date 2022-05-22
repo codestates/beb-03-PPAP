@@ -63,7 +63,7 @@ export const requestPassport = async (req: Request, res: Response) => {
             requestedData: data[0],
             msg: "Your request is sucessfully submitted",
           });
-        }
+        },
       );
     } else {
       if (data.success_yn === "0") {
@@ -112,59 +112,59 @@ export const issuePassVC = async (req: Request, res: Response) => {
   // get issuer sign (not only issuer DID) to make VC
   const issuer: any = await createIssuerDID();
 
-  // vc payload which contains passport and stamp data
-  const vcPassPayload: JwtCredentialPayload = {
-    sub: holderInfo.did,
-    nbf: 1562950282,
-    vc: {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential"],
-      credentialSubject: {
-        passportInfo: holderInfo,
-      },
-    },
-  };
-  // create vc as JWT token under issuer signing
-  const vcPassJwt = await createVerifiableCredentialJwt(vcPassPayload, issuer);
+  // // vc payload which contains passport and stamp data
+  // const vcPassPayload: JwtCredentialPayload = {
+  //   sub: holderInfo.did,
+  //   nbf: 1562950282,
+  //   vc: {
+  //     "@context": ["https://www.w3.org/2018/credentials/v1"],
+  //     type: ["VerifiableCredential"],
+  //     credentialSubject: {
+  //       passportInfo: holderInfo,
+  //     },
+  //   },
+  // };
+  // // create vc as JWT token under issuer signing
+  // const vcPassJwt = await createVerifiableCredentialJwt(vcPassPayload, issuer);
 
-  const condOption = {
-    setCond: "did",
-    setVal: holderInfo.did,
-    findCond: "client_id",
-    findVal: holderInfo.client_id,
-  };
+  // const condOption = {
+  //   setCond: "did",
+  //   setVal: holderInfo.did,
+  //   findCond: "client_id",
+  //   findVal: holderInfo.client_id,
+  // };
 
-  // insert user did on GOVERN_USER_CLIENT table
-  await query.updateRow(
-    "GOVERN_USER_CLIENT",
-    condOption,
-    async (err: any, data: any) => {
-      if (err) {
-        console.log("ERROR : ", err);
-        res.status(400).send(err);
-      }
-      if (data.affectedRows === 1) {
-        // delete designated user's passport request form
-        await query.deleteRow(
-          "GOVERN_FA_PASSPORT",
-          condOption.setCond,
-          condOption.setVal,
-          (err: any, data: any) => {
-            if (err) {
-              console.log("ERROR : ", err);
-              res.status(400).send(err);
-            }
-            console.log(data);
-          }
-        );
-      }
-    }
-  );
+  // // insert user did on GOVERN_USER_CLIENT table
+  // await query.updateRow(
+  //   "GOVERN_USER_CLIENT",
+  //   condOption,
+  //   async (err: any, data: any) => {
+  //     if (err) {
+  //       console.log("ERROR : ", err);
+  //       res.status(400).send(err);
+  //     }
+  //     if (data.affectedRows === 1) {
+  //       // delete designated user"s passport request form
+  //       await query.deleteRow(
+  //         "GOVERN_FA_PASSPORT",
+  //         condOption.setCond,
+  //         condOption.setVal,
+  //         (err: any, data: any) => {
+  //           if (err) {
+  //             console.log("ERROR : ", err);
+  //             res.status(400).send(err);
+  //           }
+  //           console.log(data);
+  //         }
+  //       );
+  //     }
+  //   }
+  // );
 
-  res.status(200).send({
-    data: { vcPassJwt: vcPassJwt },
-    msg: "get passport vc success",
-  });
+  // res.status(200).send({
+  //   data: { vcPassJwt: vcPassJwt },
+  //   msg: "get passport vc success",
+  // });
 };
 
 export const getAvailableVisa = async (req: Request, res: Response) => {
@@ -225,7 +225,7 @@ export const requestVisa = async (req: Request, res: Response) => {
           res.status(400).send(err);
         }
         resolve(data);
-      }
+      },
     );
   });
 
@@ -233,7 +233,7 @@ export const requestVisa = async (req: Request, res: Response) => {
   if (hasPassport.length === 0) {
     return res.status(400).send({
       data: null,
-      msg: `You don't have passport. Make passport first.`,
+      msg: `You don"t have passport. Make passport first.`,
     });
   }
 
@@ -278,7 +278,7 @@ export const requestVisa = async (req: Request, res: Response) => {
       "GOVERN_FA_VISA",
       condOption,
       (err: any, data: any) => {
-        // requested visa doesn't exist
+        // requested visa doesn"t exist
         if (data.length === 0) {
           return res.status(400).send({
             data: null,
@@ -286,7 +286,7 @@ export const requestVisa = async (req: Request, res: Response) => {
           });
         }
         resolve(data);
-      }
+      },
     );
   });
 
@@ -319,14 +319,15 @@ export const requestVisa = async (req: Request, res: Response) => {
             requestedData: data[0],
             msg: "Your request is sucessfully submitted",
           });
-        }
+        },
       );
     } else {
       // already exist request & not approved
       if (data.success_yn === "0") {
         res.status(401).send({
           data: null,
-          msg: "Your request is already transfered and it does not approved yet.",
+          msg:
+            "Your request is already transfered and it does not approved yet.",
         });
       } else {
         res.status(401).send({
@@ -364,7 +365,7 @@ export const getReqVisaList = async (req: Request, res: Response) => {
         data: { reqVisaList: data },
         msg: "call requested visa list success",
       });
-    }
+    },
   );
 };
 
@@ -408,7 +409,7 @@ export const issueVisaVC = async (req: Request, res: Response) => {
   // create vc as JWT token under issuer signing
   const vcVisaJwt = await createVerifiableCredentialJwt(vcVisaPayload, issuer);
 
-  // delete designated user's visa request form
+  // delete designated user"s visa request form
   await query.deleteRow(
     "GOVERN_FA_VISA_SURVEY",
     "visa_survey_id",
@@ -419,7 +420,7 @@ export const issueVisaVC = async (req: Request, res: Response) => {
         res.status(400).send(err);
       }
       console.log(data);
-    }
+    },
   );
 
   res.status(200).send({
