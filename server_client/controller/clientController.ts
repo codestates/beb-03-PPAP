@@ -10,8 +10,8 @@ import { id } from "ethers/lib/utils";
 import { resolve } from "path/posix";
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
 
-const didContractAdd = "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8";
-const rpcUrl = "http://localhost:7545";
+const didContractAdd = process.env.DIDCONTRACTADD;
+const rpcUrl = process.env.RPC_URL;
 var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 var contractAddress = didContractAdd; //local
 
