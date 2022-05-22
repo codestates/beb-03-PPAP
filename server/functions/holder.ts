@@ -120,33 +120,50 @@ export const getApprovedVisaData = async (reqVisaInfo: any) => {
         msg: `No matching visa. Check visa_survey_id`,
       };
     }
-    const cond = ["visa_id", "visa_id"];
+    const cond1 = ["visa_id", "visa_id"];
     const realData: any = await new Promise(async (resolve) => {
       // designate user using visa_survey_id
       await query.joinTable(
         "GOVERN_FA_VISA_SURVEY",
         "GOVERN_FA_VISA",
-        cond,
+        cond1,
         "visa_survey_id",
         reqVisaInfo.visa_survey_id,
-        (err: any, data: any) => {
+        async (err: any, data1: any) => {
           if (err) {
             console.log(err);
             return err;
           }
-          if (data[0].success_yn === "0") {
+          if (data1[0].success_yn === "0") {
             resolve({
               statusCode: 400,
               data: null,
               msg: `Your visa request is not approved yet.`,
             });
           }
-          const tempObj = Object.assign(data[0]);
-          // delete unnecessary key:value
-          delete tempObj.visa_id;
-          delete tempObj.success_yn;
-          delete tempObj.visa_survey_id;
-          resolve(tempObj);
+          const cond2 = ["did", "did"];
+          await query.joinTable(
+            "GOVERN_FA_VISA_SURVEY",
+            "GOVERN_USER_CLIENT",
+            cond2,
+            "did",
+            data1[0].did,
+            (err: any, data2: any) => {
+              if (err) {
+                console.log(err);
+                return err;
+              }
+              const tempObj = Object.assign(data1[0], data2[0]);
+              // delete unnecessary key:value
+              delete tempObj.visa_id;
+              delete tempObj.success_yn;
+              delete tempObj.visa_survey_id;
+              delete tempObj.client_id;
+              delete tempObj.phone_num;
+              delete tempObj.personal_id;
+              resolve(tempObj);
+            },
+          );
         },
       );
     });

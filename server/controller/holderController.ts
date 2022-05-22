@@ -219,6 +219,13 @@ export const requestVisa = async (req: Request, res: Response) => {
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
 
+  // case when user submit visa request to own country
+  if (holderInfo.country_code === target_country) {
+    return res
+      .status(400)
+      .send({ data: null, msg: "You can't request visa to your country" });
+  }
+
   // check whether the client has passport or not
   const hasPassport: any = await new Promise((resolve) => {
     query.getTargetData(
@@ -367,6 +374,12 @@ export const getReqVisaList = async (req: Request, res: Response) => {
         console.log("ERROR : ", err);
         res.status(400).send(err);
       }
+      if (data.length === 0) {
+        return res.status(200).send({
+          data: null,
+          msg: "There are no requests",
+        });
+      }
       return res.status(200).send({
         data: { reqVisaList: data },
         msg: "call requested visa list success",
@@ -425,7 +438,9 @@ export const issueVisaVC = async (req: Request, res: Response) => {
         console.log("ERROR : ", err);
         res.status(400).send(err);
       }
-      console.log(data);
+      if (data.affectedRows === 1) {
+        console.log("row delete success");
+      }
     },
   );
 
@@ -447,7 +462,6 @@ export const test = async (req: Request, res: Response) => {
     },
   };
   const vpJwt = await createVerifiablePresentationJwt(vpPayload, issuer);
-  console.log(vpJwt);
   const providerConfig = {
     name: "ganache",
     rpcUrl: process.env.RPC_URL,
