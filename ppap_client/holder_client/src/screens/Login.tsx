@@ -52,7 +52,7 @@ const Login = ({ navigation }) => {
     console.log(userName, password);
     dispatch(setSpinnerStatus(true));
     axios
-      .post("https://ppap.loca.lt/clientAuth/login", {
+      .post("https://rare-seahorse-92.loca.lt/clientAuth/login", {
         user_name: userName,
         password,
       })

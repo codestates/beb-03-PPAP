@@ -66,7 +66,7 @@ const Passport = ({ navigation }) => {
   );
   clearJwt();
 
-  const userInfo = useSelector((state) => state.userReducer).data;
+  const userInfo = useSelector((state: any) => state.userReducer).data;
   if (userInfo) {
     const { accessToken, userData } = userInfo;
 

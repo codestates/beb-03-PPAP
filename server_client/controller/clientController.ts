@@ -62,8 +62,8 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const loginData = req.body;
-  console.log(loginData)
+  const loginData = req.query;
+
   await query.getUser(
     "user_name",
     loginData.user_name,
@@ -90,7 +90,7 @@ export const login = async (req: Request, res: Response) => {
             return compareBoolArr[idx];
           })[0];
           if (!dataFiltered) {
-            res.send({
+            res.status(401).send({
               data: null,
               msg: "Wrong password!",
             });
@@ -205,7 +205,7 @@ export const storeStampVC = async (req: Request, res: Response) => {
 };
 
 export const getPassportVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_PASSPORT_VC",
@@ -225,7 +225,7 @@ export const getPassportVC = async (req: Request, res: Response) => {
 };
 
 export const getVisaVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_VISA_VC",
@@ -245,7 +245,7 @@ export const getVisaVC = async (req: Request, res: Response) => {
 };
 
 export const getStampVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_STAMP_VC",
