@@ -63,6 +63,7 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const loginData = req.body;
+  console.log(loginData)
   await query.getUser(
     "user_name",
     loginData.user_name,
