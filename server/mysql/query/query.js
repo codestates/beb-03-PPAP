@@ -11,7 +11,7 @@ module.exports.getTargetData = async function getTargetData(
   tableFlag,
   findFlag,
   data,
-  callback
+  callback,
 ) {
   const queryMsg = `SELECT * FROM ${tableFlag} WHERE ${findFlag}='${data}'`;
   connection.query(queryMsg, function (err, result) {
@@ -24,7 +24,7 @@ module.exports.getTargetData = async function getTargetData(
 module.exports.getMultiCondData = async function getMultiCondData(
   tableFlag,
   findCond,
-  callback
+  callback,
 ) {
   let queryMsg = `SELECT * FROM ${tableFlag} `;
   Object.entries(findCond).forEach(([findFlag, data], idx) => {
@@ -44,7 +44,7 @@ module.exports.getMultiCondData = async function getMultiCondData(
 
 module.exports.getPassport = async function getPassportList(
   countryCode,
-  callback
+  callback,
 ) {
   connection.query(
     `SELECT * FROM GOVERN_FA_PASSPORT P
@@ -54,13 +54,13 @@ module.exports.getPassport = async function getPassportList(
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
 module.exports.getUserByDid = async function getUserByDid(
   holder_did,
-  callback
+  callback,
 ) {
   connection.query(
     `SELECT * FROM GOVERN_USER_CLIENT C 
@@ -68,13 +68,13 @@ module.exports.getUserByDid = async function getUserByDid(
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
 module.exports.getVisaSurveyList = async function getVisaSurveyList(
   countryCode,
-  callback
+  callback,
 ) {
   connection.query(
     `SELECT *,V.success_yn AS visa_success_yn FROM GOVERN_FA_VISA FV
@@ -86,7 +86,7 @@ module.exports.getVisaSurveyList = async function getVisaSurveyList(
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
@@ -97,7 +97,7 @@ module.exports.updateRequest = async function updateRequest(
   updateData,
   findFlag,
   findData,
-  callback
+  callback,
 ) {
   connection.query(
     `UPDATE ${tableFlag}
@@ -106,14 +106,14 @@ module.exports.updateRequest = async function updateRequest(
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
 module.exports.getUserStamp = async function getUserStamp(
   entOrdep, // 0 : 전체 ,1 : 입국,2 : 출국
   countryCode,
-  callback
+  callback,
 ) {
   // 조건
   let queryStr = `SELECT * FROM GOVERN_FA_STAMP S
@@ -148,7 +148,7 @@ module.exports.updateStampTable = async function updateStampTable(
   country_code,
   stamp_expired_date,
   ent_or_dep,
-  callback
+  callback,
 ) {
   connection.query(
     `INSERT INTO GOVERN_FA_STAMP (passport_id, stamp_uri, country_code, stamp_expired_date, ent_or_dep)
@@ -156,13 +156,13 @@ module.exports.updateStampTable = async function updateStampTable(
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
 module.exports.requestPassForm = async function requestPassForm(
   reqForm,
-  callback
+  callback,
 ) {
   console.log(reqForm.did);
   // find user using id(clientId)
@@ -191,7 +191,7 @@ module.exports.requestPassForm = async function requestPassForm(
                 } else {
                   resolve(data);
                 }
-              }
+              },
             );
           });
 
@@ -204,7 +204,7 @@ module.exports.requestPassForm = async function requestPassForm(
               function (err, result) {
                 if (err) callback(err, null);
                 else callback(null, result);
-              }
+              },
             );
           } else {
             // none request but did exist -> already have did
@@ -215,13 +215,13 @@ module.exports.requestPassForm = async function requestPassForm(
           callback(null, data[0]);
         }
       }
-    }
+    },
   );
 };
 
 module.exports.requestVisaForm = async function requestVisaForm(
   reqForm,
-  callback
+  callback,
 ) {
   // find visa request
   connection.query(
@@ -239,14 +239,14 @@ module.exports.requestVisaForm = async function requestVisaForm(
             function (err, result) {
               if (err) callback(err, null);
               else callback(null, result);
-            }
+            },
           );
         } else {
           // request already exists
           callback(null, data[0]);
         }
       }
-    }
+    },
   );
 };
 
@@ -254,7 +254,7 @@ module.exports.deleteRow = async function deleteRow(
   tableFlag,
   findFlag,
   data,
-  callback
+  callback,
 ) {
   const queryMsg = `DELETE FROM ${tableFlag} WHERE ${findFlag} = '${data}'`;
   connection.query(queryMsg, function (err, result) {
@@ -266,7 +266,7 @@ module.exports.deleteRow = async function deleteRow(
 module.exports.updateRow = async function updateRow(
   tableFlag,
   updateCond,
-  callback
+  callback,
 ) {
   let queryMsg = `UPDATE ${tableFlag} SET ${updateCond.setCond}='${updateCond.setVal}' WHERE ${updateCond.findCond} = '${updateCond.findVal}'`;
   connection.query(queryMsg, function (err, result) {
@@ -285,7 +285,7 @@ module.exports.joinTable = async function joinTables(
   cond,
   findFlag,
   data,
-  callback
+  callback,
 ) {
   let queryMsg = `SELECT * FROM ${tableFlag} INNER JOIN ${joinTable} ON ${tableFlag}.${cond[0]} = ${joinTable}.${cond[1]} WHERE ${tableFlag}.${findFlag} = '${data}'`;
 

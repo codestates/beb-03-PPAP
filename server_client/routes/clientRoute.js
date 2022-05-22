@@ -14,11 +14,16 @@ const {
 const express = require("express");
 const clientRoute = express.Router();
 
+// register and login process
 clientRoute.route("/login").post(login);
 clientRoute.route("/register").post(register);
+
+// process which stores each VC
 clientRoute.route("/storePassportVC").post(storePassportVC);
 clientRoute.route("/storeVisaVC").post(storeVisaVC);
 clientRoute.route("/storeStampVC").post(storeStampVC);
+
+//process which get each VC
 clientRoute.route("/getPassportVC").get(getPassportVC);
 clientRoute.route("/getVisaVC").get(getVisaVC);
 clientRoute.route("/getStampVC").get(getStampVC);

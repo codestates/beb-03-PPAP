@@ -102,69 +102,75 @@ export const issuePassVC = async (req: Request, res: Response) => {
   }
 
   // recall passport
-  const passData = await getApprovedPassportData(holderInfo);
-  if (passData.statusCode) {
+  const tempPassData = await getApprovedPassportData(holderInfo);
+  if (tempPassData.statusCode) {
     return res
-      .status(passData.statusCode)
-      .send({ data: null, msg: passData.msg });
+      .status(tempPassData.statusCode)
+      .send({ data: null, msg: tempPassData.msg });
   }
+  const passData = Object.assign(tempPassData.data);
+
+  const condOption = {
+    setCond: "did",
+    setVal: holderInfo.did,
+    findCond: "client_id",
+    findVal: holderInfo.client_id,
+  };
+
+  // insert user did on GOVERN_USER_CLIENT table
+  await query.updateRow(
+    "GOVERN_USER_CLIENT",
+    condOption,
+    async (err: any, data: any) => {
+      if (err) {
+        console.log("ERROR : ", err);
+        res.status(400).send(err);
+      }
+      if (data.affectedRows === 1) {
+        console.log("add did success");
+        // delete designated user"s passport request form
+        await query.deleteRow(
+          "GOVERN_FA_PASSPORT",
+          condOption.setCond,
+          condOption.setVal,
+          (err: any, data: any) => {
+            if (err) {
+              console.log("ERROR : ", err);
+              res.status(400).send(err);
+            }
+            if (data.affectedRows === 1) {
+              console.log("row delete success");
+            }
+          },
+        );
+      }
+    },
+  );
+
+  passData.did = holderInfo.did;
 
   // get issuer sign (not only issuer DID) to make VC
   const issuer: any = await createIssuerDID();
 
-  // // vc payload which contains passport and stamp data
-  // const vcPassPayload: JwtCredentialPayload = {
-  //   sub: holderInfo.did,
-  //   nbf: 1562950282,
-  //   vc: {
-  //     "@context": ["https://www.w3.org/2018/credentials/v1"],
-  //     type: ["VerifiableCredential"],
-  //     credentialSubject: {
-  //       passportInfo: holderInfo,
-  //     },
-  //   },
-  // };
-  // // create vc as JWT token under issuer signing
-  // const vcPassJwt = await createVerifiableCredentialJwt(vcPassPayload, issuer);
+  // vc payload which contains passport and stamp data
+  const vcPassPayload: JwtCredentialPayload = {
+    sub: holderInfo.did,
+    nbf: 1562950282,
+    vc: {
+      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      type: ["VerifiableCredential"],
+      credentialSubject: {
+        passportInfo: passData,
+      },
+    },
+  };
+  // create vc as JWT token under issuer signing
+  const vcPassJwt = await createVerifiableCredentialJwt(vcPassPayload, issuer);
 
-  // const condOption = {
-  //   setCond: "did",
-  //   setVal: holderInfo.did,
-  //   findCond: "client_id",
-  //   findVal: holderInfo.client_id,
-  // };
-
-  // // insert user did on GOVERN_USER_CLIENT table
-  // await query.updateRow(
-  //   "GOVERN_USER_CLIENT",
-  //   condOption,
-  //   async (err: any, data: any) => {
-  //     if (err) {
-  //       console.log("ERROR : ", err);
-  //       res.status(400).send(err);
-  //     }
-  //     if (data.affectedRows === 1) {
-  //       // delete designated user"s passport request form
-  //       await query.deleteRow(
-  //         "GOVERN_FA_PASSPORT",
-  //         condOption.setCond,
-  //         condOption.setVal,
-  //         (err: any, data: any) => {
-  //           if (err) {
-  //             console.log("ERROR : ", err);
-  //             res.status(400).send(err);
-  //           }
-  //           console.log(data);
-  //         }
-  //       );
-  //     }
-  //   }
-  // );
-
-  // res.status(200).send({
-  //   data: { vcPassJwt: vcPassJwt },
-  //   msg: "get passport vc success",
-  // });
+  res.status(200).send({
+    data: { vcPassJwt: vcPassJwt },
+    msg: "get passport vc success",
+  });
 };
 
 export const getAvailableVisa = async (req: Request, res: Response) => {

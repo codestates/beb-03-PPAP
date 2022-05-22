@@ -35,7 +35,7 @@ export const auth = async (authorization: any) => {
                   resolve(transferObj);
                 }
               }
-            }
+            },
           );
         });
       } else {
@@ -59,7 +59,7 @@ export const auth = async (authorization: any) => {
                     resolve(data[0]);
                   }
                 }
-              }
+              },
             );
           });
         }
@@ -107,7 +107,7 @@ export const getAdminDid = async (id: any, password: any) => {
               });
             }
           }
-        }
+        },
       );
     });
   } catch (e) {
