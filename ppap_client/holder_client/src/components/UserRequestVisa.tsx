@@ -51,7 +51,6 @@ const Container = styled.Pressable.attrs((props) => ({
 
 const UserRequestVisa = ({ visaRequestData }: { visaRequestData?: object }) => {
   const userInfo = useSelector((state: any) => state.userReducer).data;
-  // AsyncStorage.removeItem("@visa_jwt_arr");
   const getVisaVc = async () => {
     console.log("버튼 클릭");
     let output = await axios.post(

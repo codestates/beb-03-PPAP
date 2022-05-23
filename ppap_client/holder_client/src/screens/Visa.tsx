@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Button } from "react-native";
+import { View, StyleSheet, Text, Button, ScrollView } from "react-native";
 import styled from "styled-components/native";
 import { MainButton, UserVisa, VisaButton } from "../components";
 import { useSelector } from "react-redux";
@@ -15,6 +15,12 @@ import env from "../utils/envFile";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 
+
+const ScrollContainer = styled.ScrollView`
+  position: absolute;
+  width: 300px;
+`;
+
 const Container = styled.View`
   flex: 1;
   justify-content: center;
@@ -23,16 +29,18 @@ const Container = styled.View`
 `;
 
 const ButtonContainer = styled.View`
+position: absolute;
   justify-content: center;
   align-items: center;
-  bottom: -10%;
+  bottom: 3%;
 `;
 const Visa = ({ navigation }) => {
   const userInfo = useSelector((state: any) => state.userReducer).data;
   const [hasVisa, setVisa] = useState(false);
   const [screenName, setScreenName] = useState("Visa");
   const [visaList, setVisaList] = useState([]);
-
+  const [clickCheck, setClickCheck] = useState(false);
+  const [visaDetailIndex, setVisaDetailIndex] = useState(-1);
   // visa VC 저장
   // const someArray = ["asfdadfs", "aklsjhdflja"];
   // AsyncStorage.setItem("@visa_jwt", JSON.stringify(someArray))
@@ -40,11 +48,20 @@ const Visa = ({ navigation }) => {
   //   .catch((error) => console.log("error!"));
 
   useEffect(() => {
-    navigation.navigate(screenName);
     getVisaVC();
     // console.log(visaList);
   }, [screenName]);
 
+  useEffect(() => {
+    //여권detail을 눌렀을때
+    if(visaDetailIndex!==-1){
+      navigation.navigate(screenName,{visaInfo:visaList[visaDetailIndex]});
+    }
+    //다른걸 눌렀을때
+    else{
+      navigation.navigate(screenName);
+    }
+  }, [clickCheck]);
   useEffect(() => {
     console.log(visaList);
   }, [visaList]);
@@ -91,18 +108,38 @@ const Visa = ({ navigation }) => {
 
   return (
     <Container>
-      {visaList.map((elem) => {
-        return (
+      <ScrollContainer
+        horizontal
+        pagingEnabled={true}
+        disableIntervalMomentum={true}
+        showsHorizontalScrollIndicator={false}
+      >
+        {visaList.length === 0 ? (
           <UserVisa
             onPress={() => {
-              setScreenName("VisaDetail");
+              setScreenName("VisaRegister");
+              setClickCheck(!clickCheck);
             }}
             mainText={userInfo && hasVisa ? "Visa" : "비자를 신청하세요"}
-            subText={userInfo && hasVisa ? userInfo.userData.user_name : ""}
             isValidVisa={!!userInfo && hasVisa}
           />
-        );
-      })}
+        ) : null}
+        {visaList.map((elem,index) => {
+          return (
+            <UserVisa
+              onPress={() => {
+                setScreenName(`VisaDetail`);
+                setVisaDetailIndex(index);
+                setClickCheck(!clickCheck);
+              }}
+              mainText={elem.visa_name}
+              subText={elem.visa_purpose}
+              isValidVisa={true}
+              key={index}
+            />
+          );
+        })}
+      </ScrollContainer>
 
       <ButtonContainer>
         <VisaButton
@@ -110,6 +147,7 @@ const Visa = ({ navigation }) => {
           onPress={() => {
             console.log("비자 신청하기");
             setScreenName("VisaRegister");
+            setClickCheck(!clickCheck);
           }}
           width="50%"
         />
@@ -118,6 +156,7 @@ const Visa = ({ navigation }) => {
           onPress={() => {
             console.log("비자 신청 내역 조회");
             setScreenName("VisaRequestList");
+            setClickCheck(!clickCheck);
           }}
           width="50%"
         />

@@ -79,7 +79,7 @@ const Passport = ({ navigation }) => {
   setJwt(
     "eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InBhc3Nwb3J0SW5mbyI6eyJkaWQiOiJkaWQ6ZXRocjpnYW5hY2hlOjB4MDIwZmU2YWVjZWM2OTkzMmMxNWEwNTNlZTUwNmI0MmM5N2FhYWI4OGQ1YjgwM2RiMDJhNTI5ODU1NTMxMGIwYjI3IiwiY2xpZW50X2lkIjoxNiwiY291bnRyeV9jb2RlIjoiS09SIn19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.S_-Cc-7tCz7hguEX4JpeJ6_-11xzPXY-KXl-7PKqxO8xDgck4sy_QVRv0w4w1j69cISq0PztMV_7M-H9cZsWHwE",
   );
-  clearJwt();
+  //clearJwt();
 
   const userInfo = useSelector((state: any) => state.userReducer).data;
   if (userInfo) {

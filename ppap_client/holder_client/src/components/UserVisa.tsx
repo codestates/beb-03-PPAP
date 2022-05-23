@@ -4,7 +4,8 @@ import styled from "styled-components/native";
 import { images } from "../utils/images";
 
 const Cover = styled.View`
-  background-color: lightgray;
+ background-color: ${({ theme, isLogined }) =>
+    isLogined ? theme.lightblue : theme.palegray};
   width: 300px;
   height: 450px;
   border-radius: 30px;
@@ -34,6 +35,7 @@ const UserVisa = ({
   subText?: string;
   isValidVisa?: boolean;
 }) => {
+  
   return (
     <Pressable onPress={onPress}>
       <Cover isLogined={isValidVisa}>

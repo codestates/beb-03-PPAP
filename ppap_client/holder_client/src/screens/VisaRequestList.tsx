@@ -21,7 +21,13 @@ const VisaRequestList = () => {
       .get(`${env.server}/holder/getReqVisaList`, {
         headers: { authorization: userInfo.accessToken },
       })
-      .then((data) => data.data.data.reqVisaList);
+      .then((data) => {
+        if(data.data.data!=null){
+          return data.data.data.reqVisaList
+        }else{
+          return [];
+        }
+      });
   }
 
   useEffect(() => {
@@ -36,7 +42,7 @@ const VisaRequestList = () => {
 
   return (
     <Container>
-      <Text>VisaRequestList</Text>
+     
       {requestVisaList.length !== 0
         ? requestVisaList.map((data) => {
             return (
@@ -46,7 +52,7 @@ const VisaRequestList = () => {
               />
             );
           })
-        : null}
+        :  <Text>신청내역이 없습니다.</Text>}
     </Container>
   );
 };

@@ -14,7 +14,7 @@ const VisaStack = () => {
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Visa" component={Visa} />
-      <Stack.Screen name="VisaDetail" component={VisaDetail} />
+      <Stack.Screen name="VisaDetail" component={VisaDetail}  />
       <Stack.Screen name="VisaRegister" component={VisaRegister} />
       <Stack.Screen name="VisaRequestList" component={VisaRequestList} />
     </Stack.Navigator>
