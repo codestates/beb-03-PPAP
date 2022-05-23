@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, Button } from "react-native";
 import styled from "styled-components/native";
 import { MainButton, UserVisa, VisaButton } from "../components";
@@ -12,6 +12,11 @@ const Container = styled.View`
   background-color: #fff;
 `;
 
+const ButtonContainer = styled.View`
+  justify-content: center;
+  align-items: center;
+  bottom: -10%;
+`;
 const Visa = ({ navigation }) => {
   const userInfo = useSelector((state: any) => state.userReducer).data;
   const [hasVisa, setVisa] = useState(false);
@@ -22,13 +27,17 @@ const Visa = ({ navigation }) => {
   // AsyncStorage.setItem("@visa_jwt", JSON.stringify(someArray))
   //   .then((json) => console.log("success!"))
   //   .catch((error) => console.log("error!"));
+  
+  useEffect(() => {
+    navigation.navigate(screenName)
+  }, [screenName]);
 
   AsyncStorage.getItem("@visa_jwt").then(async (data) => {
     if (data === null) {
-      console.log("비자 없음");
-      setScreenName("VisaRegister");
+      console.log("비자 없음!!")
       // 비자 신청
       setVisa(false);
+
     } else {
       console.log("비자 있음");
       let output = JSON.parse(data);
@@ -43,19 +52,29 @@ const Visa = ({ navigation }) => {
   return (
     <Container>
       <UserVisa
-        onPress={() => navigation.navigate(screenName)}
-        mainText={"Visa"}
+        onPress={() =>  {setScreenName("VisaDetail")}}
+        mainText={userInfo && hasVisa ? "Visa" : "비자를 신청하세요"}
         subText={userInfo && hasVisa ? userInfo.userData.user_name : ""}
         isValidPassport={!!userInfo && hasVisa}
       />
+      <ButtonContainer >
       <VisaButton
         title="신청하기"
         onPress={() => {
           console.log("비자 신청하기");
-          navigation.navigate(screenName);
+          setScreenName("VisaRegister");
         }}
         width="50%"
       />
+      <VisaButton
+        title="신청 내역 조회"
+        onPress={() => {
+          console.log("비자 신청 내역 조회");
+          setScreenName("VisaRequestList")
+        }}
+        width="50%"
+      />
+      </ButtonContainer>
     </Container>
   );
 };

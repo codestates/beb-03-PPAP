@@ -206,14 +206,17 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
+  console.log("TESTAAA")
   const { visa_purpose, target_country, vpPassJwt } = req.body;
-
+ 
   // JWT token from authorization header
   const authorization = req.headers["authorization"];
+  
   // specify user using user data in DB
   const holderInfo: any = await new Promise((resolve) => {
     resolve(clientAuth(authorization));
   });
+
   // case when token is not valid
   if (holderInfo.name == "JsonWebTokenError") {
     return res.status(400).send({ data: null, msg: "invaild token" });

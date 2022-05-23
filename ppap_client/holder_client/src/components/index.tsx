@@ -9,6 +9,7 @@ import Image from "./Image";
 import LabeledText from "./LabeledText";
 import UserVisa from "./UserVisa";
 import VisaButton from "./VisaButton";
+import UserRequestVisa from "./UserRequestVisa";
 
 export {
   Input,
@@ -22,4 +23,5 @@ export {
   LabeledText,
   UserVisa,
   VisaButton,
+  UserRequestVisa,
 };

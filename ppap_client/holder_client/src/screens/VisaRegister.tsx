@@ -85,8 +85,7 @@ const VisaRegister = () => {
             },
             {
               headers: {
-                "Content-type": "application/json",
-                Authorization: userInfo.accessToken,
+                "authorization": userInfo.accessToken,
               },
             },
           );

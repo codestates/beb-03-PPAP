@@ -6,9 +6,8 @@ const Container = styled.Pressable.attrs((props) => ({
   width: props.width || "70%",
 }))`
   align-items: center;
-  /* width: 70%; */
-  position: absolute;
-  bottom: 3%;
+   width: 200px; 
+  margin-bottom: 10px;
   padding: 10px;
   border-radius: 30px;
   background-color: ${({ theme, disabled }) =>
