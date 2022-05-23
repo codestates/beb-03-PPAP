@@ -1,3 +1,4 @@
+const { Console } = require("console");
 const connection = require("../config/mysql");
 
 module.exports.getAllData = async function getAllData(tableFlag, callback) {
@@ -27,6 +28,7 @@ module.exports.getMultiCondData = async function getMultiCondData(
   callback,
 ) {
   let queryMsg = `SELECT * FROM ${tableFlag} `;
+  
   Object.entries(findCond).forEach(([findFlag, data], idx) => {
     if (idx === 0) {
       queryMsg += "WHERE ";
@@ -35,7 +37,6 @@ module.exports.getMultiCondData = async function getMultiCondData(
     }
     queryMsg += `${findFlag}='${data}' `;
   });
-
   connection.query(queryMsg, function (err, result) {
     if (err) callback(err, null);
     else callback(null, result);
