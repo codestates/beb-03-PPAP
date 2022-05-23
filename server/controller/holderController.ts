@@ -228,7 +228,6 @@ export const requestVisa = async (req: Request, res: Response) => {
       .status(400)
       .send({ data: null, msg: "You can't request visa to your country" });
   }
-
   // check whether the client has passport or not
   const hasPassport: any = await new Promise((resolve) => {
     query.getTargetData(
@@ -268,6 +267,7 @@ export const requestVisa = async (req: Request, res: Response) => {
     const vcPass = verifiedVP.payload.vp.verifiableCredential[0];
     const verifiedVC = await verifyCredential(vcPass, didResolver);
     passData = verifiedVC.payload.vc.credentialSubject.passportInfo;
+    
   } catch (e) {
     return res
       .status(400)
@@ -313,6 +313,7 @@ export const requestVisa = async (req: Request, res: Response) => {
 
   // submit request for issuing visa
   await query.requestVisaForm(reqForm, (err: any, data: any) => {
+    
     if (err) {
       console.log(err);
       res.status(400).send(err);
