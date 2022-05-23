@@ -60,7 +60,7 @@ export const requestPassport = async (req: Request, res: Response) => {
         clientInfo.client_id,
         (err: any, data: any) => {
           res.status(200).send({
-            requestedData: data[0],
+            data: data[0],
             msg: "Your request is sucessfully submitted",
           });
         },
@@ -87,6 +87,56 @@ export const requestPassport = async (req: Request, res: Response) => {
       }
     }
   });
+};
+
+export const getReqPass = async (req: Request, res: Response) => {
+  // JWT token from authorization header
+  const authorization = req.headers["authorization"];
+  // specify user using user data in DB
+  const clientInfo: any = await new Promise((resolve) => {
+    resolve(clientAuth(authorization));
+  });
+  // case when token is not valid
+  if (clientInfo.name == "JsonWebTokenError") {
+    return res.status(400).send({ data: null, msg: "invaild token" });
+  }
+
+  // get all requested visa which user submit request
+  await query.getTargetData(
+    "GOVERN_FA_PASSPORT",
+    "did",
+    clientInfo.did,
+    async (err: any, data1: any) => {
+      if (err) {
+        console.log("ERROR : ", err);
+        res.status(400).send(err);
+      }
+      if (data1.length === 0) {
+        return res.status(200).send({
+          data: null,
+          msg: "There is no request",
+        });
+      }
+      const cond = ["client_id", "client_id"];
+      await query.joinTable(
+        "GOVERN_FA_PASSPORT",
+        "GOVERN_USER_CLIENT",
+        cond,
+        "client_id",
+        data1[0].client_id,
+        (err: any, data2: any) => {
+          if (err) {
+            console.log("ERROR : ", err);
+            res.status(400).send(err);
+          }
+          return res.status(200).send({
+            data: { reqVisaList: data2[0] },
+            msg: "call requested passport success",
+          });
+        },
+      );
+    },
+  );
 };
 
 export const issuePassVC = async (req: Request, res: Response) => {
@@ -372,19 +422,41 @@ export const getReqVisaList = async (req: Request, res: Response) => {
     "GOVERN_FA_VISA_SURVEY",
     "did",
     holderInfo.did,
-    (err: any, data: any) => {
+    async (err: any, data1: any) => {
       if (err) {
         console.log("ERROR : ", err);
         res.status(400).send(err);
       }
-      if (data.length === 0) {
+      if (data1.length === 0) {
         return res.status(200).send({
           data: null,
           msg: "There are no requests",
         });
       }
+      const cond = ["visa_id", "visa_id"];
+      const visaPromises = await data1.map(async (elem: any, idx: number) => {
+        const eachQuery = new Promise(async (resolve) => {
+          await query.joinTable(
+            "GOVERN_FA_VISA_SURVEY",
+            "GOVERN_FA_VISA",
+            cond,
+            "visa_id",
+            elem.visa_id,
+            (err: any, data2: any) => {
+              if (err) {
+                console.log("ERROR : ", err);
+                res.status(400).send(err);
+              }
+              resolve(data2[0]);
+            },
+          );
+        });
+        return eachQuery;
+      });
+      const visaArr = await Promise.all(visaPromises);
+
       return res.status(200).send({
-        data: { reqVisaList: data },
+        data: { reqVisaList: visaArr },
         msg: "call requested visa list success",
       });
     },

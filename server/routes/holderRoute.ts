@@ -1,5 +1,6 @@
 import {
   requestPassport,
+  getReqPass,
   issuePassVC,
   getAvailableVisa,
   requestVisa,
@@ -13,6 +14,7 @@ const holderRoute = express.Router();
 
 // routing related to issue passport VC
 holderRoute.route("/reqPass").post(requestPassport);
+holderRoute.route("/getReqPass").get(getReqPass);
 holderRoute.route("/issuePassVC").get(issuePassVC);
 
 // routing related to issue visa VC
