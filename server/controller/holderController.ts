@@ -129,8 +129,10 @@ export const getReqPass = async (req: Request, res: Response) => {
             console.log("ERROR : ", err);
             res.status(400).send(err);
           }
+          const tempObj: any = Object.assign(data2[0]);
+          tempObj.did = clientInfo.did;
           return res.status(200).send({
-            data: { reqPass: data2[0] },
+            data: { reqPass: tempObj },
             msg: "call requested passport success",
           });
         },
@@ -256,12 +258,12 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-  console.log("TESTAAA")
+  console.log("TESTAAA");
   const { visa_purpose, target_country, vpPassJwt } = req.body;
- 
+
   // JWT token from authorization header
   const authorization = req.headers["authorization"];
-  
+
   // specify user using user data in DB
   const holderInfo: any = await new Promise((resolve) => {
     resolve(clientAuth(authorization));
