@@ -7,6 +7,8 @@ import MainText from "./MainText";
 import ModalAlert from "./ModalAlert";
 import Image from "./Image";
 import LabeledText from "./LabeledText";
+import UserVisa from "./UserVisa";
+import VisaButton from "./VisaButton";
 
 export {
   Input,
@@ -18,4 +20,6 @@ export {
   ModalAlert,
   Image,
   LabeledText,
+  UserVisa,
+  VisaButton,
 };
