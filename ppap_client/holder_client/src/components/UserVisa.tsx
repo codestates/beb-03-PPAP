@@ -4,8 +4,7 @@ import styled from "styled-components/native";
 import { images } from "../utils/images";
 
 const Cover = styled.View`
-  background-color: ${({ theme, isLogined }) =>
-    isLogined ? theme.navy : theme.palegray};
+  background-color: lightgray;
   width: 300px;
   height: 450px;
   border-radius: 30px;

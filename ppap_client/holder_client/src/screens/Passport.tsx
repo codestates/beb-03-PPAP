@@ -8,10 +8,15 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
-import { DelegateTypes, EthrDID } from 'ethr-did'
-import "@ethersproject/shims"
-import { JwtPresentationPayload, verifyCredential,createVerifiablePresentationJwt ,verifyPresentation} from "did-jwt-vc";
-import { Issuer } from 'did-jwt-vc'
+import { DelegateTypes, EthrDID } from "ethr-did";
+import "@ethersproject/shims";
+import {
+  JwtPresentationPayload,
+  verifyCredential,
+  createVerifiablePresentationJwt,
+  verifyPresentation,
+} from "did-jwt-vc";
+import { Issuer } from "did-jwt-vc";
 const Container = styled.View`
   flex: 1;
   justify-content: center;
@@ -19,16 +24,17 @@ const Container = styled.View`
   background-color: #fff;
 `;
 
-const verifiedVC = async (payload)=>{
-  payload= 'eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InBhc3Nwb3J0SW5mbyI6eyJkaWQiOiJkaWQ6ZXRocjpnYW5hY2hlOjB4MDIwZmU2YWVjZWM2OTkzMmMxNWEwNTNlZTUwNmI0MmM5N2FhYWI4OGQ1YjgwM2RiMDJhNTI5ODU1NTMxMGIwYjI3IiwiY2xpZW50X2lkIjoxNiwiY291bnRyeV9jb2RlIjoiS09SIn19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.S_-Cc-7tCz7hguEX4JpeJ6_-11xzPXY-KXl-7PKqxO8xDgck4sy_QVRv0w4w1j69cISq0PztMV_7M-H9cZsWHwE'
+const verifiedVC = async (payload) => {
+  payload =
+    "eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InBhc3Nwb3J0SW5mbyI6eyJkaWQiOiJkaWQ6ZXRocjpnYW5hY2hlOjB4MDIwZmU2YWVjZWM2OTkzMmMxNWEwNTNlZTUwNmI0MmM5N2FhYWI4OGQ1YjgwM2RiMDJhNTI5ODU1NTMxMGIwYjI3IiwiY2xpZW50X2lkIjoxNiwiY291bnRyeV9jb2RlIjoiS09SIn19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.S_-Cc-7tCz7hguEX4JpeJ6_-11xzPXY-KXl-7PKqxO8xDgck4sy_QVRv0w4w1j69cISq0PztMV_7M-H9cZsWHwE";
   const providerConfig = {
     name: "ganache",
-    rpcUrl: "http://192.168.35.214:7545",
-    registry: "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8",
+    rpcUrl: "http://192.168.1.132:7545",
+    registry: "0x15CD7F5b57718b17eD0CacF3386aAad54C65a234",
   };
   const ethrDidResolver = await getResolver(providerConfig);
-  const didResolver:any = await new Resolver(ethrDidResolver);
-   console.log("TEST")
+  const didResolver: any = await new Resolver(ethrDidResolver);
+  // console.log("TEST");
   // const verifiedVC = await verifyCredential(payload, didResolver);
   // console.log(verifiedVC);
   // const keypair = {
@@ -53,10 +59,11 @@ const verifiedVC = async (payload)=>{
   // //  console.log(verifiedVP);
   // // return didResolver;
 
-  const visaVC = 'eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InZpc2EiOnsiZGlkIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsImNyZWF0aW9uX2RhdGUiOiIyMDIyLTA1LTIyVDA1OjI5OjMzLjAwMFoiLCJtb2RpZmllZF9kYXRhIjoiMjAyMi0wNS0yMlQwNToyOTozMy4wMDBaIiwidmlzYV9uYW1lIjoiMjAyMiBWSVNBIiwidmlzYV9wdXJwb3NlIjoiU1RVREVOVCIsImNvdW50cnlfY29kZSI6IktPUiIsInZpc2FfZXhwaXJlZF9kYXRlIjoiMzY1In19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.NkvXhjV2khUlubY05xUnZUyn2tJcYHYAujTyTobVXuhuOeSOTrhQoKP2OPPxoplyNUxBX_wcnPNJi08ruy41EQA';
-  const verifiedVisaVC = await verifyCredential(visaVC, didResolver);
-  console.log(verifiedVisaVC);
-}
+  // const visaVC =
+  //   "eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InZpc2EiOnsiZGlkIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsImNyZWF0aW9uX2RhdGUiOiIyMDIyLTA1LTIyVDA1OjI5OjMzLjAwMFoiLCJtb2RpZmllZF9kYXRhIjoiMjAyMi0wNS0yMlQwNToyOTozMy4wMDBaIiwidmlzYV9uYW1lIjoiMjAyMiBWSVNBIiwidmlzYV9wdXJwb3NlIjoiU1RVREVOVCIsImNvdW50cnlfY29kZSI6IktPUiIsInZpc2FfZXhwaXJlZF9kYXRlIjoiMzY1In19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.NkvXhjV2khUlubY05xUnZUyn2tJcYHYAujTyTobVXuhuOeSOTrhQoKP2OPPxoplyNUxBX_wcnPNJi08ruy41EQA";
+  // const verifiedVisaVC = await verifyCredential(visaVC, didResolver);
+  // console.log(verifiedVisaVC);
+};
 const Passport = ({ navigation }) => {
   const [hasPassport, setPassport] = useState(false);
   const [screenName, setScreenName] = useState("Passport");
@@ -70,7 +77,7 @@ const Passport = ({ navigation }) => {
   };
 
   setJwt(
-    "eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InBhc3Nwb3J0SW5mbyI6eyJkaWQiOiJkaWQ6ZXRocjpnYW5hY2hlOjB4MDIwZmU2YWVjZWM2OTkzMmMxNWEwNTNlZTUwNmI0MmM5N2FhYWI4OGQ1YjgwM2RiMDJhNTI5ODU1NTMxMGIwYjI3IiwiY2xpZW50X2lkIjoxNiwiY291bnRyeV9jb2RlIjoiS09SIn19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.S_-Cc-7tCz7hguEX4JpeJ6_-11xzPXY-KXl-7PKqxO8xDgck4sy_QVRv0w4w1j69cISq0PztMV_7M-H9cZsWHwE"
+    "eyJhbGciOiJFUzI1NkstUiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7InBhc3Nwb3J0SW5mbyI6eyJkaWQiOiJkaWQ6ZXRocjpnYW5hY2hlOjB4MDIwZmU2YWVjZWM2OTkzMmMxNWEwNTNlZTUwNmI0MmM5N2FhYWI4OGQ1YjgwM2RiMDJhNTI5ODU1NTMxMGIwYjI3IiwiY2xpZW50X2lkIjoxNiwiY291bnRyeV9jb2RlIjoiS09SIn19fSwic3ViIjoiZGlkOmV0aHI6Z2FuYWNoZToweDAyMGZlNmFlY2VjNjk5MzJjMTVhMDUzZWU1MDZiNDJjOTdhYWFiODhkNWI4MDNkYjAyYTUyOTg1NTUzMTBiMGIyNyIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6Z2FuYWNoZToweDVlZkVBYUU3ODJERDFjMTZlMmRiNDYxODkwNGVEMzk2MDY2YTBGMDYifQ.S_-Cc-7tCz7hguEX4JpeJ6_-11xzPXY-KXl-7PKqxO8xDgck4sy_QVRv0w4w1j69cISq0PztMV_7M-H9cZsWHwE",
   );
   clearJwt();
 
