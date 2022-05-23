@@ -37,7 +37,7 @@ const verifiedVC = async (payload)=>{
   //   publicKey: '0x020fe6aecec69932c15a053ee506b42c97aaab88d5b803db02a5298555310b0b27',
   //   identifier: '0x020fe6aecec69932c15a053ee506b42c97aaab88d5b803db02a5298555310b0b27'
   // };
-  //  const ethrDid = new EthrDID({...keypair,rpcUrl:providerConfig.rpcUrl,chainNameOrId:'ganache',registry:"0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8"}) as Issuer
+  // const ethrDid = new EthrDID({...keypair,rpcUrl:providerConfig.rpcUrl,chainNameOrId:'ganache',registry:"0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8"}) as Issuer
 
   // const vpPayload: JwtPresentationPayload = {
   //       vp: {

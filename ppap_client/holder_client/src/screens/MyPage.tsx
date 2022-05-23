@@ -17,7 +17,7 @@ const MyPage = ({ navigation }) => {
 
   const logout = () => {
     dispatch(unsetUser());
-    navigation.navigate("Passport");
+    navigation.navigate("PassportStack");
   };
 
   return (
@@ -30,3 +30,4 @@ const MyPage = ({ navigation }) => {
 const styles = StyleSheet.create({});
 
 export default MyPage;
+

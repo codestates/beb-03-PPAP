@@ -11,7 +11,7 @@ const app = initializeApp(firebaseConfig);
 const storage = getStorage();
 const storageRef = ref(storage);
 
-export const uploadImage = async (uri, user) => {
+export const uploadImage = async (uri, user_id) => {
   const blob = await new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -25,23 +25,14 @@ export const uploadImage = async (uri, user) => {
     xhr.send(null);
   });
 
-  const url = `/profile/${user}_photo.${uri.slice(-3)}`;
+  const url = `/profile/${user_id}_photo.${uri.slice(-3)}`;
   const userProfileRef = ref(storage, url);
   const uploadTask = uploadBytesResumable(userProfileRef, blob);
 
-  uploadTask.on(
-    "state_changed",
-    (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log("Upload is " + progress + "% done");
-    },
-    (error) => {
-      console.error(error);
-    },
-    () => {
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        console.log("File available at", downloadURL);
-      });
-    }
-  );
+  const downloadUrl = await uploadTask.then(async () => {
+    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+    return downloadURL;
+  });
+
+  return downloadUrl;
 };
