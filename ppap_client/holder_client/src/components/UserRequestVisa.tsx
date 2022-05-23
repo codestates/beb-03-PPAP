@@ -51,6 +51,7 @@ const Container = styled.Pressable.attrs((props) => ({
 
 const UserRequestVisa = ({ visaRequestData }: { visaRequestData?: object }) => {
   const userInfo = useSelector((state: any) => state.userReducer).data;
+  // AsyncStorage.removeItem("@visa_jwt_arr");
   const getVisaVc = async () => {
     console.log("버튼 클릭");
     let output = await axios.post(
@@ -64,13 +65,13 @@ const UserRequestVisa = ({ visaRequestData }: { visaRequestData?: object }) => {
       if (data === null) {
         console.log("null");
         const visaArray = [output.data.data.vcVisaJwt];
-        // console.log(visaArray);
+
         AsyncStorage.setItem("@visa_jwt_arr", JSON.stringify(visaArray));
       } else {
         console.log("data");
         let visaArray = JSON.parse(data);
         visaArray.push(output.data.data.vcVisaJwt);
-        // console.log(visaArray);
+
         AsyncStorage.setItem("@visa_jwt_arr", JSON.stringify(visaArray));
       }
     });
