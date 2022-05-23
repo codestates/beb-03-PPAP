@@ -170,7 +170,7 @@ const VisaRegister = () => {
 
       {/* "visa_name": "2022 VISA",
                 "visa_purpose": "TOUR",
-                "country_code": "KOR",
+                "country_code": "KOR",...
                 "visa_expired_date": "90" */}
       {visa ? (
         <Wrapper>
