@@ -330,7 +330,7 @@ export const giveStamp = async (req: Request, res: Response) => {
           const stampurl = await makeStamp(
             entOrdep,
             admin.country_code,
-            CountryIpfs[admin.country_code]
+            CountryIpfs[admin.country_code],
           );
 
           // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
@@ -355,7 +355,7 @@ export const giveStamp = async (req: Request, res: Response) => {
 
           const stampVcJwt = await createVerifiableCredentialJwt(
             stampVcPayload,
-            issuer
+            issuer,
           );
           res.status(200).send({ vcJwt: stampVcJwt, message: "success" });
         }

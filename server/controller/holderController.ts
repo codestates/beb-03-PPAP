@@ -63,7 +63,7 @@ export const requestPassport = async (req: Request, res: Response) => {
             requestedData: data[0],
             msg: "Your request is sucessfully submitted",
           });
-        }
+        },
       );
     } else {
       if (data.success_yn === "0") {
@@ -102,30 +102,13 @@ export const issuePassVC = async (req: Request, res: Response) => {
   }
 
   // recall passport
-  const passData = await getApprovedPassportData(holderInfo);
-  if (passData.statusCode) {
+  const tempPassData = await getApprovedPassportData(holderInfo);
+  if (tempPassData.statusCode) {
     return res
-      .status(passData.statusCode)
-      .send({ data: null, msg: passData.msg });
+      .status(tempPassData.statusCode)
+      .send({ data: null, msg: tempPassData.msg });
   }
-
-  // get issuer sign (not only issuer DID) to make VC
-  const issuer: any = await createIssuerDID();
-
-  // vc payload which contains passport and stamp data
-  const vcPassPayload: JwtCredentialPayload = {
-    sub: holderInfo.did,
-    nbf: 1562950282,
-    vc: {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential"],
-      credentialSubject: {
-        passportInfo: holderInfo,
-      },
-    },
-  };
-  // create vc as JWT token under issuer signing
-  const vcPassJwt = await createVerifiableCredentialJwt(vcPassPayload, issuer);
+  const passData = Object.assign(tempPassData.data);
 
   const condOption = {
     setCond: "did",
@@ -144,7 +127,8 @@ export const issuePassVC = async (req: Request, res: Response) => {
         res.status(400).send(err);
       }
       if (data.affectedRows === 1) {
-        // delete designated user's passport request form
+        console.log("add did success");
+        // delete designated user"s passport request form
         await query.deleteRow(
           "GOVERN_FA_PASSPORT",
           condOption.setCond,
@@ -154,12 +138,34 @@ export const issuePassVC = async (req: Request, res: Response) => {
               console.log("ERROR : ", err);
               res.status(400).send(err);
             }
-            console.log(data);
-          }
+            if (data.affectedRows === 1) {
+              console.log("row delete success");
+            }
+          },
         );
       }
-    }
+    },
   );
+
+  passData.did = holderInfo.did;
+
+  // get issuer sign (not only issuer DID) to make VC
+  const issuer: any = await createIssuerDID();
+
+  // vc payload which contains passport and stamp data
+  const vcPassPayload: JwtCredentialPayload = {
+    sub: holderInfo.did,
+    nbf: 1562950282,
+    vc: {
+      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      type: ["VerifiableCredential"],
+      credentialSubject: {
+        passportInfo: passData,
+      },
+    },
+  };
+  // create vc as JWT token under issuer signing
+  const vcPassJwt = await createVerifiableCredentialJwt(vcPassPayload, issuer);
 
   res.status(200).send({
     data: { vcPassJwt: vcPassJwt },
@@ -213,6 +219,13 @@ export const requestVisa = async (req: Request, res: Response) => {
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
 
+  // case when user submit visa request to own country
+  if (holderInfo.country_code === target_country) {
+    return res
+      .status(400)
+      .send({ data: null, msg: "You can't request visa to your country" });
+  }
+
   // check whether the client has passport or not
   const hasPassport: any = await new Promise((resolve) => {
     query.getTargetData(
@@ -225,7 +238,7 @@ export const requestVisa = async (req: Request, res: Response) => {
           res.status(400).send(err);
         }
         resolve(data);
-      }
+      },
     );
   });
 
@@ -233,7 +246,7 @@ export const requestVisa = async (req: Request, res: Response) => {
   if (hasPassport.length === 0) {
     return res.status(400).send({
       data: null,
-      msg: `You don't have passport. Make passport first.`,
+      msg: `You don"t have passport. Make passport first.`,
     });
   }
 
@@ -278,7 +291,7 @@ export const requestVisa = async (req: Request, res: Response) => {
       "GOVERN_FA_VISA",
       condOption,
       (err: any, data: any) => {
-        // requested visa doesn't exist
+        // requested visa doesn"t exist
         if (data.length === 0) {
           return res.status(400).send({
             data: null,
@@ -286,7 +299,7 @@ export const requestVisa = async (req: Request, res: Response) => {
           });
         }
         resolve(data);
-      }
+      },
     );
   });
 
@@ -319,14 +332,15 @@ export const requestVisa = async (req: Request, res: Response) => {
             requestedData: data[0],
             msg: "Your request is sucessfully submitted",
           });
-        }
+        },
       );
     } else {
       // already exist request & not approved
       if (data.success_yn === "0") {
         res.status(401).send({
           data: null,
-          msg: "Your request is already transfered and it does not approved yet.",
+          msg:
+            "Your request is already transfered and it does not approved yet.",
         });
       } else {
         res.status(401).send({
@@ -360,11 +374,17 @@ export const getReqVisaList = async (req: Request, res: Response) => {
         console.log("ERROR : ", err);
         res.status(400).send(err);
       }
+      if (data.length === 0) {
+        return res.status(200).send({
+          data: null,
+          msg: "There are no requests",
+        });
+      }
       return res.status(200).send({
         data: { reqVisaList: data },
         msg: "call requested visa list success",
       });
-    }
+    },
   );
 };
 
@@ -408,7 +428,7 @@ export const issueVisaVC = async (req: Request, res: Response) => {
   // create vc as JWT token under issuer signing
   const vcVisaJwt = await createVerifiableCredentialJwt(vcVisaPayload, issuer);
 
-  // delete designated user's visa request form
+  // delete designated user"s visa request form
   await query.deleteRow(
     "GOVERN_FA_VISA_SURVEY",
     "visa_survey_id",
@@ -418,8 +438,10 @@ export const issueVisaVC = async (req: Request, res: Response) => {
         console.log("ERROR : ", err);
         res.status(400).send(err);
       }
-      console.log(data);
-    }
+      if (data.affectedRows === 1) {
+        console.log("row delete success");
+      }
+    },
   );
 
   res.status(200).send({
@@ -440,7 +462,6 @@ export const test = async (req: Request, res: Response) => {
     },
   };
   const vpJwt = await createVerifiablePresentationJwt(vpPayload, issuer);
-  console.log(vpJwt);
   const providerConfig = {
     name: "ganache",
     rpcUrl: process.env.RPC_URL,

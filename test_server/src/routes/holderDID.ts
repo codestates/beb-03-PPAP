@@ -5,7 +5,7 @@ import { Issuer } from "did-jwt-vc";
 import { Wallet } from "@ethersproject/wallet";
 import { ethers } from "ethers";
 const { issuerPub, issuerPriv, didContractAdd } = require("../config");
-const rpcUrl = "http://192.168.35.214:7545";
+const rpcUrl = process.env.RPC_URL;
 var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 var contractAddress = didContractAdd; //local
 const txSigner = new Wallet(issuerPriv, provider);
