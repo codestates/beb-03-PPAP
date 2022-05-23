@@ -21,8 +21,7 @@ const port = 4000;
 
 const corsOptions = {
   origin: [
-    "http://localhost:3000",
-    "exp://q6-xk2.ressom.holder-client.exp.direct:80",
+    "*",
   ],
   credentials: true,
   methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
