@@ -130,7 +130,7 @@ export const getReqPass = async (req: Request, res: Response) => {
             res.status(400).send(err);
           }
           return res.status(200).send({
-            data: { reqVisaList: data2[0] },
+            data: { reqPass: data2[0] },
             msg: "call requested passport success",
           });
         },
