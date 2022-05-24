@@ -72,7 +72,7 @@ export const UpdatePassportReq = async (successyn: any, passport_id: any) => {
               resolve(data);
             }
           }
-        }
+        },
       );
     });
   } catch (e) {
@@ -100,7 +100,7 @@ export const UpdateVisaReq = async (successyn: any, visa_survey_id: any) => {
               resolve(data);
             }
           }
-        }
+        },
       );
     });
   } catch (e) {
@@ -135,7 +135,7 @@ export const getEntOrDepStamp = async (entOrdep: any, countryCode: any) => {
 export const makeStamp = async (
   entOrdep: any,
   country_code: any,
-  country_img_url: any
+  country_img_url: any,
 ) => {
   let ent_or_dep = "NO DATA";
   if (entOrdep === "1") {
@@ -191,7 +191,7 @@ export const updateStamp = async (
   stamp_uri: any,
   country_code: any,
   stamp_expired_date: any,
-  ent_or_dep: any
+  ent_or_dep: any,
 ) => {
   try {
     return new Promise((resolve, reject) => {
@@ -210,7 +210,56 @@ export const updateStamp = async (
               resolve(data);
             }
           }
+        },
+      );
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+// 회원 did & vp 저장
+export const saveUserDidandVp = async (vpJwt: any, did: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      query.storeUserDidAndVp(vpJwt, did, (err: any, data: any) => {
+        if (err) {
+          // error handling code goes here
+          reject(err);
+          console.log("ERROR : ", err);
+        } else {
+          if (data) {
+            resolve(data);
+          }
         }
+      });
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+// 회원 did & vp 삭제
+export const deleteUserDidandVp = async (did: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      query.deleteRow(
+        "GOVERN_IMMIGRATION_SURVEY",
+        "did",
+        did,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            reject(err);
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
+          }
+        },
       );
     });
   } catch (e) {
