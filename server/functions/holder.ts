@@ -153,15 +153,28 @@ export const getApprovedVisaData = async (reqVisaInfo: any) => {
                 console.log(err);
                 return err;
               }
-              const tempObj = Object.assign(data1[0], data2[0]);
+              // console.log(data1, data2);
+              const tempObj1 = Object.assign(data2[0]);
+              const countryObj1 = { user_country_code: tempObj1.country_code };
+              delete tempObj1.country_code;
+              const tempObj2 = Object.assign(data1[0], tempObj1);
+              const countryObj2 = {
+                target_country_code: tempObj2.country_code,
+              };
               // delete unnecessary key:value
-              delete tempObj.visa_id;
-              delete tempObj.success_yn;
-              delete tempObj.visa_survey_id;
-              delete tempObj.client_id;
-              delete tempObj.phone_num;
-              delete tempObj.personal_id;
-              resolve(tempObj);
+              delete tempObj2.country_code;
+              delete tempObj2.visa_id;
+              delete tempObj2.success_yn;
+              delete tempObj2.visa_survey_id;
+              delete tempObj2.client_id;
+              delete tempObj2.phone_num;
+              delete tempObj2.personal_id;
+              const tempObj3 = Object.assign(
+                tempObj2,
+                countryObj1,
+                countryObj2,
+              );
+              resolve(tempObj3);
             },
           );
         },

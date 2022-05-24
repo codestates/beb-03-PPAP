@@ -258,7 +258,6 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
 };
 
 export const requestVisa = async (req: Request, res: Response) => {
-  console.log("TESTAAA");
   const { visa_purpose, target_country, vpPassJwt } = req.body;
 
   // JWT token from authorization header
@@ -275,7 +274,7 @@ export const requestVisa = async (req: Request, res: Response) => {
   }
 
   // case when user submit visa request to own country
-  if (holderInfo.country_code === target_country) {
+  if (holderInfo.user_country_code === target_country) {
     return res
       .status(400)
       .send({ data: null, msg: "You can't request visa to your country" });
@@ -319,7 +318,6 @@ export const requestVisa = async (req: Request, res: Response) => {
     const vcPass = verifiedVP.payload.vp.verifiableCredential[0];
     const verifiedVC = await verifyCredential(vcPass, didResolver);
     passData = verifiedVC.payload.vc.credentialSubject.passportInfo;
-    
   } catch (e) {
     return res
       .status(400)
@@ -365,7 +363,6 @@ export const requestVisa = async (req: Request, res: Response) => {
 
   // submit request for issuing visa
   await query.requestVisaForm(reqForm, (err: any, data: any) => {
-    
     if (err) {
       console.log(err);
       res.status(400).send(err);
@@ -421,45 +418,26 @@ export const getReqVisaList = async (req: Request, res: Response) => {
   }
 
   // get all requested visa which user submit request
-  await query.getTargetData(
+  const cond = ["visa_id", "visa_id"];
+  await query.joinTable(
     "GOVERN_FA_VISA_SURVEY",
+    "GOVERN_FA_VISA",
+    cond,
     "did",
     holderInfo.did,
-    async (err: any, data1: any) => {
+    (err: any, data: any) => {
       if (err) {
         console.log("ERROR : ", err);
         res.status(400).send(err);
       }
-      if (data1.length === 0) {
+      if (data.length === 0) {
         return res.status(200).send({
           data: null,
           msg: "There are no requests",
         });
       }
-      const cond = ["visa_id", "visa_id"];
-      const visaPromises = await data1.map(async (elem: any, idx: number) => {
-        const eachQuery = new Promise(async (resolve) => {
-          await query.joinTable(
-            "GOVERN_FA_VISA_SURVEY",
-            "GOVERN_FA_VISA",
-            cond,
-            "visa_id",
-            elem.visa_id,
-            (err: any, data2: any) => {
-              if (err) {
-                console.log("ERROR : ", err);
-                res.status(400).send(err);
-              }
-              resolve(data2[0]);
-            },
-          );
-        });
-        return eachQuery;
-      });
-      const visaArr = await Promise.all(visaPromises);
-
       return res.status(200).send({
-        data: { reqVisaList: visaArr },
+        data: { reqVisaList: data },
         msg: "call requested visa list success",
       });
     },
@@ -468,6 +446,7 @@ export const getReqVisaList = async (req: Request, res: Response) => {
 
 export const issueVisaVC = async (req: Request, res: Response) => {
   const { visa_survey_id } = req.body;
+  // console.log(visa_survey_id);
   // JWT token from authorization header
   const authorization = req.headers["authorization"];
   // specify user using user data in DB
