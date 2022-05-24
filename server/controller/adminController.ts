@@ -21,6 +21,7 @@ import {
   findHolderDid,
   updateStamp,
   saveUserDidandVp,
+  getUserDidandVp,
 } from "../functions/admin";
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
@@ -379,7 +380,7 @@ export const giveStamp = async (req: Request, res: Response) => {
 
 export const storeHolderDidAndVp = async (req: Request, res: Response) => {
   try {
-    const { did, vpJwt, countryCode } = req.body; // entOrdep === 1 : ent, 2 : dep
+    const { did, vpJwt, countryCode } = req.body;
     if (!did || !vpJwt) res.status(400).send({ message: "invalid userInfo" });
     else {
       const output = await saveUserDidandVp(vpJwt, did, countryCode);
@@ -388,5 +389,24 @@ export const storeHolderDidAndVp = async (req: Request, res: Response) => {
     }
   } catch (e) {
     console.log(e);
+  }
+};
+
+export const getHolderDidAndVp = async (req: Request, res: Response) => {
+  const authorization = req.headers["authorization"];
+  if (!authorization) res.status(401).send({ message: "no Auth header" });
+  const admin = await adminAuth(authorization);
+  if (issuerDid.includes(admin.did)) {
+    try {
+      const output: any = await getUserDidandVp(admin.country_code);
+      if (output) {
+        res.status(200).send({ data: output, message: "success" });
+      }
+    } catch (e) {
+      res.status(400).send({ message: e });
+    }
+  } else {
+    // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
+    res.status(401).send({ message: "Admin Auth fail" });
   }
 };
