@@ -5,6 +5,7 @@ import {LabeledText,MainText,VisaButton } from "../components"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { EthrDID } from "ethr-did";
 import env from "../utils/envFile";
+import axios from "axios";
 import {
   JwtPresentationPayload,
   createVerifiablePresentationJwt,
@@ -36,6 +37,17 @@ const VisaDetail = ({ route, navigation }) => {
   const userInfo = useSelector((state: any) => state.userReducer).data;
   const {visaInfo} = route.params;
   const {visaIndex} = route.params;
+  
+  //출입국 VP 신청
+  async function storeVP(did, vpJwt) {
+    const output =  await axios
+      .post(`${env.server}/admin/storeVp`,{
+        did,
+        vpJwt,
+        countryCode:visaInfo.country_code,
+      });
+      return output;
+  }
 
   async function immigationVPcreate(){
     try{
@@ -69,7 +81,11 @@ const VisaDetail = ({ route, navigation }) => {
             }
 
         const vpjwt = await createVerifiablePresentationJwt(vpPayload,ethrDid);
-        console.log(vpjwt)
+        const storeOutput = await storeVP(userDid,vpjwt);
+        
+        if(storeOutput.status===200){
+          window.alert("요청에 성공하였습니다.")
+        }
       }else{
         //에러 띄우기
       }
@@ -89,7 +105,7 @@ const VisaDetail = ({ route, navigation }) => {
         <LabeledText label="성별" text={visaInfo.sex} />
         <LabeledText label="생년월일" text={visaInfo.birth} />
         <LabeledText label="나이" text={visaInfo.age} />
-        <LabeledText label="국가" text={visaInfo.country_code} />
+        <LabeledText label="비자 발급 국가" text={visaInfo.target_country_code} />
         <LabeledText label="비자 이름" text={visaInfo.visa_name} />
         <LabeledText label="비자 목적" text={visaInfo.visa_purpose} />
         <LabeledText label="비자 유효기간" text={visaInfo.visa_expired_date} />

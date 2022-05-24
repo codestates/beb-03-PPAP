@@ -10,6 +10,7 @@ import Stamp from "./pages/Stamp";
 import StampDetail from "./pages/StampDetail";
 
 import Immigration from "./pages/Immigration";
+import ImmigrationDetail from "./pages/ImmigrationDetail";
 
 import Mains from "./pages/Mains";
 
@@ -53,6 +54,7 @@ function App() {
         <Route path="/stamp/detail/:id" element={<StampDetail />} />
 
         <Route path="/immigration" element={<Immigration />} />
+        <Route path="/immigration/detail/:id" element={<ImmigrationDetail />} />
         </Routes>
         <Footer />
       </BrowserRouter>

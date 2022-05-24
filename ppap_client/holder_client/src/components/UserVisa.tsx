@@ -13,7 +13,13 @@ const Cover = styled.View`
   padding: 24px;
 `;
 
-const UserPassportTitle = styled.Text`
+const UserVisaTitle = styled.Text`
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+`;
+
+const CountryTitle = styled.Text`
   color: #fff;
   font-size: 24px;
   font-weight: 700;
@@ -28,19 +34,22 @@ const UserVisa = ({
   onPress,
   mainText,
   subText,
+  countryCode,
   isValidVisa,
 }: {
   onPress?: Function;
   mainText?: string;
   subText?: string;
+  countryCode?: string;
   isValidVisa?: boolean;
 }) => {
   
   return (
     <Pressable onPress={onPress}>
       <Cover isLogined={isValidVisa}>
-        <UserPassportTitle>{mainText}</UserPassportTitle>
-        <Text style={{ color: "#fff" }}>{subText}</Text>
+      <CountryTitle style={{ color: "#fff" }}>{countryCode}</CountryTitle>
+      <UserVisaTitle>{mainText}</UserVisaTitle>
+      <Text style={{ color: "#fff" }}>{subText}</Text>
       </Cover>
     </Pressable>
   );

@@ -20,9 +20,9 @@ dotenv.config({ path: "./.env" });
 const port = 4000;
 
 const corsOptions = {
-  origin: [
-    "*",
-  ],
+  origin: 
+    ["*","http://localhost:3000"]
+  ,
   credentials: true,
   methods: ["GET", "POST", "OPTIONS", "PATCH", "DELETE"],
 };

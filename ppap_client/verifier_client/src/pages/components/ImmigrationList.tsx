@@ -2,27 +2,28 @@ import React, { useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { setPassport } from "../../redux/passportReducer";
+import { setImmigration } from '../../redux/immigrationReducer';
 
 
-const PassportIssuanceList = ({linkPath}:any) => {
-
+const ImmigrationList = ({linkPath}:any) => {
+ 
   const dispatch = useDispatch();
 
   //리듀스에 저장되어있는 userInfo가지고오기
   const userInfo = useSelector((state:any) => state.userReducer).data;
   //const passportData = useSelector((state:any) => state.passportReducer).data;
-  const [passportList, setPassportList] = useState([]);
+  const [immigrationList, setImmigrationList] = useState([]);
 
   useEffect(() => {
-    axios.get(process.env.REACT_APP_SERVER_ADMIN_URL+"/admin/passportRequests",{
+    console.log("AAAA");
+    axios.get(process.env.REACT_APP_SERVER_ADMIN_URL+"/admin/getVp",{
       headers: {
         authorization: userInfo.jwtToken
     }
     }).then((payload) => {
-        setPassportList(payload.data.passportRequests);
-        dispatch(setPassport(payload.data.passportRequests));
-        console.log(payload.data.passportRequests);
+      setImmigrationList(payload.data.data);
+      dispatch(setImmigration(payload.data.data));
+        console.log(payload.data.data);
     });
   }, []);
 
@@ -61,7 +62,7 @@ const PassportIssuanceList = ({linkPath}:any) => {
 
               <div className="card-body">
                 <h5 className="card-title">
-                Passport issuance list <span>| Today</span>
+                Immigration Application list <span>| Today</span>
                 </h5>
 
                 <table className="table table-borderless datatable">
@@ -69,26 +70,21 @@ const PassportIssuanceList = ({linkPath}:any) => {
                     <tr>
                       <th scope="col">#ID</th>
                       <th scope="col">Country Code</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Issuance Date</th>
+                      <th scope="col">DID</th>
                       <th scope="col">Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                   {passportList && passportList.map((data:any,index:any)=>{
+                   {immigrationList&&immigrationList.map((data:any,index:any)=>{
                       return (
                         <tr>
                           <th scope="row">
-                            <Link to={linkPath + "detail/"+data.passport_id}>#{data.passport_id}</Link>
+                            <Link to={linkPath + "detail/"+data.immigration_id}>#{data.immigration_id}</Link>
                           </th>
                           <td>{data.country_code}</td>
-                          <td>
-                            <a href="#" className="text-primary">
-                              {data.user_name}
-                            </a>
+                          <td>{data.did}
                           </td>
-                          <td>{data.creation_date}</td>
-                          {data.success_yn==='1'?<td><span className="badge bg-success w-4/4">Approved</span></td>  : ( data.success_yn==='0'?  <td><span className="badge bg-warning w-4/4">Pending</span></td>:  <td><span className="badge bg-danger w-4/4">Rejected</span></td>)}
+                           <td><span className="badge bg-warning w-4/4">Pending</span></td>
                         </tr>
                       );
                    })}
@@ -105,4 +101,4 @@ const PassportIssuanceList = ({linkPath}:any) => {
   );
 };
 
-export default PassportIssuanceList;
+export default ImmigrationList;

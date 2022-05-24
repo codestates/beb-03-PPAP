@@ -42,20 +42,14 @@ const Visa = ({ navigation }) => {
   const [clickCheck, setClickCheck] = useState(false);
   const [visaDetailIndex, setVisaDetailIndex] = useState(-1);
   
-  // visa VC 저장
-  // const someArray = ["asfdadfs", "aklsjhdflja"];
-  // AsyncStorage.setItem("@visa_jwt", JSON.stringify(someArray))
-  //   .then((json) => console.log("success!"))
-  //   .catch((error) => console.log("error!"));
-
   useEffect(() => {
     getVisaVC();
-    // console.log(visaList);
   }, [screenName]);
 
   useEffect(() => {
-    //여권detail을 눌렀을때
+    //Visa detail을 눌렀을때
     if(visaDetailIndex!==-1){
+      console.log("여기?")
       navigation.navigate(screenName,{visaInfo:visaList[visaDetailIndex], visaIndex:visaDetailIndex});
     }
     //다른걸 눌렀을때
@@ -79,17 +73,17 @@ const Visa = ({ navigation }) => {
         let output = JSON.parse(data);
 
         let visaVCArray = output.map(async (elem) => {
-          // console.log()
+
           const output = await resolveVisaVC(elem);
-          // console.log(output.payload.vc.credentialSubject.visa;
+          console.log("AAAAAAAAAA");
+          console.log(output.payload.vc.credentialSubject.visa);
           return output.payload.vc.credentialSubject.visa;
+
         });
 
         const visavc: any = await Promise.all(visaVCArray);
+
         setVisaList(visavc);
-        // console.log("-------------------------");
-        // console.log(visaList);
-        // console.log("-------------------------");
       }
     });
   }
@@ -103,7 +97,7 @@ const Visa = ({ navigation }) => {
     const ethrDidResolver = await getResolver(providerConfig);
     const didResolver: any = await new Resolver(ethrDidResolver);
     const verifiedVC = await verifyCredential(visaVcJwt, didResolver);
-    // console.log(verifiedVC);
+    
     return verifiedVC;
   }
 
@@ -135,6 +129,7 @@ const Visa = ({ navigation }) => {
               }}
               mainText={elem.visa_name}
               subText={elem.visa_purpose}
+              countryCode={elem.target_country_code}
               isValidVisa={true}
               key={index}
             />
