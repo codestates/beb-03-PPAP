@@ -3,14 +3,14 @@ const connection = require("../config/mysql");
 module.exports.getUser = async function getClientUser(
   findFlag,
   data,
-  callback
+  callback,
 ) {
   connection.query(
     `SELECT * FROM CLIENT_USER WHERE ${findFlag}='${data}'`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
@@ -21,7 +21,7 @@ module.exports.isPassport = async function isPassport(phoneNum, callback) {
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
@@ -32,11 +32,11 @@ module.exports.createUser = async function createUser(userData, callback) {
     } else {
       if (data.length === 0) {
         connection.query(
-          `INSERT INTO CLIENT_USER (user_name, password, phone_num, did) VALUES ('${userData.user_name}','${userData.password}','${userData.phone_num}','${userData.did}')`,
+          `INSERT INTO CLIENT_USER (user_name, password, phone_num, did, user_birth) VALUES ('${userData.user_name}','${userData.password}','${userData.phone_num}','${userData.did}','${userData.user_birth}')`,
           function (err, result) {
             if (err) callback(err, null);
             else callback(null, result);
-          }
+          },
         );
       } else {
         callback(null, null);
@@ -49,21 +49,21 @@ module.exports.createVC = async function createVC(
   tableFlag,
   phoneNum,
   vcJwt,
-  callback
+  callback,
 ) {
   connection.query(
     `INSERT INTO ${tableFlag} (phone_num, vc_jwt) VALUES ('${phoneNum}','${vcJwt}')`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 module.exports.updateVC = async function createVC(
   tableFlag,
   phoneNum,
   vcJwt,
-  callback
+  callback,
 ) {
   connection.query(
     `UPDATE ${tableFlag}
@@ -72,20 +72,20 @@ module.exports.updateVC = async function createVC(
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };
 
 module.exports.getVC = async function getClientUser(
   tableFlag,
   phoneNum,
-  callback
+  callback,
 ) {
   connection.query(
     `SELECT * FROM ${tableFlag} WHERE phone_num='${phoneNum}'`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
-    }
+    },
   );
 };

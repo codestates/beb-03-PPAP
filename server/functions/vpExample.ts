@@ -9,7 +9,7 @@ import {
 import { ethers } from "ethers";
 import { Wallet } from "@ethersproject/wallet";
 import { EthrDID } from "ethr-did";
-const rpcUrl = "http://localhost:7545";
+const rpcUrl = process.env.RPC_URL;
 var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 var contractAddress = "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8"; //local
 const txSigner = new Wallet(

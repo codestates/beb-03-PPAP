@@ -7,6 +7,9 @@ import { removeWhitespace, isValidPhoneNumber } from "../utils/common";
 import { useDispatch } from "react-redux";
 import { setSpinnerStatus } from "../modules/spinnerReducer";
 import axios from "axios";
+import env from "../utils/envFile";
+import { asyncSetItem, asyncGetItem } from "../utils/asyncStorage";
+// import DateTimePicker from "@react-native-community/datetimepicker";
 
 const Container = styled.View`
   flex: 1;
@@ -30,8 +33,10 @@ const Signup = ({ navigation }) => {
   const [phoneNum, setPhoneNum] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [birth, setBirth] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [disabled, setDisabled] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -48,11 +53,11 @@ const Signup = ({ navigation }) => {
       _errorMsg = "";
     }
     setErrorMsg(_errorMsg);
-  }, [userName, phoneNum, password, passwordConfirm]);
+  }, [userName, phoneNum, password, passwordConfirm, birth]);
 
   useEffect(() => {
     setDisabled(
-      !(userName && phoneNum && password && passwordConfirm && !errorMsg)
+      !(userName && phoneNum && password && passwordConfirm && !errorMsg),
     );
   }, [userName, password, phoneNum, passwordConfirm, errorMsg]);
 
@@ -60,14 +65,25 @@ const Signup = ({ navigation }) => {
     console.log(userName, phoneNum, password, passwordConfirm);
     dispatch(setSpinnerStatus(true));
     axios
-      .post("https://ppap.loca.lt/clientAuth/register", {
-        user_name: userName,
-        password,
-        phone_num: phoneNum,
-      })
+      .post(
+        `${env.clientServer}/clientAuth/register`,
+        {
+          user_name: userName,
+          password,
+          phone_num: phoneNum,
+        },
+        {
+          validateStatus: function (status) {
+            return status >= 200 && status < 500;
+          },
+        },
+      )
       .then((payload) => {
         const { data, msg } = payload.data;
-        console.log(msg);
+        const { keypair, userData } = data;
+        asyncSetItem("@keypair", keypair);
+        asyncGetItem("@keypair").then((res) => console.log(res));
+
         dispatch(setSpinnerStatus(false));
         if (msg === "Your data already exists!") {
           setErrorMsg("이미 가입된 회원입니다");
@@ -94,6 +110,12 @@ const Signup = ({ navigation }) => {
           />
           <Input
             label="휴대폰 번호"
+            maxLength={15}
+            onChangeText={(text) => setPhoneNum(removeWhitespace(text))}
+            placeholder="- 을 빼고 입력"
+          />
+          <Input
+            label="생년월일"
             maxLength={15}
             onChangeText={(text) => setPhoneNum(removeWhitespace(text))}
             placeholder="- 을 빼고 입력"

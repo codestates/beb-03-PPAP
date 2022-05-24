@@ -6,7 +6,7 @@ export const getVC = async(payload) => {
     
   const providerConfig = {
     name: "ganache",
-    rpcUrl: "http://localhost:7545",
+    rpcUrl: "http://192.168.35.214:7545",
     registry: "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8",
   };
   const ethrDidResolver = await getResolver(providerConfig);

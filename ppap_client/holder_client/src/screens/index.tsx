@@ -13,6 +13,7 @@ import QR from "./QR";
 import PassportRegister from "./PassportRegister";
 import VisaRegister from "./VisaRegister";
 import MyPage from "./MyPage";
+import VisaRequestList from "./VisaRequestList";
 
 export {
   Login,
@@ -30,4 +31,5 @@ export {
   PassportRegister,
   VisaRegister,
   MyPage,
+  VisaRequestList,
 };

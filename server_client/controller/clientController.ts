@@ -6,12 +6,11 @@ const bcrypt = require("bcrypt");
 const { hashRound, accessTokenSecret } = require("../config");
 import { EthrDID } from "ethr-did";
 import { ethers } from "ethers";
-import { id } from "ethers/lib/utils";
-import { resolve } from "path/posix";
+import { Wallet } from "@ethersproject/wallet";
 // const { issuerPub, issuerPriv, didContractAdd } = require('../config');
 
-const didContractAdd = "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8";
-const rpcUrl = "http://localhost:7545";
+const didContractAdd = process.env.DIDCONTRACTADD;
+const rpcUrl = process.env.RPC_URL;
 var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 var contractAddress = didContractAdd; //local
 
@@ -31,32 +30,39 @@ export const register = async (req: Request, res: Response) => {
   const userData = req.body;
 
   const keypair = EthrDID.createKeyPair();
+  const txSigner = new Wallet(keypair.privateKey, provider);
   const holder = new EthrDID({
+    txSigner,
     provider,
-    identifier: keypair.identifier,
-    privateKey: keypair.privateKey,
+    ...keypair,
     rpcUrl,
     chainNameOrId: "ganache",
     registry: contractAddress,
   });
+
   userData.did = holder.did;
 
   const hashed = await passHash(userData.password);
   userData.password = hashed;
 
-  await query.createUser(userData, (err: any, data: any) => {
+  await query.createUser(userData, async (err: any, data1: any) => {
     if (err) {
       // error handling code goes here
       console.log("ERROR : ", err);
+    }
+    if (data1.affectedRows === 1) {
+      await query.getUser(
+        "phone_num",
+        userData.phone_num,
+        (err: any, data2: any) => {
+          res.send({
+            data: { userData: data2[0], keypair: keypair },
+            msg: "Your data successfully registered!",
+          });
+        },
+      );
     } else {
-      if (data) {
-        res.send({
-          data: null,
-          msg: "Your data successfully registered!",
-        });
-      } else {
-        res.send({ data: null, msg: "Your data already exists!" });
-      }
+      res.send({ data: null, msg: "Your data already exists!" });
     }
   });
 };
@@ -80,16 +86,17 @@ export const login = async (req: Request, res: Response) => {
           const promises = await data.map(async (elem: any) => {
             const compareBoolean = await bcrypt.compare(
               loginData.password,
-              elem.password
+              elem.password,
             );
             return compareBoolean;
           });
+
           const compareBoolArr = await Promise.all(promises);
           const dataFiltered = data.filter((elem: any, idx: number) => {
             return compareBoolArr[idx];
           })[0];
           if (!dataFiltered) {
-            res.send({
+            res.status(401).send({
               data: null,
               msg: "Wrong password!",
             });
@@ -103,6 +110,7 @@ export const login = async (req: Request, res: Response) => {
             // req.session.user_birth = dataFiltered.user_birth;
             // req.session.did = dataFiltered.did;
             // req.session.phone_num = dataFiltered.phone_num;
+
             const accessToken = genAccessToken(tokenData);
             res.send({
               data: {
@@ -114,7 +122,7 @@ export const login = async (req: Request, res: Response) => {
           }
         }
       }
-    }
+    },
   );
 };
 
@@ -133,11 +141,15 @@ export const storePassportVC = async (req: Request, res: Response) => {
           (err: any, data: any) => {
             console.log(data);
             if (data.affectedRows === 1) {
-              res.status(200).send({ message: "Add passport VC success" });
+              res.status(200).send({
+                message: "Add passport VC success",
+              });
             } else {
-              res.status(400).send({ message: "Add passport VC fail" });
+              res.status(400).send({
+                message: "Add passport VC fail",
+              });
             }
-          }
+          },
         );
       } else {
         //With data
@@ -148,11 +160,15 @@ export const storePassportVC = async (req: Request, res: Response) => {
           (err: any, data: any) => {
             console.log(data);
             if (data.affectedRows === 1) {
-              res.status(200).send({ message: "Update passport VC success" });
+              res.status(200).send({
+                message: "Update passport VC success",
+              });
             } else {
-              res.status(400).send({ message: "Update passport VC fail" });
+              res.status(400).send({
+                message: "Update passport VC fail",
+              });
             }
-          }
+          },
         );
       }
     });
@@ -175,7 +191,7 @@ export const storeVisaVC = async (req: Request, res: Response) => {
         } else {
           res.status(400).send({ message: "Add visa VC fail" });
         }
-      }
+      },
     );
   } catch (e) {
     console.log(e);
@@ -196,7 +212,7 @@ export const storeStampVC = async (req: Request, res: Response) => {
         } else {
           res.status(400).send({ message: "Add stamp VC fail" });
         }
-      }
+      },
     );
   } catch (e) {
     console.log(e);
@@ -204,7 +220,7 @@ export const storeStampVC = async (req: Request, res: Response) => {
 };
 
 export const getPassportVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_PASSPORT_VC",
@@ -216,7 +232,7 @@ export const getPassportVC = async (req: Request, res: Response) => {
         } else {
           res.status(400).send({ message: "No passport data" });
         }
-      }
+      },
     );
   } catch (e) {
     console.log(e);
@@ -224,7 +240,7 @@ export const getPassportVC = async (req: Request, res: Response) => {
 };
 
 export const getVisaVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_VISA_VC",
@@ -236,7 +252,7 @@ export const getVisaVC = async (req: Request, res: Response) => {
         } else {
           res.status(400).send({ message: "No visa data" });
         }
-      }
+      },
     );
   } catch (e) {
     console.log(e);
@@ -244,7 +260,7 @@ export const getVisaVC = async (req: Request, res: Response) => {
 };
 
 export const getStampVC = async (req: Request, res: Response) => {
-  const { phoneNum } = req.body;
+  const { phoneNum } = req.query;
   try {
     await query.getVC(
       "CLIENT_STORAGE_STAMP_VC",
@@ -256,7 +272,7 @@ export const getStampVC = async (req: Request, res: Response) => {
         } else {
           res.status(400).send({ message: "No stamp data" });
         }
-      }
+      },
     );
   } catch (e) {
     console.log(e);

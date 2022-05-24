@@ -1,6 +1,8 @@
 const query = require("../mysql/query/query");
 import { auth } from "../functions/auth";
 import createIPFS from "../functions/createIPFS.js";
+import { ethers } from "ethers";
+import { NFTabi } from "../ABI";
 
 // 관리자 인증
 export const adminAuth = async (authorization: any) => {
@@ -72,7 +74,7 @@ export const UpdatePassportReq = async (successyn: any, passport_id: any) => {
               resolve(data);
             }
           }
-        }
+        },
       );
     });
   } catch (e) {
@@ -100,7 +102,7 @@ export const UpdateVisaReq = async (successyn: any, visa_survey_id: any) => {
               resolve(data);
             }
           }
-        }
+        },
       );
     });
   } catch (e) {
@@ -135,7 +137,7 @@ export const getEntOrDepStamp = async (entOrdep: any, countryCode: any) => {
 export const makeStamp = async (
   entOrdep: any,
   country_code: any,
-  country_img_url: any
+  country_img_url: any,
 ) => {
   let ent_or_dep = "NO DATA";
   if (entOrdep === "1") {
@@ -164,6 +166,7 @@ export const findHolderDid = async (holder_did: any) => {
       query.getUserByDid(holder_did, (err: any, data: any) => {
         if (err) {
           // error handling code goes here
+          reject(err);
           console.log("ERROR : ", err);
         } else {
           if (data) {
@@ -171,6 +174,8 @@ export const findHolderDid = async (holder_did: any) => {
               const holder = data[0];
               // 도장 등록 함수(addStampToDb) resolve
               resolve(holder);
+            } else {
+              resolve({ message: "No matched user" });
             }
           }
         }
@@ -188,7 +193,7 @@ export const updateStamp = async (
   stamp_uri: any,
   country_code: any,
   stamp_expired_date: any,
-  ent_or_dep: any
+  ent_or_dep: any,
 ) => {
   try {
     return new Promise((resolve, reject) => {
@@ -207,11 +212,110 @@ export const updateStamp = async (
               resolve(data);
             }
           }
-        }
+        },
       );
     });
   } catch (e) {
     console.log(e);
     return e;
   }
+};
+
+// 회원 did & vp 저장
+export const saveUserDidandVp = async (
+  vpJwt: any,
+  did: any,
+  countryCode: any,
+  address: any,
+) => {
+  try {
+    return new Promise((resolve, reject) => {
+      query.storeUserDidAndVp(
+        vpJwt,
+        did,
+        countryCode,
+        address,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            reject(err);
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
+          }
+        },
+      );
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+// 회원 did & vp 삭제
+export const deleteUserDidandVp = async (did: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      query.deleteRow(
+        "GOVERN_IMMIGRATION_SURVEY",
+        "did",
+        did,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            reject(err);
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
+          }
+        },
+      );
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+// 회원 did & vp 가져오기
+export const getUserDidandVp = async (countryCode: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      query.getTargetData(
+        "GOVERN_IMMIGRATION_SURVEY",
+        "country_code",
+        countryCode,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            reject(err);
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
+          }
+        },
+      );
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+export const mintNFT = async (toAddress: any, url: any) => {
+  const rpcurl = process.env.RPC_URL;
+  const provider = new ethers.providers.JsonRpcProvider(rpcurl);
+  const issuerpriv: any = process.env.ISSUERPRIVKEY;
+  const nftContractAdd: any = process.env.NFTCONTRACTADD;
+  const wallet = new ethers.Wallet(issuerpriv, provider);
+  const contract = new ethers.Contract(nftContractAdd, NFTabi, wallet);
+  const tx = await contract.mintNFT(toAddress, url);
+  const result = await tx.wait();
+  return result;
 };

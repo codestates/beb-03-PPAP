@@ -76,7 +76,7 @@ const VisaIssuanceList = ({linkPath}:any) => {
                     </tr>
                   </thead>
                   <tbody>
-                  {visaList.map((data:any,index:any)=>{
+                  {visaList&&visaList.map((data:any,index:any)=>{
                       return (
                         <tr>
                           <th scope="row">

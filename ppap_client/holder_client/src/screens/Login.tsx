@@ -8,6 +8,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../modules/userReducer";
 import { setSpinnerStatus } from "../modules/spinnerReducer";
+import env from "../utils/envFile";
 
 const Container = styled.View`
   flex: 1;
@@ -52,13 +53,20 @@ const Login = ({ navigation }) => {
     console.log(userName, password);
     dispatch(setSpinnerStatus(true));
     axios
-      .post("https://rare-seahorse-92.loca.lt/clientAuth/login", {
-        user_name: userName,
-        password,
-      })
+      .post(
+        `${env.clientServer}/clientAuth/login`,
+        {
+          user_name: userName,
+          password,
+        },
+        {
+          validateStatus: function (status) {
+            return status >= 200 && status < 500;
+          },
+        },
+      )
       .then((payload) => {
         const { data, msg } = payload.data;
-        // console.log(data, msg);
         dispatch(setSpinnerStatus(false));
         if (msg === "Login success!") {
           dispatch(setUser(data));
