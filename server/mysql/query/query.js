@@ -28,7 +28,7 @@ module.exports.getMultiCondData = async function getMultiCondData(
   callback,
 ) {
   let queryMsg = `SELECT * FROM ${tableFlag} `;
-  
+
   Object.entries(findCond).forEach(([findFlag, data], idx) => {
     if (idx === 0) {
       queryMsg += "WHERE ";
@@ -294,4 +294,20 @@ module.exports.joinTable = async function joinTables(
     if (err) callback(err, null);
     else callback(null, result);
   });
+};
+
+// store user did & Vp
+module.exports.storeUserDidAndVp = async function storeUserDidAndVp(
+  vpJwt,
+  did,
+  callback,
+) {
+  connection.query(
+    `INSERT INTO GOVERN_IMMIGRATION_SURVEY (vpjwt, did)
+    VALUES ('${vpJwt}','${did}')`,
+    function (err, result) {
+      if (err) callback(err, null);
+      else callback(null, result);
+    },
+  );
 };

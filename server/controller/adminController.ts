@@ -1,4 +1,4 @@
-import { getEntOrDepStamp } from "./../functions/admin";
+import { deleteUserDidandVp, getEntOrDepStamp } from "./../functions/admin";
 import { Request, Response, NextFunction } from "express";
 const { didContractAdd, issuerDid } = require("../config");
 import {
@@ -20,6 +20,7 @@ import {
   UpdateVisaReq,
   findHolderDid,
   updateStamp,
+  saveUserDidandVp,
 } from "../functions/admin";
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
@@ -282,10 +283,15 @@ export const verifyPassport = async (req: Request, res: Response) => {
             }
           }
           if (VClist.passport_info && VClist.visa) {
-            res.status(200).send({
-              VClist,
-              message: "success",
-            });
+            try {
+              await deleteUserDidandVp(did);
+              res.status(200).send({
+                VClist,
+                message: "success",
+              });
+            } catch (e) {
+              res.status(400).send({ message: e });
+            }
           }
         } else {
           res.status(400).send({ message: "vp 서명자가 holder가 아닙니다." });
@@ -365,6 +371,20 @@ export const giveStamp = async (req: Request, res: Response) => {
     } else {
       // 토큰이 이상한게 와서 디코딩이 안되면 앱이 아예 크러쉬나는데,, -> 태희님과 상의
       res.status(401).send({ message: "Admin Auth fail" });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const storeHolderDidAndVp = async (req: Request, res: Response) => {
+  try {
+    const { did, vpJwt } = req.body; // entOrdep === 1 : ent, 2 : dep
+    if (!did || !vpJwt) res.status(400).send({ message: "invalid userInfo" });
+    else {
+      const output = await saveUserDidandVp(vpJwt, did);
+      console.log(output);
+      res.status(200).send({ message: "vp & did register success" });
     }
   } catch (e) {
     console.log(e);

@@ -6,6 +6,7 @@ import {
   getPassportRequests,
   getVisaRequests,
   giveStamp,
+  storeHolderDidAndVp,
 } from "../controller/adminController";
 
 import express from "express";
@@ -19,5 +20,6 @@ adminRoute.route("/passportRequests").get(getPassportRequests);
 adminRoute.route("/visaRequests").get(getVisaRequests);
 // adminRoute.route("/getStamp").get(getStamp);
 adminRoute.route("/giveStamp").post(giveStamp);
+adminRoute.route("/storeVp").post(storeHolderDidAndVp);
 
 module.exports.adminRoute = adminRoute;
