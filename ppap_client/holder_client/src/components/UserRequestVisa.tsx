@@ -1,8 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Text, Pressable, Button } from "react-native";
 import styled from "styled-components/native";
-import { images } from "../utils/images";
-import { MainButton } from "../components/MainButton";
 import axios from "axios";
 import env from "../utils/envFile";
 import { useSelector } from "react-redux";
@@ -16,13 +14,14 @@ const Cover = styled.View`
   border-radius: 30px;
   justify-content: center;
   padding: 24px;
-  align-items: center;
+  align-items: stretch;
 `;
 
-const VisaCreationDate = styled.Text`
+const VisaText = styled.Text`
   color: black;
   font-size: 12px;
   font-weight: 700;
+  
 `;
 
 const StyledLogo = styled.ImageBackground`
@@ -37,20 +36,21 @@ const Title = styled.Text`
 `;
 
 const Container = styled.Pressable.attrs((props) => ({
-  width: props.width || "70%",
+  width: props.width || "80%",
 }))`
   align-items: center;
   /* width: 70%; */
-  margin: 20px;
-  bottom: -40%;
+  margin: 10px;
   padding: 10px;
   border-radius: 30px;
   background-color: ${({ theme, disabled }) =>
     disabled ? theme.lightgray : theme.navy};
 `;
 
-const UserRequestVisa = ({ visaRequestData }: { visaRequestData?: object }) => {
+const UserRequestVisa = ({navVisa, visaRequestData }: {navVisa?:Function, visaRequestData?: object }) => {
+
   const userInfo = useSelector((state: any) => state.userReducer).data;
+
   const getVisaVc = async () => {
     console.log("버튼 클릭");
     let output = await axios.post(
@@ -60,40 +60,43 @@ const UserRequestVisa = ({ visaRequestData }: { visaRequestData?: object }) => {
         headers: { authorization: userInfo.accessToken },
       },
     );
-    AsyncStorage.getItem("@visa_jwt_arr").then(async (data) => {
-      if (data === null) {
-        console.log("null");
-        const visaArray = [output.data.data.vcVisaJwt];
 
-        AsyncStorage.setItem("@visa_jwt_arr", JSON.stringify(visaArray));
-      } else {
-        console.log("data");
-        let visaArray = JSON.parse(data);
-        visaArray.push(output.data.data.vcVisaJwt);
+    if(output.status===200){
+      await AsyncStorage.getItem("@visa_jwt_arr").then(async (data) => {
+        if (data === null) {
+          console.log("null");
+          const visaArray = [output.data.data.vcVisaJwt];
+          AsyncStorage.setItem("@visa_jwt_arr", JSON.stringify(visaArray));
+        } else {
+          console.log("data");
+          let visaArray = JSON.parse(data);
+          visaArray.push(output.data.data.vcVisaJwt);
+          AsyncStorage.setItem("@visa_jwt_arr", JSON.stringify(visaArray));
+        }
+      });
+      
+      window.alert("발급되었습니다.");
+      navVisa();
+    }  
+     
 
-        AsyncStorage.setItem("@visa_jwt_arr", JSON.stringify(visaArray));
-      }
-    });
 
-    // visa VC 저장
-    // const visaArray = ["asfdadfs", "aklsjhdflja"];
-    AsyncStorage.getItem("@visa_jwt_arr").then((json) => {
-      console.log(json);
-    });
+  
   };
 
   return (
     <Pressable>
       <Cover>
-        <VisaCreationDate>
-          발급 신청일 : {visaRequestData.creation_date}
-        </VisaCreationDate>
+        <VisaText>비자 이름 : {visaRequestData.visa_name}</VisaText>
+        <VisaText>비자 목적 : {visaRequestData.visa_purpose}</VisaText>
+        <VisaText>비자 국가 : {visaRequestData.country_code}</VisaText>
+        <VisaText>비자 유효일 : {visaRequestData.visa_expired_date}</VisaText>
+        <VisaText>비자 신청일 : {visaRequestData.creation_date}</VisaText>
         {visaRequestData.success_yn === "1" ? (
           <Container onPress={getVisaVc}>
             <Title>비자 발급</Title>
           </Container>
         ) : null}
-        <Text style={{ color: "#fff" }}></Text>
       </Cover>
     </Pressable>
   );

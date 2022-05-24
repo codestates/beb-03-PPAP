@@ -41,6 +41,7 @@ const Visa = ({ navigation }) => {
   const [visaList, setVisaList] = useState([]);
   const [clickCheck, setClickCheck] = useState(false);
   const [visaDetailIndex, setVisaDetailIndex] = useState(-1);
+  
   // visa VC 저장
   // const someArray = ["asfdadfs", "aklsjhdflja"];
   // AsyncStorage.setItem("@visa_jwt", JSON.stringify(someArray))
@@ -55,7 +56,7 @@ const Visa = ({ navigation }) => {
   useEffect(() => {
     //여권detail을 눌렀을때
     if(visaDetailIndex!==-1){
-      navigation.navigate(screenName,{visaInfo:visaList[visaDetailIndex]});
+      navigation.navigate(screenName,{visaInfo:visaList[visaDetailIndex], visaIndex:visaDetailIndex});
     }
     //다른걸 눌렀을때
     else{

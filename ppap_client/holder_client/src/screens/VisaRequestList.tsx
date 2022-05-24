@@ -12,7 +12,7 @@ const Container = styled.View`
   background-color: #fff;
 `;
 
-const VisaRequestList = () => {
+const VisaRequestList = ({navigation}) => {
   const [requestVisaList, setRequestVisaList] = useState([]);
   const userInfo = useSelector((state: any) => state.userReducer).data;
 
@@ -40,13 +40,17 @@ const VisaRequestList = () => {
     console.log("신청내역 : ", requestVisaList);
   }, [requestVisaList]);
 
+  function navVisa(){
+    navigation.navigate("Visa");
+  }
+
   return (
     <Container>
      
       {requestVisaList.length !== 0
         ? requestVisaList.map((data) => {
             return (
-              <UserRequestVisa
+              <UserRequestVisa navVisa={navVisa}
                 visaRequestData={data}
                 key={data.visa_survey_id}
               />

@@ -7,6 +7,7 @@ import env from "../utils/envFile";
 import RNPickerSelect from "react-native-picker-select";
 import { Image, MainText, MainButton, LabeledText } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {
   Issuer,
   JwtCredentialPayload,
@@ -25,8 +26,43 @@ const Container = styled.View`
 `;
 const Wrapper = styled.View`
   justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
 `;
-const VisaRegister = () => {
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+      fontSize: 16,
+      height: 50, 
+      width: 300, 
+      color: '#000000',
+      borderColor: '#000000', 
+      borderWidth: 1, 
+      borderRadius: 12,
+      padding: 10,
+      margin: 10
+  },
+  inputAndroid: {
+      fontSize: 16,
+      height: 50, 
+      width: 300, 
+      color: '#000000',
+      borderColor: '#000000', 
+      borderWidth: 1, 
+      borderRadius: 12,
+      padding: 10,
+      margin: 10
+  },
+});
+
+const textSelectStyles = StyleSheet.create({
+  inputIOS: {
+  },
+  inputAndroid: {
+  },
+});
+
+const VisaRegister = ({ navigation }) => {
   const [visaList, setVisaList] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [purposeList, setPurposeList] = useState([]);
@@ -90,9 +126,15 @@ const VisaRegister = () => {
             },
           );
 
-          console.log(output);
+          //성공
+          if(output.status===200){
+           window.alert("발급 신청에 성공했습니다. 발급이력을 확인해보세요.")
+           navigation.navigate('VisaRequestList');
+          }
+
         } catch (e) {
           console.log(e);
+          window.alert("발급에 실패하였습니다.\n"+e)
         }
       }
     });
@@ -152,40 +194,52 @@ const VisaRegister = () => {
 
   return (
     <Container>
-      <RNPickerSelect
-        onValueChange={(value) => setCountry(value)}
-        items={countryList.map((elem) => {
-          return { label: elem, value: elem };
-        })}
-      />
-      <RNPickerSelect
-        onValueChange={(value) => {
-          setPurpose(value);
-        }}
-        items={purposeList.map((elem) => {
-          return { label: elem, value: elem };
-        })}
-      />
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <View style={{ width: 300 }}>
+          <RNPickerSelect
+            onValueChange={(value) => setCountry(value)}
+            items={countryList.map((elem) => {
+              return { label: elem, value: elem };
+            })}
+            style={pickerSelectStyles}
+            placeholder={{
+              label: "국가를 선택해주세요 ...",
+            }}
+          />
+          <RNPickerSelect
+            onValueChange={(value) => {
+              setPurpose(value);
+            }}
+            items={purposeList.map((elem) => {
+              return { label: elem, value: elem };
+            })}
+            style={pickerSelectStyles}
+            placeholder={{
+              label: "비자를 선택해주세요 ...",
+            }}
+          />
 
+          {visa ? (
+            <Wrapper>
+              <LabeledText label="비자 이름" text={visa.visa_name} />
+              <LabeledText label="비자 목적" text={visa.visa_purpose} />
+              <LabeledText label="국가" text={visa.country_code} />
+              <LabeledText label="유효일" text={visa.visa_expired_date} />
+              <MainButton
+                title="신청하기"
+                onPress={() => {
+                  requestVisa();
+                }}
+                width="50%"
+              />
+            </Wrapper>
+          ) : <Wrapper><Text>발급가능한 비자가 없습니다.</Text></Wrapper>}
+        </View>
+      </View>
       {/* "visa_name": "2022 VISA",
                 "visa_purpose": "TOUR",
                 "country_code": "KOR",...
                 "visa_expired_date": "90" */}
-      {visa ? (
-        <Wrapper>
-          <LabeledText label="비자 이름" text={visa.visa_name} />
-          <LabeledText label="비자 목적" text={visa.visa_purpose} />
-          <LabeledText label="국가" text={visa.country_code} />
-          <LabeledText label="유효일" text={visa.visa_expired_date} />
-          <MainButton
-            title="신청하기"
-            onPress={() => {
-              requestVisa();
-            }}
-            width="50%"
-          />
-        </Wrapper>
-      ) : null}
     </Container>
   );
 };
