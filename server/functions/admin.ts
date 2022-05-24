@@ -277,7 +277,7 @@ export const deleteUserDidandVp = async (did: any) => {
   }
 };
 
-// 회원 did & vp 삭제
+// 회원 did & vp 가져오기
 export const getUserDidandVp = async (countryCode: any) => {
   try {
     return new Promise((resolve, reject) => {
