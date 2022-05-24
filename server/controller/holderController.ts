@@ -18,6 +18,13 @@ import {
 import { auth } from "../functions/auth";
 import createIssuerDID from "../functions/createIssuerDID";
 const didContractAdd = process.env.DIDCONTRACTADD;
+/* import moralis */
+const Moralis = require("moralis/node");
+
+/* Moralis init code */
+const serverUrl = process.env.SERVER_URL;
+const appId = process.env.APP_ID;
+const masterKey = process.env.MASTER_KEY;
 
 const clientAuth = async (authorization: any) => {
   let output: any = await auth(authorization);
@@ -392,8 +399,7 @@ export const requestVisa = async (req: Request, res: Response) => {
       if (data.success_yn === "0") {
         res.status(401).send({
           data: null,
-          msg:
-            "Your request is already transfered and it does not approved yet.",
+          msg: "Your request is already transfered and it does not approved yet.",
         });
       } else {
         res.status(401).send({
@@ -529,4 +535,21 @@ export const test = async (req: Request, res: Response) => {
   const verifiedVP = await verifyPresentation(vpJwt, didResolver);
 
   return res.status(200).send({ data: { vpJwt: vpJwt } });
+};
+
+export const getStampNFTs = async (req: Request, res: Response) => {
+  await Moralis.start({ serverUrl, appId, masterKey });
+  const { address } = req.query;
+  const options = {
+    chain: "ropsten",
+    address: address,
+    token_address: process.env.NFTCONTRACTADD,
+  };
+  const NFTs = await Moralis.Web3API.account.getNFTsForContract(options);
+  res.status(200).send({ NFT_list: NFTs.result });
+  console.log(NFTs);
+  try {
+  } catch (e) {
+    res.status(400).send({ message: e });
+  }
 };

@@ -7,6 +7,7 @@ import {
   getReqVisaList,
   issueVisaVC,
   test,
+  getStampNFTs,
 } from "../controller/holderController";
 
 import express from "express";
@@ -22,6 +23,7 @@ holderRoute.route("/getAvailVisa").get(getAvailableVisa);
 holderRoute.route("/reqVisa").post(requestVisa);
 holderRoute.route("/getReqVisaList").get(getReqVisaList);
 holderRoute.route("/issueVisaVC").post(issueVisaVC);
+holderRoute.route("/getStampNFTs").get(getStampNFTs);
 
 // test for generate sample VP using passport VC
 holderRoute.route("/test").post(test);

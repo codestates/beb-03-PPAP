@@ -309,11 +309,12 @@ export const getUserDidandVp = async (countryCode: any) => {
 };
 
 export const mintNFT = async (toAddress: any, url: any) => {
-  const rpcurl = process.env.RPC_URL;
+  const rpcurl = process.env.INFURA_URL;
   const provider = new ethers.providers.JsonRpcProvider(rpcurl);
-  const issuerpriv: any = process.env.ISSUERPRIVKEY;
+  const issuerpriv: any = process.env.TXSIGNER_PRIV;
   const nftContractAdd: any = process.env.NFTCONTRACTADD;
   const wallet = new ethers.Wallet(issuerpriv, provider);
+
   const contract = new ethers.Contract(nftContractAdd, NFTabi, wallet);
   const tx = await contract.mintNFT(toAddress, url);
   const result = await tx.wait();
