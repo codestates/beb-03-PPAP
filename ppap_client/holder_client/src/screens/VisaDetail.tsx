@@ -39,12 +39,13 @@ const VisaDetail = ({ route, navigation }) => {
   const {visaIndex} = route.params;
   
   //출입국 VP 신청
-  async function storeVP(did, vpJwt) {
+  async function storeVP(did, vpJwt, address) {
     const output =  await axios
       .post(`${env.server}/admin/storeVp`,{
         did,
         vpJwt,
         countryCode:visaInfo.country_code,
+        address
       });
       return output;
   }
@@ -81,7 +82,7 @@ const VisaDetail = ({ route, navigation }) => {
             }
 
         const vpjwt = await createVerifiablePresentationJwt(vpPayload,ethrDid);
-        const storeOutput = await storeVP(userDid,vpjwt);
+        const storeOutput = await storeVP(userDid,vpjwt,keypair.address);
         
         if(storeOutput.status===200){
           window.alert("요청에 성공하였습니다.")
