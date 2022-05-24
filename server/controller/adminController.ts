@@ -285,7 +285,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
           }
           if (VClist.passport_info && VClist.visa) {
             try {
-              await deleteUserDidandVp(did);
+              // await deleteUserDidandVp(did);
               res.status(200).send({
                 VClist,
                 message: "success",
@@ -364,6 +364,7 @@ export const giveStamp = async (req: Request, res: Response) => {
             stampVcPayload,
             issuer,
           );
+          await deleteUserDidandVp(did);
           res.status(200).send({ vcJwt: stampVcJwt, message: "success" });
         }
       } catch (e) {
