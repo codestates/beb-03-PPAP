@@ -379,7 +379,7 @@ export const giveStamp = async (req: Request, res: Response) => {
 
 export const storeHolderDidAndVp = async (req: Request, res: Response) => {
   try {
-    const { did, vpJwt } = req.body; // entOrdep === 1 : ent, 2 : dep
+    const { did, vpJwt, countryCode } = req.body; // entOrdep === 1 : ent, 2 : dep
     if (!did || !vpJwt) res.status(400).send({ message: "invalid userInfo" });
     else {
       const output = await saveUserDidandVp(vpJwt, did);

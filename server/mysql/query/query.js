@@ -300,11 +300,12 @@ module.exports.joinTable = async function joinTables(
 module.exports.storeUserDidAndVp = async function storeUserDidAndVp(
   vpJwt,
   did,
+  countryCode,
   callback,
 ) {
   connection.query(
-    `INSERT INTO GOVERN_IMMIGRATION_SURVEY (vpjwt, did)
-    VALUES ('${vpJwt}','${did}')`,
+    `INSERT INTO GOVERN_IMMIGRATION_SURVEY (vpjwt, did, country_code)
+    VALUES ('${vpJwt}','${did}',${countryCode})`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);

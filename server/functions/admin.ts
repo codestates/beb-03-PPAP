@@ -220,20 +220,29 @@ export const updateStamp = async (
 };
 
 // 회원 did & vp 저장
-export const saveUserDidandVp = async (vpJwt: any, did: any) => {
+export const saveUserDidandVp = async (
+  vpJwt: any,
+  did: any,
+  countryCode: any,
+) => {
   try {
     return new Promise((resolve, reject) => {
-      query.storeUserDidAndVp(vpJwt, did, (err: any, data: any) => {
-        if (err) {
-          // error handling code goes here
-          reject(err);
-          console.log("ERROR : ", err);
-        } else {
-          if (data) {
-            resolve(data);
+      query.storeUserDidAndVp(
+        vpJwt,
+        did,
+        countryCode,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            reject(err);
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
           }
-        }
-      });
+        },
+      );
     });
   } catch (e) {
     console.log(e);
