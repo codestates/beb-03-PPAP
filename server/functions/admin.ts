@@ -1,6 +1,8 @@
 const query = require("../mysql/query/query");
 import { auth } from "../functions/auth";
 import createIPFS from "../functions/createIPFS.js";
+import { ethers } from "ethers";
+import { NFTabi } from "../ABI";
 
 // 관리자 인증
 export const adminAuth = async (authorization: any) => {
@@ -224,6 +226,7 @@ export const saveUserDidandVp = async (
   vpJwt: any,
   did: any,
   countryCode: any,
+  address: any,
 ) => {
   try {
     return new Promise((resolve, reject) => {
@@ -231,6 +234,7 @@ export const saveUserDidandVp = async (
         vpJwt,
         did,
         countryCode,
+        address,
         (err: any, data: any) => {
           if (err) {
             // error handling code goes here
@@ -302,4 +306,16 @@ export const getUserDidandVp = async (countryCode: any) => {
     console.log(e);
     return e;
   }
+};
+
+export const mintNFT = async (toAddress: any, url: any) => {
+  const rpcurl = process.env.RPC_URL;
+  const provider = new ethers.providers.JsonRpcProvider(rpcurl);
+  const issuerpriv: any = process.env.ISSUERPRIVKEY;
+  const nftContractAdd: any = process.env.NFTCONTRACTADD;
+  const wallet = new ethers.Wallet(issuerpriv, provider);
+  const contract = new ethers.Contract(nftContractAdd, NFTabi, wallet);
+  const tx = await contract.mintNFT(toAddress, url);
+  const result = await tx.wait();
+  return result;
 };

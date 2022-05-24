@@ -334,38 +334,19 @@ export const giveStamp = async (req: Request, res: Response) => {
           } else {
             res.status(400).send({ message: "invalid entOrdep" });
           }
+          // ipfs url 생성
           const stampurl = await makeStamp(
             entOrdep,
             admin.country_code,
             CountryIpfs[admin.country_code],
           );
 
-          // stamp url을 db에도 등록(did로 passport table에서 누군지 찾아서 등록)
+          // <------------- NFT contract에 민팅 --------------->
 
-          const issuer: any = await createIssuerDID();
-          const stampVcPayload: JwtCredentialPayload = {
-            sub: did,
-            nbf: 1562950282,
-            vc: {
-              "@context": ["https://www.w3.org/2018/credentials/v1"],
-              type: ["VerifiableCredential", "PassportCredential"],
-              credentialSubject: {
-                stampInfo: {
-                  stamp_uri: stampurl,
-                  ent_or_dep: ent_or_dep,
-                  country_code: admin.country_code,
-                  creation_date: new Date(),
-                },
-              },
-            },
-          };
+          // await mintNFT()
 
-          const stampVcJwt = await createVerifiableCredentialJwt(
-            stampVcPayload,
-            issuer,
-          );
           await deleteUserDidandVp(did);
-          res.status(200).send({ vcJwt: stampVcJwt, message: "success" });
+          res.status(200).send({ message: "success" });
         }
       } catch (e) {
         res.status(400).send({ message: e });
@@ -381,10 +362,10 @@ export const giveStamp = async (req: Request, res: Response) => {
 
 export const storeHolderDidAndVp = async (req: Request, res: Response) => {
   try {
-    const { did, vpJwt, countryCode } = req.body;
+    const { did, vpJwt, countryCode, address } = req.body;
     if (!did || !vpJwt) res.status(400).send({ message: "invalid userInfo" });
     else {
-      const output = await saveUserDidandVp(vpJwt, did, countryCode);
+      const output = await saveUserDidandVp(vpJwt, did, countryCode, address);
       console.log(output);
       res.status(200).send({ message: "vp & did register success" });
     }

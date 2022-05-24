@@ -301,11 +301,12 @@ module.exports.storeUserDidAndVp = async function storeUserDidAndVp(
   vpJwt,
   did,
   countryCode,
+  address,
   callback,
 ) {
   connection.query(
-    `INSERT INTO GOVERN_IMMIGRATION_SURVEY (vpjwt, did, country_code)
-    VALUES ('${vpJwt}','${did}','${countryCode}')`,
+    `INSERT INTO GOVERN_IMMIGRATION_SURVEY (vpjwt, did, country_code,address)
+    VALUES ('${vpJwt}','${did}','${countryCode}','${address}')`,
     function (err, result) {
       if (err) callback(err, null);
       else callback(null, result);
