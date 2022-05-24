@@ -382,7 +382,7 @@ export const storeHolderDidAndVp = async (req: Request, res: Response) => {
     const { did, vpJwt, countryCode } = req.body; // entOrdep === 1 : ent, 2 : dep
     if (!did || !vpJwt) res.status(400).send({ message: "invalid userInfo" });
     else {
-      const output = await saveUserDidandVp(vpJwt, did);
+      const output = await saveUserDidandVp(vpJwt, did, countryCode);
       console.log(output);
       res.status(200).send({ message: "vp & did register success" });
     }
