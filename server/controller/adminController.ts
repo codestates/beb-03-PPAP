@@ -22,6 +22,7 @@ import {
   updateStamp,
   saveUserDidandVp,
   getUserDidandVp,
+  mintNFT,
 } from "../functions/admin";
 import { genAccessToken } from "../functions/genAccessToken";
 const query = require("../mysql/query/query");
@@ -314,7 +315,7 @@ export const verifyPassport = async (req: Request, res: Response) => {
 export const giveStamp = async (req: Request, res: Response) => {
   try {
     const authorization = req.headers["authorization"];
-    const { did, entOrdep } = req.body; // entOrdep === 1 : ent, 2 : dep
+    const { did, entOrdep, address } = req.body; // entOrdep === 1 : ent, 2 : dep
     if (!authorization) res.status(401).send({ message: "no Auth header" });
     if (!did || !entOrdep)
       res.status(400).send({ message: "Check your Request Body data" });
@@ -343,8 +344,8 @@ export const giveStamp = async (req: Request, res: Response) => {
 
           // <------------- NFT contract에 민팅 --------------->
 
-          // await mintNFT()
-
+          const NFToutput = await mintNFT(address, stampurl);
+          console.log(NFToutput);
           await deleteUserDidandVp(did);
           res.status(200).send({ message: "success" });
         }
