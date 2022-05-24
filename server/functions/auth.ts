@@ -31,7 +31,7 @@ export const auth = async (authorization: any) => {
                   const transferObj: any = new Object();
                   transferObj.did = tokenData.did;
                   transferObj.client_id = data[0].client_id;
-                  transferObj.country_code = data[0].country_code;
+                  transferObj.user_country_code = data[0].country_code;
                   resolve(transferObj);
                 }
               }
