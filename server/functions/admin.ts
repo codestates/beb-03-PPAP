@@ -276,3 +276,30 @@ export const deleteUserDidandVp = async (did: any) => {
     return e;
   }
 };
+
+// 회원 did & vp 삭제
+export const getUserDidandVp = async (countryCode: any) => {
+  try {
+    return new Promise((resolve, reject) => {
+      query.getTargetData(
+        "GOVERN_IMMIGRATION_SURVEY",
+        "country_code",
+        countryCode,
+        (err: any, data: any) => {
+          if (err) {
+            // error handling code goes here
+            reject(err);
+            console.log("ERROR : ", err);
+          } else {
+            if (data) {
+              resolve(data);
+            }
+          }
+        },
+      );
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
