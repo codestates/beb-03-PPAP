@@ -45,6 +45,7 @@
     "https-browserify": "^0.0.1",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.3",
+    "moralis": "^1.7.0",
     "node-libs-expo": "^0.0.3",
     "node-libs-react-native": "^1.2.1",
     "path-browserify": "^0.0.0",

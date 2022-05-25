@@ -22,6 +22,7 @@ const Login = () => {
   const onSubmit = async () => {
     //로그인 시도
     const body = { id: username, password: password };
+    console.log(process.env.REACT_APP_SERVER_ADMIN_URL );
     axios
       .post(process.env.REACT_APP_SERVER_ADMIN_URL + "/admin/adminlogin", body)
       .then((response)=> response.data)

@@ -44,7 +44,7 @@ const VisaDetail = ({ route, navigation }) => {
       .post(`${env.server}/admin/storeVp`,{
         did,
         vpJwt,
-        countryCode:visaInfo.country_code,
+        countryCode:visaInfo.target_country_code,
         address
       });
       return output;
