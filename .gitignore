@@ -1,0 +1,13 @@
+ABI
+address
+*/node_modules
+*/.env
+*/package-lock.json
+node_modules
+package-lock.json
+*/sessions
+.DS_store
+node_modules
+*/*/.zip
+*/*/*/.zip
+*.zip

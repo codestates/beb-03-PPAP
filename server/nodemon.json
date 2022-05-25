@@ -1,0 +1,14 @@
+{
+  "verdose": true,
+  "watch": [
+    "index.ts",
+    "package.json",
+    "nodemon.json",
+    "tsconfig.json",
+    "src/*.*",
+    "routes/*.*",
+    "mysql/**/*.*",
+    "functions/*.*",
+    "controller/*.*"
+  ]
+}
