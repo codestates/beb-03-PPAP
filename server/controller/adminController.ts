@@ -320,6 +320,7 @@ export const giveStamp = async (req: Request, res: Response) => {
     if (!did || !entOrdep)
       res.status(400).send({ message: "Check your Request Body data" });
     const admin = await adminAuth(authorization);
+    
     if (issuerDid.includes(admin.did)) {
       try {
         const holderInfo: any = await findHolderDid(did);
@@ -341,7 +342,6 @@ export const giveStamp = async (req: Request, res: Response) => {
             admin.country_code,
             CountryIpfs[admin.country_code],
           );
-
           // <------------- NFT contract에 민팅 --------------->
           await deleteUserDidandVp(did);
           const NFToutput = await mintNFT(address, stampurl);
