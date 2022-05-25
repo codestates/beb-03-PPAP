@@ -11,7 +11,7 @@ contract NFTs is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    constructor() ERC721("NFTs", "NFT") {}
+    constructor() ERC721("STAMP", "STAMP") {}
 
 
     function mintNFT(address recipient, string memory tokenURI)

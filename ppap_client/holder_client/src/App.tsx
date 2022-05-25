@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Platform } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
@@ -10,7 +10,7 @@ import styled from "styled-components/native";
 import { createStore } from "redux";
 import rootReducer from "./modules";
 import { Provider } from "react-redux";
-import '../shim';
+import "../shim";
 
 const Container = styled.View`
   flex: 1;

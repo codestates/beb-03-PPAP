@@ -1,3 +1,4 @@
 import App from "./src/App";
-import './shim';
+import "./shim";
+
 export default App;
