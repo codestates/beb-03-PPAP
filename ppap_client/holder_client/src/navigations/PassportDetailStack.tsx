@@ -6,9 +6,8 @@ import { PassportDetail, Stamps, QR } from "../screens";
 const Stack = createStackNavigator();
 
 const PassportDetailStack = ({ route }) => {
-  console.log(route?.params);
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true, headerTitle: "" }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, headerTitle: "" }}>
       <Stack.Screen name="PassportDetail" component={PassportDetail} />
       <Stack.Screen name="Stamps" component={Stamps} />
       <Stack.Screen name="QR" component={QR} />

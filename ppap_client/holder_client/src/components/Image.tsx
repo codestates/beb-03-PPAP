@@ -18,18 +18,22 @@ const Container = styled.View`
 `;
 
 const StyledImage = styled.ImageBackground`
-  width: ${({ isUpload }) => (isUpload ? "140px" : "100px")};
-  height: ${({ isUpload }) => (isUpload ? "180px" : "100px")};
+  width: ${({ isPassport }) => (isPassport ? "140px" : "100px")};
+  height: ${({ isPassport }) => (isPassport ? "180px" : "100px")};
 `;
 
 const Image = ({
   url,
   isUpload,
   onChangeImage,
+  isPassport,
+  isFlag,
 }: {
   url: string;
   isUpload?: boolean;
   onChangeImage?: Function;
+  isPassport?: boolean;
+  isFlag?: boolean;
 }) => {
   if (isUpload) {
     (async () => {
@@ -39,7 +43,7 @@ const Image = ({
           if (status !== "granted") {
             Alert.alert(
               "Photo Permission",
-              "Please turn on the camera roll permissions."
+              "Please turn on the camera roll permissions.",
             );
           }
         }
@@ -77,6 +81,8 @@ const Image = ({
             uri: url,
           }}
           isUpload={isUpload}
+          isPassport={isPassport}
+          isFlag={isFlag}
         ></StyledImage>
       </Pressable>
     </Container>

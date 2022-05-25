@@ -16,6 +16,7 @@
     "@ethersproject/wallet": "^5.6.1",
     "@expo/webpack-config": "^0.16.24",
     "@react-native-async-storage/async-storage": "~1.17.3",
+    "@react-native-community/datetimepicker": "6.1.2",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-material/core": "^1.3.7",
     "@react-navigation/bottom-tabs": "^6.3.1",
@@ -116,3 +117,4 @@
     "vm": "vm-browserify"
   }
 }
+

@@ -8,6 +8,11 @@ export const isValidName = (name: string) => {
   return regex.test(name);
 };
 
+export const isValidBirth = (birth: string) => {
+  const regex = /[0-9]/;
+  return regex.test(birth);
+};
+
 export const removeWhitespace = (text) => {
   const regex = /\s/g;
   return text.replace(regex, "");

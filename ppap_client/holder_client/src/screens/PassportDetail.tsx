@@ -1,60 +1,147 @@
-import React, { useState,useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text, ImageBackground } from "react-native";
 import styled from "styled-components/native";
-import env from "../utils/envFile";
+import { setPassportStatus } from "../modules/passportStatusReducer";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  MainText,
+  Image,
+  LabeledText,
+  MessageAlert,
+  Flag,
+} from "../components";
 import axios from "axios";
+import env from "../utils/envFile";
+import { asyncGetItem, asyncSetItem } from "../utils/asyncStorage";
+import { Resolver } from "did-resolver";
+import { getResolver } from "ethr-did-resolver";
+import { images } from "../utils/images";
+import { DelegateTypes, EthrDID } from "ethr-did";
+import {
+  JwtPresentationPayload,
+  verifyCredential,
+  createVerifiablePresentationJwt,
+  verifyPresentation,
+} from "did-jwt-vc";
+import { Issuer } from "did-jwt-vc";
+import jwt_decode from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Container = styled.View`
   flex: 1;
-  justify-content: center;
   align-items: center;
   background-color: #fff;
 `;
 
+const Wrapper = styled.View`
+  flex-grow: ${({ type }) => (type === "header" ? "1" : "3")};
+  justify-content: ${({ type }) =>
+    type === "header" ? "center" : "flex-start"};
+`;
+
 const PassportDetail = ({ navigation, route }) => {
-  const [stampNftList, setStampNftList] = useState([]);
+  const [passportInfo, setPassportInfo] = useState({});
+  const [seconds, setSeconds] = useState(0);
+  const userInfo = useSelector((state) => state.userReducer).data;
+  const { userData, accessToken } = userInfo;
+  const dispatch = useDispatch();
 
-  //출입국 NFT 도장 가져오기
-  async function getStampNft() {
-    const keypairString: any = await AsyncStorage.getItem("@key_pair");
-    let keypair = JSON.parse(keypairString);
-    const output = await axios.get(
-      `${env.server}/holder/getStampNFTs?address=${keypair.address}`,
-      {},
-    );
-    const nftTokenList = output.data.NFT_list;
-    
-    let stampList = nftTokenList.map(async(data)=>{
-      const output = await axios.get(
-        data.token_uri,
-        {},
-      );
-      return output.data;
-    })
-
-    const _stampList: any = await Promise.all(stampList);
-
-
-    setStampNftList(_stampList);
-  }
+  const passportStatus = useSelector(
+    (state) => state.passportStatusReducer,
+  ).data;
+  console.log(`Passport passportStatus ${passportStatus}`);
 
   useEffect(() => {
-    getStampNft();
-  },[]);
+    if (passportStatus < 2) {
+      const interval = setInterval(() => {
+        setSeconds((seconds) => seconds + 1);
+        axios
+          .get(`${env.server}/holder/getReqPass`, {
+            headers: { Authorization: accessToken },
+            validateStatus: function (status) {
+              return status >= 200 && status < 500;
+            },
+          })
+          .then((payload) => {
+            const { data, msg } = payload.data;
+            setPassportInfo(data.reqPass);
+            const { success_yn } = passportInfo;
+            console.log(`PassportDetail success_yn ${success_yn}`);
+            if (success_yn === "1") {
+              asyncSetItem("@passportStatus", "2");
+              dispatch(setPassportStatus(2));
+            }
+          })
+          .catch((e) => console.error(e));
+      }, 5000);
+      return () => clearInterval(interval);
+    } else {
+      asyncGetItem("@passport_jwt").then((vcJwt) => {
+        if (vcJwt === null) {
+          getPassportVC();
+        } else {
+          setVerifiedPassportVC(vcJwt); // vc에서 추출한 여권 정보 상태 저장
+        }
+      });
+    }
+  }, []);
 
-  useEffect(() => {
-    console.log(stampNftList)
-   console.log("CHANGE")
-  },[stampNftList]);
+  const setVerifiedPassportVC = async (vcJwt) => {
+    const providerConfig = {
+      name: "ganache",
+      rpcUrl: env.rpcUrl,
+      registry: env.registry,
+    };
+    const ethrDidResolver = await getResolver(providerConfig);
+    const didResolver: any = await new Resolver(ethrDidResolver);
+    const verifiedVC = await verifyCredential(vcJwt, didResolver);
 
-  async function immigationVPcreate() {}
+    const { payload: vcPayload } = verifiedVC;
+    setPassportInfo(vcPayload.vc.credentialSubject.passportInfo);
 
-  /* Moralis init code */
+    return didResolver;
+  };
+
+  const getPassportVC = () => {
+    axios
+      .get(`${env.server}/holder/issuePassVC`, {
+        headers: { Authorization: accessToken },
+        validateStatus: function (status) {
+          return status >= 200 && status < 500;
+        },
+      })
+      .then((payload) => {
+        const { data, msg } = payload.data;
+        asyncSetItem("@passport_jwt", data.vcPassJwt);
+        console.log("여권 jwt 등록");
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+
   return (
     <Container>
-      <Text>PassportDetail</Text>
-
+      <Wrapper type="header">
+        <MainText title="여권 정보" />
+        {passportStatus < 2 && <MessageAlert message="승인 대기" />}
+      </Wrapper>
+      <Wrapper type="content">
+        <Image url={passportInfo.photo_uri} isPassport={true} />
+        <LabeledText label="성명" text={passportInfo.user_name} />
+        <LabeledText
+          label="국적"
+          text={passportInfo.country_code}
+          showIcon={true}
+        />
+        <LabeledText label="생년월일" text={passportInfo.birth} />
+        <LabeledText label="성별" text={passportInfo.sex} />
+        <LabeledText label="휴대전화" text={passportInfo.phone_num} />
+        <LabeledText
+          label="DID"
+          text={passportInfo?.did?.substr(0, 12) + "⋯"}
+        />
+      </Wrapper>
     </Container>
   );
 };

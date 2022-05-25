@@ -39,7 +39,7 @@ const UserPassport = ({
     <Pressable onPress={onPress}>
       <Cover isLogined={isValidPassport}>
         <StyledLogo
-          source={isValidPassport ? { uri: images.color_logo } : {}}
+          source={isValidPassport ? { uri: images.color_logo } : {}} // 여권이 있는 유저인 경우 로고 출력
         />
         <UserPassportTitle>{mainText}</UserPassportTitle>
         <Text style={{ color: "#fff" }}>{subText}</Text>
@@ -51,3 +51,4 @@ const UserPassport = ({
 const styles = StyleSheet.create({});
 
 export default UserPassport;
+

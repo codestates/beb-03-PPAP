@@ -10,6 +10,8 @@ import LabeledText from "./LabeledText";
 import UserVisa from "./UserVisa";
 import VisaButton from "./VisaButton";
 import UserRequestVisa from "./UserRequestVisa";
+import MessageAlert from "./MessageAlert";
+import Flag from "./Flag";
 
 export {
   Input,
@@ -24,4 +26,6 @@ export {
   UserVisa,
   VisaButton,
   UserRequestVisa,
+  MessageAlert,
+  Flag,
 };
