@@ -343,10 +343,10 @@ export const giveStamp = async (req: Request, res: Response) => {
             CountryIpfs[admin.country_code],
           );
           // <------------- NFT contract에 민팅 --------------->
-
+          await deleteUserDidandVp(did);
           const NFToutput = await mintNFT(address, stampurl);
           console.log(NFToutput);
-          await deleteUserDidandVp(did);
+
           res.status(200).send({ message: "success" });
         }
       } catch (e) {
