@@ -67,6 +67,22 @@ export const register = async (req: Request, res: Response) => {
   });
 };
 
+export const resignation = async (req: Request, res: Response) => {
+  console.log("탈퇴 진입");
+  const userData = req.body;
+  console.log(userData);
+  await query.deleteUser(userData, async (err: any, data: any) => {
+    if (err) {
+      console.error(err);
+    } else {
+      res.send({
+        data: null,
+        msg: "삭제 완료!",
+      });
+    }
+  });
+};
+
 export const login = async (req: Request, res: Response) => {
   const loginData = req.body;
   await query.getUser(

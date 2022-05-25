@@ -15,17 +15,8 @@ import env from "../utils/envFile";
 import { asyncGetItem, asyncSetItem } from "../utils/asyncStorage";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
-import { images } from "../utils/images";
-import { DelegateTypes, EthrDID } from "ethr-did";
-import {
-  JwtPresentationPayload,
-  verifyCredential,
-  createVerifiablePresentationJwt,
-  verifyPresentation,
-} from "did-jwt-vc";
-import { Issuer } from "did-jwt-vc";
-import jwt_decode from "jwt-decode";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { verifyCredential } from "did-jwt-vc";
+import { setSpinnerStatus } from "../modules/spinnerReducer";
 
 const Container = styled.View`
   flex: 1;

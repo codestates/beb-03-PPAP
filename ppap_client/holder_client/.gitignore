@@ -16,4 +16,4 @@ web-build/
 yarn.lock
 package-lock.json
 
-*/envFile.tsx
+src/utils/envFile.tsx
