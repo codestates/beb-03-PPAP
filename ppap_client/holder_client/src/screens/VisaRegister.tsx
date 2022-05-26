@@ -179,7 +179,7 @@ const VisaRegister = ({ navigation }) => {
               requestVisa();
             }}
             width="50%"
-            disabled={passportStatus !== "2"}
+            disabled={passportStatus !== 2}
           />
         </>
       ) : (

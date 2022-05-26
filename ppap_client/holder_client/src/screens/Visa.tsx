@@ -119,6 +119,7 @@ const Visa = ({ navigation }) => {
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {visaList.length === 0 ? (
