@@ -41,6 +41,7 @@ export const requestPassport = async (req: Request, res: Response) => {
   });
   // case when token is not valid
   if (clientInfo.name == "JsonWebTokenError") {
+    console.log("invalid token");
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
   // add user photo data
@@ -53,6 +54,9 @@ export const requestPassport = async (req: Request, res: Response) => {
       res.status(400).send(err);
     }
     if (!data) {
+      console.log(
+        "user already has passport vc, but user submit request once more",
+      );
       return res.status(400).send({
         data: null,
         msg: `You already have passport VC.`,
@@ -66,6 +70,7 @@ export const requestPassport = async (req: Request, res: Response) => {
         "client_id",
         clientInfo.client_id,
         (err: any, data: any) => {
+          console.log("add data success");
           res.status(200).send({
             data: data[0],
             msg: "Your request is sucessfully submitted",
@@ -75,18 +80,21 @@ export const requestPassport = async (req: Request, res: Response) => {
     } else {
       if (data.success_yn === "0") {
         // already exist request
+        console.log("request already transfered and not approved");
         res.status(401).send({
           data: null,
           msg: "Your request is already transfered and not approved",
         });
       } else if (data.success_yn === "1") {
         // already exist passport
+        console.log("request approved and user doesn't get VC yet");
         res.status(401).send({
           data: null,
           msg: "Your passport is approved. Get your passport.",
         });
       } else if (data.success_yn === "2") {
         // rejected passport
+        console.log("user's request is rejected by issuer");
         res.status(401).send({
           data: null,
           msg: "Your request is rejected.",
@@ -105,10 +113,11 @@ export const getReqPass = async (req: Request, res: Response) => {
   });
   // case when token is not valid
   if (clientInfo.name == "JsonWebTokenError") {
+    console.log("invalid token");
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
 
-  // get all requested visa which user submit request
+  // get requested passport which user submit request
   await query.getTargetData(
     "GOVERN_FA_PASSPORT",
     "did",
@@ -118,12 +127,15 @@ export const getReqPass = async (req: Request, res: Response) => {
         console.log("ERROR : ", err);
         res.status(400).send(err);
       }
+      // no request on DB
       if (data1.length === 0) {
+        console.log("no request");
         return res.status(200).send({
           data: null,
           msg: "There is no request",
         });
       }
+      // data should be displyed containing user information
       const cond = ["client_id", "client_id"];
       await query.joinTable(
         "GOVERN_FA_PASSPORT",
@@ -138,6 +150,7 @@ export const getReqPass = async (req: Request, res: Response) => {
           }
           const tempObj: any = Object.assign(data2[0]);
           tempObj.did = clientInfo.did;
+          console.log("call requested passport success");
           return res.status(200).send({
             data: { reqPass: tempObj },
             msg: "call requested passport success",
@@ -157,6 +170,7 @@ export const issuePassVC = async (req: Request, res: Response) => {
   });
   // case when token is not valid
   if (holderInfo.name == "JsonWebTokenError") {
+    console.log("invalid token");
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
 
@@ -240,8 +254,10 @@ export const getAvailableVisa = async (req: Request, res: Response) => {
     } else {
       if (data.length === 0) {
         // case when available visa is empty
+        console.log("no matching data");
         return res.status(400).send({ data: null, msg: "no data matched" });
       } else {
+        console.log("get visa information success");
         let countryList: any = [];
         let purposeList: any = [];
         data.forEach((elem: any, idx: number) => {
@@ -277,11 +293,13 @@ export const requestVisa = async (req: Request, res: Response) => {
 
   // case when token is not valid
   if (holderInfo.name == "JsonWebTokenError") {
+    console.log("invalid token");
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
 
   // case when user submit visa request to own country
   if (holderInfo.user_country_code === target_country) {
+    console.log("user requested contry code is equal to user's country");
     return res
       .status(400)
       .send({ data: null, msg: "You can't request visa to your country" });
@@ -304,9 +322,10 @@ export const requestVisa = async (req: Request, res: Response) => {
 
   // case when there is no did in designated user on GOVERN_USER_CLIENT
   if (hasPassport.length === 0) {
+    console.log("DB has no issuing record. -> user has no passport");
     return res.status(400).send({
       data: null,
-      msg: `You don"t have passport. Make passport first.`,
+      msg: `You don't have passport. Make passport first.`,
     });
   }
 
@@ -334,6 +353,9 @@ export const requestVisa = async (req: Request, res: Response) => {
   // did on holderInfo -> from access token
   // did on passData -> from VP in req.body
   if (holderInfo.did !== passData.did) {
+    console.log(
+      "did from access token and did from requested body is not same",
+    );
     return res.status(400).send({
       data: null,
       msg: "Not identified between token data and passport vc data",
@@ -353,6 +375,7 @@ export const requestVisa = async (req: Request, res: Response) => {
       (err: any, data: any) => {
         // requested visa doesn"t exist
         if (data.length === 0) {
+          console.log("no availale visa");
           return res.status(400).send({
             data: null,
             msg: "No available visa for your request",
@@ -388,6 +411,7 @@ export const requestVisa = async (req: Request, res: Response) => {
             console.log("ERROR : ", err);
             res.status(400).send(err);
           }
+          console.log("user request is stored in DB");
           res.status(200).send({
             requestedData: data[0],
             msg: "Your request is sucessfully submitted",
@@ -397,11 +421,16 @@ export const requestVisa = async (req: Request, res: Response) => {
     } else {
       // already exist request & not approved
       if (data.success_yn === "0") {
+        console.log(
+          "user visa request already transfered and not approvred yet",
+        );
         res.status(401).send({
           data: null,
-          msg: "Your request is already transfered and it does not approved yet.",
+          msg:
+            "Your request is already transfered and it does not approved yet.",
         });
       } else {
+        console.log("user visa request is approved. VC is not issued yet");
         res.status(401).send({
           data: null,
           msg: "Your request is approved. Get your visa",
@@ -420,10 +449,12 @@ export const getReqVisaList = async (req: Request, res: Response) => {
   });
   // case when token is not valid
   if (holderInfo.name == "JsonWebTokenError") {
+    console.log("invalid token");
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
 
   // get all requested visa which user submit request
+  // detailed visa information should be displayed
   const cond = ["visa_id", "visa_id"];
   await query.joinTable(
     "GOVERN_FA_VISA_SURVEY",
@@ -452,7 +483,6 @@ export const getReqVisaList = async (req: Request, res: Response) => {
 
 export const issueVisaVC = async (req: Request, res: Response) => {
   const { visa_survey_id } = req.body;
-  // console.log(visa_survey_id);
   // JWT token from authorization header
   const authorization = req.headers["authorization"];
   // specify user using user data in DB
@@ -461,6 +491,7 @@ export const issueVisaVC = async (req: Request, res: Response) => {
   });
   // case when token is not valid
   if (holderInfo.name == "JsonWebTokenError") {
+    console.log("invalid token");
     return res.status(400).send({ data: null, msg: "invaild token" });
   }
 
@@ -491,7 +522,7 @@ export const issueVisaVC = async (req: Request, res: Response) => {
   // create vc as JWT token under issuer signing
   const vcVisaJwt = await createVerifiableCredentialJwt(vcVisaPayload, issuer);
 
-  // delete designated user"s visa request form
+  // delete designated user's visa request form
   await query.deleteRow(
     "GOVERN_FA_VISA_SURVEY",
     "visa_survey_id",
@@ -506,10 +537,10 @@ export const issueVisaVC = async (req: Request, res: Response) => {
       }
     },
   );
-
+  console.log("issuing visa VC success");
   res.status(200).send({
     data: { vcVisaJwt: vcVisaJwt },
-    msg: "get passport vc success",
+    msg: "get visa VC success",
   });
 };
 
