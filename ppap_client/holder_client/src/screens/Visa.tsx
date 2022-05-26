@@ -16,6 +16,10 @@ import env from "../utils/envFile";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 
+import {
+  asyncClear,
+} from "../utils/asyncStorage";
+
 const ScrollContainer = styled.ScrollView`
   /* flex-grow: 1; */
   /* position: absolute; */
@@ -50,6 +54,10 @@ const Visa = ({ navigation }) => {
   const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
   useEffect(() => {
+
+    //모든데이터 삭제
+    //asyncClear();
+
     getVisaVC();
   }, [screenName]);
 
@@ -119,6 +127,7 @@ const Visa = ({ navigation }) => {
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",
+          justifyContent: "center"
         }}
       >
         {visaList.length === 0 ? (

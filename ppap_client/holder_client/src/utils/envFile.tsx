@@ -1,5 +1,5 @@
 const env = {
-  server: "https://server.loca.lt",
+  server: "https://server2.loca.lt",
   clientServer: "https://client.loca.lt",
   rpcUrl: "HTTP://192.168.35.214:7545",
   registry: "0x4C9B4DaCb456861dD165b1b4F02D3e1aDb5650F8",
