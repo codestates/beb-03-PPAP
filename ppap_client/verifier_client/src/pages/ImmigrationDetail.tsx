@@ -85,7 +85,7 @@ const ImmigrationDetail = () => {
   return (
     <main id="main" className="main">
       <div className="pagetitle">
-        <h1>Passport</h1>
+        <h1>Immigration</h1>
         <Breadcrumb pageName={pageName} />
       </div>
 
