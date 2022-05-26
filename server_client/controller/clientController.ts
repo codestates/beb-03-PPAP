@@ -100,10 +100,16 @@ export const login = async (req: Request, res: Response) => {
           });
         } else {
           const promises = await data.map(async (elem: any) => {
-            const compareBoolean = await bcrypt.compare(
-              loginData.password,
-              elem.password,
-            );
+            let compareBoolean;
+            try {
+              compareBoolean = await bcrypt.compare(
+                loginData.password,
+                elem.password,
+              );
+            } catch (e) {
+              console.log(e);
+              compareBoolean = false;
+            }
             return compareBoolean;
           });
 

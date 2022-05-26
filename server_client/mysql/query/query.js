@@ -39,7 +39,7 @@ module.exports.createUser = async function createUser(userData, callback) {
           },
         );
       } else {
-        callback(null, null);
+        callback(null, data);
       }
     }
   });
