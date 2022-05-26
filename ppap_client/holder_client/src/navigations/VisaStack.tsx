@@ -11,10 +11,10 @@ const VisaStack = () => {
   return (
     <Stack.Navigator
       initialRouteName="Visa"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: true, headerTitle: "" }}
     >
       <Stack.Screen name="Visa" component={Visa} />
-      <Stack.Screen name="VisaDetail" component={VisaDetail}  />
+      <Stack.Screen name="VisaDetail" component={VisaDetail} />
       <Stack.Screen name="VisaRegister" component={VisaRegister} />
       <Stack.Screen name="VisaRequestList" component={VisaRequestList} />
     </Stack.Navigator>

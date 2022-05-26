@@ -32,6 +32,7 @@ const Input = ({
   onChangeText,
   isUpperCase,
   placeholder,
+  value,
 }: {
   label: string;
   isPassword?: boolean;
@@ -39,6 +40,7 @@ const Input = ({
   onChangeText?: Function;
   isUpperCase?: boolean;
   placeholder?: string;
+  value?: string;
 }) => {
   return (
     <Container>
@@ -51,6 +53,7 @@ const Input = ({
         maxLength={maxLength}
         onChangeText={onChangeText}
         placeholder={placeholder}
+        value={value}
       />
     </Container>
   );

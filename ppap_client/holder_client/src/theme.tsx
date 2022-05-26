@@ -6,7 +6,7 @@ export const theme = {
   darkgray: colors.darkgray,
   lightgray: colors.lightgray,
   palegray: colors.palegray,
-  lightblue: colors.lightblue,
+  green: colors.green,
   background: colors.white,
   spinnerBackground: colors.white,
   spinnerIndicator: colors.black,

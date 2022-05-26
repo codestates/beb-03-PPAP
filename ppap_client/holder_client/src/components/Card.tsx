@@ -5,50 +5,31 @@ import axios from "axios";
 import env from "../utils/envFile";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LabeledText from "./LabeledText";
+import moment from "moment";
+import MainButton from "./MainButton";
 
 const Cover = styled.View`
-  background-color: lightgray;
+  background-color: #fff;
+  border: 3px solid ${({ theme }) => theme.navy};
   width: 300px;
-  height: 150px;
   margin-bottom: 10px;
-  border-radius: 30px;
   justify-content: center;
-  padding: 24px;
-  align-items: stretch;
-`;
-
-const VisaText = styled.Text`
-  color: black;
-  font-size: 12px;
-  font-weight: 700;
-  
-`;
-
-const StyledLogo = styled.ImageBackground`
-  width: 50%;
-  height: 50%;
-`;
-
-const Title = styled.Text`
-  font-weight: 600;
-  color: #fff;
-  font-size: 16px;
-`;
-
-const Container = styled.Pressable.attrs((props) => ({
-  width: props.width || "80%",
-}))`
+  padding: 14px 24px;
   align-items: center;
-  /* width: 70%; */
-  margin: 10px;
-  padding: 10px;
-  border-radius: 30px;
-  background-color: ${({ theme, disabled }) =>
-    disabled ? theme.lightgray : theme.navy};
 `;
 
-const UserRequestVisa = ({navVisa, visaRequestData }: {navVisa?:Function, visaRequestData?: object }) => {
+const Wrapper = styled.View`
+  width: 100%;
+`;
 
+const Card = ({
+  navVisa,
+  visaRequestData,
+}: {
+  navVisa?: Function;
+  visaRequestData?: object;
+}) => {
   const userInfo = useSelector((state: any) => state.userReducer).data;
 
   const getVisaVc = async () => {
@@ -61,7 +42,7 @@ const UserRequestVisa = ({navVisa, visaRequestData }: {navVisa?:Function, visaRe
       },
     );
 
-    if(output.status===200){
+    if (output.status === 200) {
       await AsyncStorage.getItem("@visa_jwt_arr").then(async (data) => {
         if (data === null) {
           console.log("null");
@@ -74,29 +55,36 @@ const UserRequestVisa = ({navVisa, visaRequestData }: {navVisa?:Function, visaRe
           AsyncStorage.setItem("@visa_jwt_arr", JSON.stringify(visaArray));
         }
       });
-      
+
       window.alert("발급되었습니다.");
       navVisa();
-    }  
-     
-
-
-  
+    }
   };
 
   return (
     <Pressable>
       <Cover>
-        <VisaText>비자 이름 : {visaRequestData.visa_name}</VisaText>
-        <VisaText>비자 목적 : {visaRequestData.visa_purpose}</VisaText>
-        <VisaText>비자 국가 : {visaRequestData.country_code}</VisaText>
-        <VisaText>비자 유효일 : {visaRequestData.visa_expired_date}</VisaText>
-        <VisaText>비자 신청일 : {visaRequestData.creation_date}</VisaText>
-        {visaRequestData.success_yn === "1" ? (
-          <Container onPress={getVisaVc}>
-            <Title>비자 발급</Title>
-          </Container>
-        ) : null}
+        <Wrapper>
+          <LabeledText label="비자 이름" text={visaRequestData.visa_name} />
+          <LabeledText label="발급 목적" text={visaRequestData.visa_purpose} />
+          <LabeledText
+            label="발급 국가"
+            text={visaRequestData.country_code}
+            showIcon={true}
+          />
+          <LabeledText
+            label="유효일자"
+            text={visaRequestData.visa_expired_date}
+          />
+          <LabeledText
+            label="신청일자"
+            text={moment(visaRequestData.creation_date).format("YYYY. MM. DD")}
+          />
+        </Wrapper>
+
+        {visaRequestData.success_yn === "1" && (
+          <MainButton onPress={getVisaVc} title="비자 발급" />
+        )}
       </Cover>
     </Pressable>
   );
@@ -104,4 +92,4 @@ const UserRequestVisa = ({navVisa, visaRequestData }: {navVisa?:Function, visaRe
 
 const styles = StyleSheet.create({});
 
-export default UserRequestVisa;
+export default Card;

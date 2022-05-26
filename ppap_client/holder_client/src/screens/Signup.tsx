@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Platform, Pressable } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styled from "styled-components/native";
-import { Input, MainButton, MainText, ModalAlert } from "../components";
-import { removeWhitespace, isValidPhoneNumber } from "../utils/common";
+import { Input, MainButton, MainText } from "../components";
+import {
+  removeWhitespace,
+  isValidPhoneNumber,
+  isValidBirth,
+} from "../utils/common";
 import { useDispatch } from "react-redux";
 import { setSpinnerStatus } from "../modules/spinnerReducer";
 import axios from "axios";
 import env from "../utils/envFile";
 import { asyncSetItem, asyncGetItem } from "../utils/asyncStorage";
-// import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import moment from "moment";
 
 const Container = styled.View`
   flex: 1;
@@ -36,8 +41,8 @@ const Signup = ({ navigation }) => {
   const [birth, setBirth] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [disabled, setDisabled] = useState(true);
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const dispatch = useDispatch();
+  const [datePickerShow, setdatePickerShow] = useState(false);
 
   useEffect(() => {
     let _errorMsg = "";
@@ -49,6 +54,8 @@ const Signup = ({ navigation }) => {
       _errorMsg = "비밀번호는 적어도 4자 이상이어야 합니다";
     } else if (password !== passwordConfirm) {
       _errorMsg = "비밀번호가 일치하지 않습니다";
+    } else if (!isValidBirth(birth)) {
+      _errorMsg = "올바른 생년월일을 입력하세요";
     } else {
       _errorMsg = "";
     }
@@ -57,9 +64,22 @@ const Signup = ({ navigation }) => {
 
   useEffect(() => {
     setDisabled(
-      !(userName && phoneNum && password && passwordConfirm && !errorMsg),
+      !(
+        userName &&
+        phoneNum &&
+        birth &&
+        password &&
+        passwordConfirm &&
+        !errorMsg
+      ),
     );
-  }, [userName, password, phoneNum, passwordConfirm, errorMsg]);
+  }, [userName, password, phoneNum, birth, passwordConfirm, errorMsg]);
+
+  const onChangeDate = (event, selectedDate) => {
+    moment.locale("ko");
+    setdatePickerShow(Platform.OS === "ios");
+    setBirth(moment(selectedDate).format("YYYYMMDD"));
+  };
 
   const signUpBtnClickHandler = () => {
     console.log(userName, phoneNum, password, passwordConfirm);
@@ -71,6 +91,7 @@ const Signup = ({ navigation }) => {
           user_name: userName,
           password,
           phone_num: phoneNum,
+          user_birth: birth,
         },
         {
           validateStatus: function (status) {
@@ -81,8 +102,8 @@ const Signup = ({ navigation }) => {
       .then((payload) => {
         const { data, msg } = payload.data;
         const { keypair, userData } = data;
-        asyncSetItem("@keypair", keypair);
-        asyncGetItem("@keypair").then((res) => console.log(res));
+        asyncSetItem("@keypair", JSON.stringify(keypair));
+        console.log(keypair);
 
         dispatch(setSpinnerStatus(false));
         if (msg === "Your data already exists!") {
@@ -114,12 +135,28 @@ const Signup = ({ navigation }) => {
             onChangeText={(text) => setPhoneNum(removeWhitespace(text))}
             placeholder="- 을 빼고 입력"
           />
-          <Input
-            label="생년월일"
-            maxLength={15}
-            onChangeText={(text) => setPhoneNum(removeWhitespace(text))}
-            placeholder="- 을 빼고 입력"
-          />
+          <Pressable
+            onPress={() => {
+              setdatePickerShow(true);
+            }}
+          >
+            <Input
+              label="생년월일"
+              maxLength={8}
+              placeholder="날짜 선택"
+              value={birth}
+            />
+          </Pressable>
+          {datePickerShow && (
+            <DateTimePicker
+              timeZoneOffsetInMinutes={0}
+              value={new Date()}
+              mode="date"
+              is24Hour={true}
+              display="default"
+              onChange={onChangeDate}
+            />
+          )}
           <Input
             label="비밀번호"
             isPassword={true}
