@@ -8,7 +8,6 @@ import {
   Pressable,
 } from "react-native";
 import styled from "styled-components/native";
-import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 
@@ -27,13 +26,11 @@ const Image = ({
   isUpload,
   onChangeImage,
   isPassport,
-  isFlag,
 }: {
   url: string;
   isUpload?: boolean;
   onChangeImage?: Function;
   isPassport?: boolean;
-  isFlag?: boolean;
 }) => {
   if (isUpload) {
     (async () => {
@@ -82,8 +79,7 @@ const Image = ({
           }}
           isUpload={isUpload}
           isPassport={isPassport}
-          isFlag={isFlag}
-        ></StyledImage>
+        />
       </Pressable>
     </Container>
   );

@@ -8,13 +8,13 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 const Stack = createStackNavigator();
 
 const PassportStack = ({ route, navigation }) => {
-  const isAlertFocused = (route) => {
+  const getRouteName = (route) => {
     const routeName = getFocusedRouteNameFromRoute(route) ?? "Passport";
-    return routeName === "ConfirmAlert";
+    return routeName;
   };
 
   useEffect(() => {
-    if (isAlertFocused(route)) {
+    if (getRouteName(route) === "ConfirmAlert") {
       navigation.setOptions({
         tabBarStyle: { display: "none" },
       });
