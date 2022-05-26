@@ -8,7 +8,7 @@ import {
   Image,
   LabeledText,
   MessageAlert,
-  Flag,
+  MainButton,
 } from "../components";
 import axios from "axios";
 import env from "../utils/envFile";
@@ -27,7 +27,7 @@ const Container = styled.View`
 const Wrapper = styled.View`
   flex-grow: ${({ type }) => (type === "header" ? "1" : "3")};
   justify-content: ${({ type }) =>
-    type === "header" ? "center" : "flex-start"};
+    type === "content" ? "flex-start" : "center"};
 `;
 
 const PassportDetail = ({ navigation, route }) => {
@@ -115,7 +115,7 @@ const PassportDetail = ({ navigation, route }) => {
     <Container>
       <Wrapper type="header">
         <MainText title="여권 정보" />
-        {passportStatus < 2 && <MessageAlert message="승인 대기" />}
+        {passportStatus !== "2" && <MessageAlert message="승인 대기" />}
       </Wrapper>
       <Wrapper type="content">
         <Image url={passportInfo.photo_uri} isPassport={true} />
@@ -132,6 +132,20 @@ const PassportDetail = ({ navigation, route }) => {
           label="DID"
           text={passportInfo?.did?.substr(0, 12) + "⋯"}
         />
+      </Wrapper>
+      <Wrapper
+        style={{
+          width: "100%",
+          alignItems: "center",
+        }}
+      >
+        {passportStatus === "2" && (
+          <MainButton
+            title="출입국 도장"
+            onPress={() => navigation.navigate("Stamps")}
+            width="40%"
+          />
+        )}
       </Wrapper>
     </Container>
   );

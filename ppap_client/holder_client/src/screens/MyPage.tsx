@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
-import { SubButton } from "../components";
+import { SubButton, MainText } from "../components";
 import { useDispatch, useSelector } from "react-redux";
 import { unsetUser } from "../modules/userReducer";
 import { unsetPassportStatus } from "../modules/passportStatusReducer";
@@ -53,6 +53,7 @@ const MyPage = ({ navigation }) => {
 
   return (
     <Container>
+      <MainText title="마이페이지" />
       <SubButton title="로그아웃" onPress={logout} />
       {/* <SubButton title="회원탈퇴" onPress={resignation} /> */}
     </Container>

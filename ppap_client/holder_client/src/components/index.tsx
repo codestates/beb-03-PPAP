@@ -12,6 +12,7 @@ import VisaButton from "./VisaButton";
 import Card from "./Card";
 import MessageAlert from "./MessageAlert";
 import Flag from "./Flag";
+import Stamp from "./Stamp";
 
 export {
   Input,
@@ -28,4 +29,5 @@ export {
   Card,
   MessageAlert,
   Flag,
+  Stamp,
 };

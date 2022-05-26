@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import styled from "styled-components/native";
+import { MainText } from "../components";
 
 const Container = styled.View`
   flex: 1;
@@ -12,7 +13,7 @@ const Container = styled.View`
 const Setting = () => {
   return (
     <Container>
-      <Text>Setting</Text>
+      <MainText title="설정" />
     </Container>
   );
 };
