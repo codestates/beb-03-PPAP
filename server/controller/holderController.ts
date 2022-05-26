@@ -541,7 +541,7 @@ export const getStampNFTs = async (req: Request, res: Response) => {
   await Moralis.start({ serverUrl, appId, masterKey });
   const { address } = req.query;
   const options = {
-    chain: "ropsten",
+    chain: "rinkeby",
     address: address,
     token_address: process.env.NFTCONTRACTADD,
   };
