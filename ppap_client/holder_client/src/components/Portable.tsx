@@ -4,8 +4,8 @@ import styled from "styled-components/native";
 import { images } from "../utils/images";
 
 const Cover = styled.View`
-  background-color: ${({ theme, isLogined }) =>
-    isLogined ? theme.navy : theme.palegray};
+  background-color: ${({ theme, type, isLogined }) =>
+    isLogined ? (type === "visa" ? theme.green : theme.navy) : theme.palegray};
   width: 300px;
   height: 450px;
   border-radius: 30px;
@@ -13,7 +13,7 @@ const Cover = styled.View`
   padding: 24px;
 `;
 
-const UserPassportTitle = styled.Text`
+const MainText = styled.Text`
   color: #fff;
   font-size: 24px;
   font-weight: 700;
@@ -24,24 +24,26 @@ const StyledLogo = styled.ImageBackground`
   height: 50%;
 `;
 
-const UserPassport = ({
+const Portable = ({
   onPress,
   mainText,
   subText,
-  isValidPassport,
+  isValid,
+  countryCode,
+  type,
 }: {
   onPress?: Function;
   mainText?: string;
   subText?: string;
-  isValidPassport?: boolean;
+  isValid?: boolean;
+  countryCode?: string;
+  type?: string;
 }) => {
   return (
     <Pressable onPress={onPress}>
-      <Cover isLogined={isValidPassport}>
-        <StyledLogo
-          source={isValidPassport ? { uri: images.color_logo } : {}} // 여권이 있는 유저인 경우 로고 출력
-        />
-        <UserPassportTitle>{mainText}</UserPassportTitle>
+      <Cover isLogined={isValid} type={type}>
+        {isValid && <StyledLogo source={{ uri: images.color_logo }} />}
+        <MainText>{mainText}</MainText>
         <Text style={{ color: "#fff" }}>{subText}</Text>
       </Cover>
     </Pressable>
@@ -50,5 +52,4 @@ const UserPassport = ({
 
 const styles = StyleSheet.create({});
 
-export default UserPassport;
-
+export default Portable;

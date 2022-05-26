@@ -10,6 +10,7 @@ const {
   getPassportVC,
   getVisaVC,
   getStampVC,
+  resignation,
 } = require("../controller/clientController.ts");
 const express = require("express");
 const clientRoute = express.Router();
@@ -17,6 +18,7 @@ const clientRoute = express.Router();
 // register and login process
 clientRoute.route("/login").post(login);
 clientRoute.route("/register").post(register);
+clientRoute.route("/resignation").post(resignation);
 
 // process which stores each VC
 clientRoute.route("/storePassportVC").post(storePassportVC);

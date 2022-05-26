@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import styled from "styled-components/native";
 import { useSelector, useDispatch } from "react-redux";
-import { UserPassport } from "../components";
+import { Portable } from "../components";
 import jwt_decode from "jwt-decode";
 import {
   asyncSetItem,
@@ -44,19 +44,19 @@ const Passport = ({ navigation }) => {
 
   return (
     <Container>
-      <UserPassport
+      <Portable
         onPress={() => navigation.navigate(screenName)}
         mainText={
           !!userInfo
             ? !!passportStatus
               ? "DID 여권"
-              : "여권을 신청해 주세요"
-            : "로그인을 진행해주세요"
+              : "여권을 신청하세요"
+            : "로그인을 진행하세요"
         }
         subText={
-          !!userInfo && !!passportStatus ? userInfo.userData.user_name : ""
+          !!userInfo && !!passportStatus ? userInfo?.userData?.user_name : ""
         }
-        isValidPassport={!!userInfo && !!passportStatus}
+        isValid={!!userInfo && !!passportStatus}
       />
     </Container>
   );
@@ -65,4 +65,3 @@ const Passport = ({ navigation }) => {
 const styles = StyleSheet.create({});
 
 export default Passport;
-

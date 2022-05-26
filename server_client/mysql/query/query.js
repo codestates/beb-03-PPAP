@@ -45,6 +45,27 @@ module.exports.createUser = async function createUser(userData, callback) {
   });
 };
 
+module.exports.deleteUser = async function deleteUser(userData, callback) {
+  this.getUser("phone_num", userData.phone_num, (err, data) => {
+    console.log(userData.phone_num);
+    if (err) {
+      console.log(err);
+    } else {
+      if (data.length === 1) {
+        connection.query(
+          `DELETE FROM CLIENT_USER WHERE phone_num="${userData.phone_num}"`,
+          function (err, result) {
+            if (err) callback(err, null);
+            else callback(null, result);
+          },
+        );
+      } else {
+        callback(null, null);
+      }
+    }
+  });
+};
+
 module.exports.createVC = async function createVC(
   tableFlag,
   phoneNum,
