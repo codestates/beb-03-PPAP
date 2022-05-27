@@ -19,68 +19,35 @@ const Wrapper = styled.View`
   padding: 30px;
   flex: 1;
   flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
 
 const Stamps = () => {
-  const [stampNftList, setStampNftList] = useState([
-    {
-      timeStamp: new Date(),
-      Immigration: "entrance",
-      countryCode: "KOR",
-      countryImg: `${images.flag}%2FKOR.png?alt=media`,
-    },
-    {
-      timeStamp: new Date(),
-      Immigration: "entrance",
-      countryCode: "JAP",
-      countryImg: `${images.flag}%2FJAP.png?alt=media`,
-    },
-    {
-      timeStamp: new Date(),
-      Immigration: "departure",
-      countryCode: "FRA",
-      countryImg: `${images.flag}%2FFRA.png?alt=media`,
-    },
-    {
-      timeStamp: new Date(),
-      Immigration: "departure",
-      countryCode: "JAP",
-      countryImg: `${images.flag}%2FJAP.png?alt=media`,
-    },
-    {
-      timeStamp: new Date(),
-      Immigration: "departure",
-      countryCode: "FRA",
-      countryImg: `${images.flag}%2FFRA.png?alt=media`,
-    },
-    {
-      timeStamp: new Date(),
-      Immigration: "departure",
-      countryCode: "JAP",
-      countryImg: `${images.flag}%2FJAP.png?alt=media`,
-    },
-    {
-      timeStamp: new Date(),
-      Immigration: "departure",
-      countryCode: "FRA",
-      countryImg: `${images.flag}%2FFRA.png?alt=media`,
-    },
-    {
-      timeStamp: new Date(),
-      Immigration: "departure",
-      countryCode: "JAP",
-      countryImg: `${images.flag}%2FJAP.png?alt=media`,
-    },
-  ]);
+  const [stampNftList, setStampNftList] = useState([]);
+  // const [stampNftList, setStampNftList] = useState([
+  //   {
+  //     timeStamp: new Date(),
+  //     Immigration: "entrance",
+  //     countryCode: "KOR",
+  //     countryImg: `${images.flag}%2FKOR.png?alt=media`,
+  //   },
+  //   {
+  //     timeStamp: new Date(),
+  //     Immigration: "entrance",
+  //     countryCode: "KOR",
+  //     countryImg: `${images.flag}%2FKOR.png?alt=media`,
+  //   },
+  // ]);
 
-  // useEffect(() => {
-  //   getStampNft();
-  // }, []);
+  useEffect(() => {
+    getStampNft();
+  }, []);
 
-  // useEffect(() => {
-  //   console.log(stampNftList);
-  //   console.log("CHANGE");
-  // }, [stampNftList]);
+  useEffect(() => {
+    console.log(stampNftList);
+    console.log("CHANGE");
+  }, [stampNftList]);
 
   async function getStampNft() {
     const keypairString: any = await AsyncStorage.getItem("@keypair");
@@ -110,7 +77,7 @@ const Stamps = () => {
             key={idx}
             url={stampNft.countryImg}
             timeStamp={stampNft.timeStamp}
-            Immigration={stampNft.Immigration}
+            Immigration={stampNft.Immigration === "departure" ? "출국" : "입국"}
             countryCode={stampNft.countryCode}
           />
         ))}

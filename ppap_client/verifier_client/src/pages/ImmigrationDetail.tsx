@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import Breadcrumb from "./components/Breadcrumb";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -6,82 +6,87 @@ import { useSelector, useDispatch } from "react-redux";
 
 const ImmigrationDetail = () => {
   //리듀스에 저장되어있는 userInfo가지고오기
-  const userInfo = useSelector((state:any) => state.userReducer).data;
-  const immigrationData = useSelector((state:any) => state.immigrationReducer).data;
+  const userInfo = useSelector((state: any) => state.userReducer).data;
+  const immigrationData = useSelector(
+    (state: any) => state.immigrationReducer,
+  ).data;
 
-  const idParam:any = useParams().id;
-  const [passportDataInfo, setPassportDataInfo]= useState(Object);
-  const [VisaDataInfo, setVisaDataInfo]= useState(Object);
-  
-  const pageName = 'Immigration details';
+  const idParam: any = useParams().id;
+  const [passportDataInfo, setPassportDataInfo] = useState(Object);
+  const [VisaDataInfo, setVisaDataInfo] = useState(Object);
+
+  const pageName = "Immigration details";
   const [modalData, setModalData] = useState("");
   const [successYn, setSuccessYn] = useState(-1);
   useEffect(() => {
-    const immigrationInfo = immigrationData.filter((data:any)=>{return data.immigration_id===parseInt(idParam)})[0]
-    console.log(immigrationInfo)
-    const data ={
-      did:immigrationInfo.did,
-      vpJWT:immigrationInfo.vpjwt
-    }
-    
-    axios.post(process.env.REACT_APP_SERVER_ADMIN_URL+"/admin/veriPass",data,
-    {
-      headers: {
-        authorization: userInfo.jwtToken
-    }
-    }).then((payload:any) => {
+    const immigrationInfo = immigrationData.filter((data: any) => {
+      return data.immigration_id === parseInt(idParam);
+    })[0];
+    console.log(immigrationInfo);
+    const data = {
+      did: immigrationInfo.did,
+      vpJWT: immigrationInfo.vpjwt,
+    };
+
+    axios
+      .post(process.env.REACT_APP_SERVER_ADMIN_URL + "/admin/veriPass", data, {
+        headers: {
+          authorization: userInfo.jwtToken,
+        },
+      })
+      .then((payload: any) => {
         setPassportDataInfo(payload.data.VClist.passport_info);
         setVisaDataInfo(payload.data.VClist.visa);
         console.log(payload.data.VClist);
-    });
-   
+      });
   }, []);
 
-  const modalClick = (successYn:any) =>{
-    const modal:any = document.getElementById("modal");
-    modal.style.display='flex';
-    if(successYn===1){
-      setModalData('Entrance');
+  const modalClick = (successYn: any) => {
+    const modal: any = document.getElementById("modal");
+    modal.style.display = "flex";
+    if (successYn === 1) {
+      setModalData("Entrance");
       setSuccessYn(1);
-      
-    }else if(successYn===2){
-      setModalData('Departure');
+    } else if (successYn === 2) {
+      setModalData("Departure");
       setSuccessYn(2);
-    }else{
+    } else {
     }
-  }
+  };
 
-  const issuanceOkClick = () =>{
-    const modal:any = document.getElementById("modal");
-    const immigrationInfo = immigrationData.filter((data:any)=>{return data.immigration_id===parseInt(idParam)})[0]
-    
-    console.log(immigrationInfo)
-    const body = {address : immigrationInfo.address,
-                  did : immigrationInfo.did,
-                  entOrdep : successYn.toString()}
+  const issuanceOkClick = () => {
+    const modal: any = document.getElementById("modal");
+    const immigrationInfo = immigrationData.filter((data: any) => {
+      return data.immigration_id === parseInt(idParam);
+    })[0];
+
+    console.log(immigrationInfo);
+    const body = {
+      address: immigrationInfo.address,
+      did: immigrationInfo.did,
+      entOrdep: successYn.toString(),
+    };
 
     console.log(body);
     axios
-    .post(process.env.REACT_APP_SERVER_ADMIN_URL + "/admin/giveStamp", body,
-    {
-      headers: {
-        authorization: userInfo.jwtToken
-      }
-    }
-    )
-    .then((response)=> {
-      console.log(response);
-    })
-    .catch((error)=>{
-      console.log(error);
-    })
-    
-    modal.style.display='none';
-  }
-  const issuanceCloseClick = () =>{
-    const modal:any = document.getElementById("modal");
-    modal.style.display='none';
-  }
+      .post(process.env.REACT_APP_SERVER_ADMIN_URL + "/admin/giveStamp", body, {
+        headers: {
+          authorization: userInfo.jwtToken,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    modal.style.display = "none";
+  };
+  const issuanceCloseClick = () => {
+    const modal: any = document.getElementById("modal");
+    modal.style.display = "none";
+  };
   return (
     <main id="main" className="main">
       <div className="pagetitle">
@@ -95,7 +100,7 @@ const ImmigrationDetail = () => {
         <h5 className="card-title">Passport Info</h5>
         <div className="md:flex no-wrap md:-mx-2 ">
           <div className="w-full md:w-3/12 md:mx-2">
-            <div className="bg-white p-3 border-t-4 border-blue-400">
+            <div className="bg-white p-3 border-t-4 border-ppap-navy">
               <div className="image overflow-hidden">
                 <img
                   className="h-auto w-full mx-auto"
@@ -115,10 +120,10 @@ const ImmigrationDetail = () => {
             </div>
           </div>
 
-          <div className="w-full md:w-9/12 bg-white p-3 border-t-4 border-blue-400">
+          <div className="w-full md:w-9/12 bg-white p-3 border-t-4 border-ppap-navy">
             <div className="md:w-12/12 bg-white p-3 shadow-sm rounded-sm">
               <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8">
-                <span className="text-blue-500">
+                <span className="border-ppap-navy">
                   <svg
                     className="h-5"
                     xmlns="http://www.w3.org/2000/svg"
@@ -188,7 +193,7 @@ const ImmigrationDetail = () => {
         <h5 className="card-title">Visa Info</h5>
         <div className="md:flex no-wrap md:-mx-2 ">
           <div className="w-full md:w-3/12 md:mx-2">
-            <div className="bg-white p-3 border-t-4 border-blue-400">
+            <div className="bg-white p-3 border-t-4 border-ppap-navy">
               <div className="image overflow-hidden"></div>
 
               <ul className="bg-gray-100 text-gray-600 hover:text-gray-700 hover:shadow py-4 px-3 mt-3 divide-y rounded shadow-sm">
@@ -201,10 +206,10 @@ const ImmigrationDetail = () => {
               </ul>
             </div>
           </div>
-          <div className="w-full md:w-9/12 bg-white p-3 border-t-4 border-blue-400">
+          <div className="w-full md:w-9/12 bg-white p-3 border-t-4 border-ppap-navy">
             <div className="md:w-12/12 bg-white p-1 shadow-sm rounded-sm">
               <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8">
-                <span className="text-blue-500">
+                <span className="border-ppap-navy">
                   <svg
                     className="h-5"
                     xmlns="http://www.w3.org/2000/svg"
@@ -246,7 +251,7 @@ const ImmigrationDetail = () => {
               </div>
 
               <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8">
-                <span className="text-blue-500">
+                <span className="border-ppap-navy">
                   <svg
                     className="h-5"
                     xmlns="http://www.w3.org/2000/svg"
@@ -311,7 +316,7 @@ const ImmigrationDetail = () => {
 
         <div className="grid grid-cols-2">
           <button
-            className="w-1/3 block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
+            className="w-1/3 block w-full text-ppap-navy text-sm font-semibold rounded-lg hover:bg-slate-200 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
             onClick={() => {
               modalClick(1);
             }}
@@ -319,7 +324,7 @@ const ImmigrationDetail = () => {
             Entrance
           </button>
           <button
-            className="w-1/3 block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
+            className="w-1/3 block w-full text-ppap-navy text-sm font-semibold rounded-lg hover:bg-slate-200 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
             onClick={() => {
               modalClick(2);
             }}
