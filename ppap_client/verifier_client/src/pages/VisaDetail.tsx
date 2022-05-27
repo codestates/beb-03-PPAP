@@ -208,15 +208,15 @@ const modalClick = (successYn:any) =>{
                         {visaDataInfo.creation_date}
                       </div>
                     </div>
-                    <div className="grid grid-cols-2"></div>
-                    <button className="w-1/3 block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
+                   
+                    <button className="w-2/3 block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
                     onClick={() => {
                       modalClick(1);
                     }}
                     >
                       Approve
                     </button>
-                    <button className="w-1/3 block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
+                    <button className="w-2/3 block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4"
                     onClick={() => {
                       modalClick(2);
                     }}>

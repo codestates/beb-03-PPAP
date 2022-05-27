@@ -8,3 +8,5 @@ package-lock.json
 */sessions
 .DS_store
 node_modules
+
+truffle-config.js

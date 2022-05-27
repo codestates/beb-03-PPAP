@@ -15701,45 +15701,19 @@
   "ast": {
     "absolutePath": "project:/contracts/NFTs.sol",
     "exportedSymbols": {
-      "Address": [
-        1554
-      ],
-      "Context": [
-        1576
-      ],
-      "Counters": [
-        1650
-      ],
-      "ERC165": [
-        1877
-      ],
-      "ERC721": [
-        970
-      ],
-      "ERC721URIStorage": [
-        1232
-      ],
-      "IERC165": [
-        1889
-      ],
-      "IERC721": [
-        1086
-      ],
-      "IERC721Metadata": [
-        1259
-      ],
-      "IERC721Receiver": [
-        1104
-      ],
-      "NFTs": [
-        1946
-      ],
-      "Ownable": [
-        104
-      ],
-      "Strings": [
-        1853
-      ]
+      "Address": [1554],
+      "Context": [1576],
+      "Counters": [1650],
+      "ERC165": [1877],
+      "ERC721": [970],
+      "ERC721URIStorage": [1232],
+      "IERC165": [1889],
+      "IERC721": [1086],
+      "IERC721Metadata": [1259],
+      "IERC721Receiver": [1104],
+      "NFTs": [1946],
+      "Ownable": [104],
+      "Strings": [1853]
     },
     "id": 1947,
     "license": "MIT",
@@ -15747,12 +15721,7 @@
     "nodes": [
       {
         "id": 1891,
-        "literals": [
-          "solidity",
-          "^",
-          "0.8",
-          ".6"
-        ],
+        "literals": ["solidity", "^", "0.8", ".6"],
         "nodeType": "PragmaDirective",
         "src": "157:23:12"
       },
@@ -15826,14 +15795,7 @@
         "fullyImplemented": true,
         "id": 1946,
         "linearizedBaseContracts": [
-          1946,
-          1232,
-          970,
-          1259,
-          1086,
-          1877,
-          1889,
-          1576
+          1946, 1232, 970, 1259, 1086, 1877, 1889, 1576
         ],
         "name": "NFTs",
         "nameLocation": "435:4:12",
@@ -16039,9 +16001,7 @@
                   "src": "711:21:12"
                 },
                 {
-                  "assignments": [
-                    1927
-                  ],
+                  "assignments": [1927],
                   "declarations": [
                     {
                       "constant": false,

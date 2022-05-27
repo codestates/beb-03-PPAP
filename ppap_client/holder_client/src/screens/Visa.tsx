@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -15,15 +15,6 @@ import { verifyCredential } from "did-jwt-vc";
 import env from "../utils/envFile";
 import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
-
-const ScrollContainer = styled.ScrollView`
-  /* flex-grow: 1; */
-  /* position: absolute; */
-  /* width: 100%; */
-  /* height: 100%; */
-  /* align-items: center; */
-  /* margin: 0px 30px; */
-`;
 
 const Container = styled.View`
   flex: 1;
@@ -67,6 +58,7 @@ const Visa = ({ navigation }) => {
       navigation.navigate(screenName);
     }
   }, [clickCheck]);
+
   useEffect(() => {
     console.log(visaList);
   }, [visaList]);
@@ -111,52 +103,60 @@ const Visa = ({ navigation }) => {
 
   return (
     <Container>
-      <ScrollContainer
+      <ScrollView
         horizontal
         pagingEnabled={true}
         disableIntervalMomentum={true}
-        showsHorizontalScrollIndicator={false}
+        showsHorizontalScrollIndicator={true}
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        {visaList.length === 0 ? (
-          <Portable
-            onPress={() => {
-              setScreenName("VisaRegister");
-              setClickCheck(!clickCheck);
+        {visaList.length === 0 || !userInfo ? (
+          <View
+            style={{
+              width: SCREEN_WIDTH,
+              alignItems: "center",
             }}
-            mainText={userInfo && hasVisa ? "Visa" : "비자를 신청하세요"}
-            isValid={!!userInfo && hasVisa}
-          />
-        ) : null}
-        {visaList.map((elem, index) => {
-          return (
-            <View
-              style={{
-                width: SCREEN_WIDTH,
-                alignItems: "center",
+          >
+            <Portable
+              onPress={() => {
+                setScreenName("VisaRegister");
+                setClickCheck(!clickCheck);
               }}
-            >
-              <Portable
-                onPress={() => {
-                  setScreenName(`VisaDetail`);
-                  setVisaDetailIndex(index);
-                  setClickCheck(!clickCheck);
+              mainText={hasVisa ? "로그인을 진행하세요" : "비자를 신청하세요"}
+              isValid={false}
+            />
+          </View>
+        ) : (
+          visaList.map((elem, index) => {
+            return (
+              <View
+                style={{
+                  width: SCREEN_WIDTH,
+                  alignItems: "center",
                 }}
-                mainText={elem.visa_name}
-                subText={elem.visa_purpose}
-                countryCode={elem.target_country_code}
-                isValid={true}
                 key={index}
-                type="visa"
-              />
-            </View>
-          );
-        })}
-      </ScrollContainer>
+              >
+                <Portable
+                  onPress={() => {
+                    setScreenName(`VisaDetail`);
+                    setVisaDetailIndex(index);
+                    setClickCheck(!clickCheck);
+                  }}
+                  mainText={elem.visa_name}
+                  subText={elem.visa_purpose}
+                  countryCode={elem.target_country_code}
+                  isValid={true}
+                  type="visa"
+                />
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
 
       <Wrapper>
         <MainButton

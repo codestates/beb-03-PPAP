@@ -67,7 +67,6 @@ const VisaIssuanceList = ({linkPath}:any) => {
                   <thead>
                     <tr>
                       <th scope="col">#ID</th>
-                      <th scope="col">Country Code</th>
                       <th scope="col">Visa Name</th>
                       <th scope="col">Visa Purpose</th>
                       <th scope="col">Name</th>
@@ -82,7 +81,6 @@ const VisaIssuanceList = ({linkPath}:any) => {
                           <th scope="row">
                             <Link to={linkPath + `detail/${data.visa_survey_id}`}>#{data.visa_survey_id}</Link>
                           </th>
-                          <td>{data.country_code}</td>
                           <td>{data.visa_name}</td>
                           <td>{data.visa_purpose}</td>
                           <td>{data.user_name}</td>

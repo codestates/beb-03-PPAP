@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPassport } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPassport } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = () => {
   return (
@@ -23,7 +23,7 @@ const Sidebar = () => {
             data-bs-toggle="collapse"
             href="#"
           >
-            <i className="bi bi-gem"></i>
+            <i className="bi bi-file-earmark-person"></i>
             <span>Passport</span>
             <i className="bi bi-chevron-down ms-auto"></i>
           </a>
@@ -50,7 +50,7 @@ const Sidebar = () => {
             data-bs-toggle="collapse"
             href="#"
           >
-            <i className="bi bi-gem"></i>
+            <i className="bi bi-file-medical"></i>
             <span>Visa</span>
             <i className="bi bi-chevron-down ms-auto"></i>
           </a>
@@ -77,7 +77,7 @@ const Sidebar = () => {
             data-bs-toggle="collapse"
             href="#"
           >
-            <i className="bi bi-gem"></i>
+            <i className="bi bi-fingerprint"></i>
             <span>Immigration stamp</span>
             <i className="bi bi-chevron-down ms-auto"></i>
           </a>
@@ -105,7 +105,7 @@ const Sidebar = () => {
             data-bs-toggle="collapse"
             href="#"
           >
-            <i className="bi bi-gem"></i>
+            <i className="bi bi-reception-4"></i>
             <span>Immigration Control</span>
             <i className="bi bi-chevron-down ms-auto"></i>
           </a>

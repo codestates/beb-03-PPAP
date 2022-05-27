@@ -48,7 +48,7 @@ module.exports.getPassport = async function getPassportList(
   callback,
 ) {
   connection.query(
-    `SELECT * FROM GOVERN_FA_PASSPORT P
+    `SELECT *,P.did AS did FROM GOVERN_FA_PASSPORT P
     INNER JOIN GOVERN_USER_CLIENT C 
     ON P.client_id = C.client_id 
     WHERE C.country_code = "${countryCode}"`,

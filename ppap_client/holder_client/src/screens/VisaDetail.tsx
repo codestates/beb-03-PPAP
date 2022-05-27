@@ -12,24 +12,24 @@ import {
   Issuer,
 } from "did-jwt-vc";
 import { useSelector } from "react-redux";
+
 const Container = styled.View`
   flex: 1;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
   background-color: #fff;
 `;
 
-const ButtonContainer = styled.View`
-  margin: 10px;
+const Wrapper = styled.View`
+  margin-bottom: 20px;
 `;
 
-const Wrapper = styled.View`
+const Card = styled.View`
   justify-content: center;
-  width: 50%;
-  border: 3px;
-  padding: 10px;
-  border-radius: 10px;
-  border-color: gray;
+  width: 70%;
+  padding: 30px;
+  border: 3px solid ${({ theme }) => theme.navy};
+  align-items: center;
 `;
 
 const VisaDetail = ({ route, navigation }) => {
@@ -54,6 +54,7 @@ const VisaDetail = ({ route, navigation }) => {
       const keypairString: any = await AsyncStorage.getItem("@keypair");
       const visaVCString: any = await AsyncStorage.getItem("@visa_jwt_arr");
       const userDid = userInfo.userData.did;
+
       if (passportVC !== null && keypairString != null) {
         let keypair = JSON.parse(keypairString);
         let visaVC = JSON.parse(visaVCString)[visaIndex];
@@ -64,17 +65,20 @@ const VisaDetail = ({ route, navigation }) => {
         console.log(keypair);
         console.log(visaVC);
         console.log("-------------------------");
+
         const providerConfig = {
           name: "ganache",
           rpcUrl: env.rpcUrl,
           registry: env.registry,
         };
+
         const ethrDid = new EthrDID({
           ...keypair,
           rpcUrl: providerConfig.rpcUrl,
           chainNameOrId: "ganache",
           registry: env.registry,
         }) as Issuer;
+
         const vpPayload: JwtPresentationPayload = {
           vp: {
             "@context": ["https://www.w3.org/2018/credentials/v1"],
@@ -98,27 +102,30 @@ const VisaDetail = ({ route, navigation }) => {
   return (
     <Container>
       <MainText title="비자 발급 정보" />
-      <Wrapper>
-        <LabeledText label="성명" text={visaInfo.user_name} />
-        <LabeledText label="성별" text={visaInfo.sex} />
-        <LabeledText label="생년월일" text={visaInfo.birth} />
-        <LabeledText label="나이" text={visaInfo.age} />
-        <LabeledText
-          label="비자 발급 국가"
-          text={visaInfo.target_country_code}
-        />
-        <LabeledText label="비자 이름" text={visaInfo.visa_name} />
-        <LabeledText label="비자 목적" text={visaInfo.visa_purpose} />
-        <LabeledText label="비자 유효기간" text={visaInfo.visa_expired_date} />
-      </Wrapper>
-
-      <ButtonContainer>
+      <Card>
+        <Wrapper>
+          <LabeledText label="성명" text={visaInfo.user_name} />
+          <LabeledText label="성별" text={visaInfo.sex} />
+          <LabeledText label="생년월일" text={visaInfo.birth} />
+          <LabeledText label="나이" text={visaInfo.age} />
+          <LabeledText
+            label="비자 발급 국가"
+            text={visaInfo.target_country_code}
+            showIcon={true}
+          />
+          <LabeledText label="비자 이름" text={visaInfo.visa_name} />
+          <LabeledText label="비자 목적" text={visaInfo.visa_purpose} />
+          <LabeledText
+            label="비자 유효기간"
+            text={visaInfo.visa_expired_date}
+          />
+        </Wrapper>
         <VisaButton
           title="출입국 요청"
           onPress={immigationVPcreate}
           width="50%"
         />
-      </ButtonContainer>
+      </Card>
     </Container>
   );
 };
