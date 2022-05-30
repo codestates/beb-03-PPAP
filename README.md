@@ -1,5 +1,8 @@
 # beb-03-project3-PPAP
 
+### Project Notion Page
+https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
+
 ### git commit Comment rule
 **Comment Rule**
 - 어떻게 보다는 무엇과 왜를 설명한다
