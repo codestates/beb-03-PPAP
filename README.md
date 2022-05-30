@@ -25,10 +25,7 @@ type
 - docs : 문서 수정에 대한 커밋(ReadMe)
 - style : 코드 스타일 혹은 포맷 등에 관한 커밋
 - test : 테스트 코드 수정에 대한 커밋
-- merge : 코드 병합에 대한 커밋
 
-
-Require Stack
 <div align="center">
     <img
         src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=HTML5&logoColor=white"
@@ -64,9 +61,3 @@ Require Stack
     />
 </div>
 <br />
-Front-End
-
-
-
-
-Back-End

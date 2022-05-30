@@ -1,5 +1,12 @@
 ABI
 address
-test_server/node_modules
-test_server/.env
-test_server/package-lock.json
+*/node_modules
+*/.env
+*/package-lock.json
+node_modules
+package-lock.json
+*/sessions
+.DS_store
+node_modules
+
+truffle-config.js
