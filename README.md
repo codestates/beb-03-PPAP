@@ -272,7 +272,8 @@ https://youtu.be/Pg046s5UWMg
 
 # Presentation
 
-[PPAP 포폴용.pdf](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e16f5a47-efff-41ae-93d7-222990428a5a/PPAP_포폴용.pdf)
+[PPAP 포폴용.pdf](https://github.com/codestates/beb-03-PPAP/files/8990118/PPAP.pdf)
+
 
 ---
 
