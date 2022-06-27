@@ -5,7 +5,8 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 
 ### 
-![slogan.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b7fc47fc-d2d6-4efe-957f-c19bea1efc9c/slogan.png)
+![slogan](https://user-images.githubusercontent.com/45090300/175894526-be7ebe73-50db-4f29-b9f8-2e9a4ae19b5a.png)
+
 
 ### Codestates Blockchain Engineering Bootcamp Final Project
 
@@ -17,8 +18,6 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 ### Passport
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/da7cf6c3-f18f-44f5-bb3a-c305240efef5/Untitled.png)
-
 여권은 해외 여행을 하는 자국민의 안전을 위해, 국가가 해당 자국민에 대해 발급하는 공식적인 신분 증명서입니다. 하지만 현재의 여권은 여러가지 문제점을 지니고 있습니다.
 
 - 파손 위험성
@@ -28,15 +27,11 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 - 분실 및 여권 범죄 위험성
     
     여행 중에 개인 신분을 증명할 수 있는 수단이므로 여권은 언제든 제출할 수 있도록 항상 지니고 있어야합니다. 이 과정에서 분실의 확률이 높아질 수 있습니다. 그리고 대한민국 여권으로 세계 많은 나라들에 입국할 수 있으므로 외국에서는 대한민국 여권이 위조나 도난 등의 범죄 표적이 되기도 합니다.
-    
-    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a3eb244a-fdf4-4454-bfc7-2fc7a7b35a00/Untitled.png)
-    
+
     - 2019년 Henley 여권 지수 기준 190여개국 여행 가능
     - COVID-19 Protocol 이후 여권 Power Rank 2위를 기록
 
 ### Electric Passport
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0b40e435-08a2-4d99-afbb-14c88a9482b1/Untitled.png)
 
 현재 ‘전자여권’이라는 명칭으로 외교부에서 발행하는 여권은 완전한 종이형 여권에 전자적으로 읽을 수 있는 칩이 내장되어 있는 형태입니다. 하지만 이 전자여권 역시 내장된 칩이 손상된다면 제 기능을 하지 못하므로 취급에 주의를 요하고 있습니다.
 
@@ -61,19 +56,12 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
     국내에서도 이러한 DID를 이용한 서비스가 속속 등장했습니다.
     
     - 부산광역시 시민들을 상대로 하는 모바일 신분확인 서비스 B Pass
-        
-        ![스크린샷 2022-05-23 오후 4.34.01.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1186bad8-c0f3-4088-9e96-2b3d92259132/스크린샷_2022-05-23_오후_4.34.01.png)
-        
+
     - COVID-19 백신 접종 인증 시스템 COOV - 여권 연동 가능
-        
-        ![스크린샷 2022-05-23 오후 4.35.09.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/6bc5e91a-090f-433b-b92c-44aab8adcc6a/스크린샷_2022-05-23_오후_4.35.09.png)
-        
 
 ---
 
 # A**pp implementation**
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/34f186ab-9726-490b-909f-55a6680601fd/Untitled.png)
 
 여전히 해결되지 못한 문제점들을 해결하기 위해서 종이형이 아닌 완전한 전자적 형태의 여권의 필요성을 인식하였고, 저희 팀은 COVID-19 백신 접종 인증 시스템인 COOV의 모델을 참고하여 스마트폰에서 사용할 수 있는 형태의 전자여권을 고안했습니다.
 
@@ -81,7 +69,7 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 # F**ull configuration**
 
-![그림1.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b9f64c52-52e0-4b20-ba63-d85f51a7837a/그림1.png)
+![그림1](https://user-images.githubusercontent.com/45090300/175895131-d7e21c78-b183-4536-8dfe-c3559080654b.png)
 
 외교부에게 여권, 비자를 발급받고, 출입국 심사 시 발급받은 여권과 비자를 검증하여 출입국 도장을 발급받는 전체 과정을 나타낸 그림입니다.
 
@@ -111,7 +99,7 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 ### Holder Authorization scenario
 
-![스크린샷 2022-05-25 오후 2.46.41.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a85dc28d-ec71-472b-be1d-507c1f8912b6/스크린샷_2022-05-25_오후_2.46.41.png)
+<img width="1363" alt="스크린샷 2022-05-25 오후 2 46 41" src="https://user-images.githubusercontent.com/45090300/175895287-b6b7e289-6167-4b07-b6c5-a485163bc161.png">
 
 여권을 VC의 형태로 발급받아 사용하기 위해서는 회원 가입 및 본인 인증 과정이 필요합니다. 
 
@@ -138,7 +126,8 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 ### Issuing Passport scenario
 
-![스크린샷 2022-05-25 오후 2.47.45.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/be5d3c1f-a9c4-4221-b91c-35baf4c4f4cb/스크린샷_2022-05-25_오후_2.47.45.png)
+<img width="1238" alt="스크린샷 2022-05-25 오후 2 47 45" src="https://user-images.githubusercontent.com/45090300/175895449-12a6b918-7830-42ac-8bbe-c5daad781fa1.png">
+
 
 회원 가입 및 로그인이 완료된 사용자(홀더)는 본격적으로 여권을 VC의 형태로 발급받아 사용할 수 있습니다.
 
@@ -170,7 +159,8 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 ### Issuing Visa Scenario (e.g., USA → Korea)
 
-![스크린샷 2022-05-25 오후 1.39.21.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/36063ed7-1fc5-4a90-b349-2a3bf2bee00d/스크린샷_2022-05-25_오후_1.39.21.png)
+<img width="1273" alt="스크린샷 2022-05-25 오후 1 39 21" src="https://user-images.githubusercontent.com/45090300/175895572-14e9c9fc-a6e0-4cef-853c-4d5da91e1cbd.png">
+
 
 여권 발급이 완료된 사용자는 이어서 원하는 비자를 VC형태로 발급받을 수 있습니다. 예를 들어, 미국 국적의 사용자(홀더)가 한국 비자를 발급받는 상황을 가정하겠습니다.
 
@@ -199,7 +189,8 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 ### Issuing Immigration Stamp Scenario
 
-![스크린샷 2022-05-25 오후 1.39.56.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9237935f-a6a0-4013-8d26-ed4e3ff63991/스크린샷_2022-05-25_오후_1.39.56.png)
+<img width="1280" alt="스크린샷 2022-05-25 오후 1 39 56" src="https://user-images.githubusercontent.com/45090300/175895695-85abb799-5568-4c1e-81a5-c81568fdd2c7.png">
+
 
 여권과 비자를 모두 발급받았다면, 이제 사용자는 출입국 수속을 밟을 수 있습니다. 발급받은 여권과 비자는 모두 JWT token 형태로 사용자의 기기에 저장되어있기 때문에, 이것을 토대로 출입국 수속을 요청하고, 출입국 도장을 NFT 형태로 발급받을 수 있습니다.
 
@@ -223,15 +214,15 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 ### 여권 발급 과정
 
-[여권발급.mp4](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d61289cf-0a3d-480e-9eff-f1d6cd22ab84/여권발급.mp4)
+https://youtu.be/L5bO4sRFuCU
 
 ### 비자 발급 과정
 
-[비자발급.mp4](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5e2ffbdd-47fc-40c2-8bd6-3d2d731ada07/비자발급.mp4)
+https://youtu.be/ATvQw8Ycvf4
 
 ### 출입국 심사 과정
 
-[출입국도장발급.mp4](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5f894ec9-9db4-4755-9bfb-47fbe05147b4/출입국도장발급.mp4)
+https://youtu.be/Pg046s5UWMg
 
 ---
 
@@ -243,19 +234,13 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
     
 - 여권의 훼손, 파손 내구성
     
-    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ee77fc95-3a67-4191-a73b-cb575b8f62bf/Untitled.png)
-    
     사용자는 스마트폰 앱으로 여권을 사용하는, 완전히 전자적인 형태이므로 여권 자체의 파손이나 훼손으로부터 안전합니다.
     
 - 사용 편의성
     
-    ![icon.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e8da0b9f-012c-4213-928f-e0087190cfba/icon.png)
-    
     스마트폰의 앱을 실행하여 필요에 따라 여권이나 비자를 제시할 수 있습니다. 단순히 종이여권을 제출해서 개인 인증을 하는 것 만큼의 편의성을 제공할 수 있습니다.     
     
 - 개인화된 인증
-    
-    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/58d94280-21e0-4092-9112-e06919ad743e/Untitled.png)
     
     현재 스마트폰은 다양한 방식의 개인 인증(간편비밀번호, TouchID, FaceID와 같은 생체인증 등)을 제공하고 있습니다. 설사 전자여권을 지니고 있는 스마트폰을 분실하더라도, 개인화된 인증을 통해야 하므로 핸드폰 실소유자만 정보에 접근할 수 있습니다.
     
@@ -268,7 +253,8 @@ https://deeply-mountain-e1f.notion.site/d55f3699bc8b422a9bd5c48a6eb519b2
 
 # Require Stack
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f7bc3228-473f-49a6-9f21-53b58ff094a6/Untitled.png)
+<img width="1490" alt="Untitled (1)" src="https://user-images.githubusercontent.com/45090300/175896447-ac615f85-7ad3-4300-a031-8e8bba4f8b11.png">
+
 
 ---
 
