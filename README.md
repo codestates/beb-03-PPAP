@@ -270,13 +270,6 @@ https://youtu.be/Pg046s5UWMg
 
 ---
 
-# Presentation
-
-[PPAP 포폴용.pdf](https://github.com/codestates/beb-03-PPAP/files/8990118/PPAP.pdf)
-
-
----
-
 # Our Team
 
 ---
